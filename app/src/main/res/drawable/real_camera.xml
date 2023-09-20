@@ -1,0 +1,47 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 添加内部阴影的矢量图 -->
+    <item android:drawable="@drawable/camera" />
+
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="180"
+                android:centerColor="#00517D96"
+                android:centerX="0.8"
+                android:endColor="#5C517D96"
+                android:startColor="#00517D96" />
+            <corners android:topLeftRadius="20dp" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="90"
+                android:centerColor="#00517D96"
+                android:centerX="0.8"
+                android:endColor="#5C517D96"
+                android:startColor="#00517D96" />
+            <corners android:topLeftRadius="20dp" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="0"
+                android:centerColor="#00517D96"
+                android:centerX="0.8"
+                android:endColor="#5C517D96"
+                android:startColor="#00517D96" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="270"
+                android:centerColor="#00517D96"
+                android:centerX="0.8"
+                android:endColor="#5C517D96"
+                android:startColor="#00517D96" />
+        </shape>
+    </item>
+</layer-list>
