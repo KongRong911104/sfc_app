@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.storage.CacheResetOnProcessCanceled.enabled
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -36,9 +38,17 @@ android {
     buildFeatures {
         viewBinding = true
     }
-}
+    }
 
 dependencies {
+    implementation("androidx.camera:camera-core:1.2.2")
+    implementation("androidx.camera:camera-camera2:1.2.2")
+    implementation("androidx.camera:camera-lifecycle:1.2.2")
+    implementation("androidx.camera:camera-video:1.2.2")
+
+    implementation("androidx.camera:camera-view:1.2.2")
+    implementation("androidx.camera:camera-extensions:1.2.2")
+//    implementation("androidx.camera:camera-lifecycle:1.2.1")
     implementation("androidx.biometric:biometric:1.2.0-alpha05")
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
@@ -48,7 +58,10 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
     implementation("androidx.navigation:navigation-fragment-ktx:2.5.3")
     implementation("androidx.navigation:navigation-ui-ktx:2.5.3")
+//    implementation("androidx.camera:camera-core:1.2.3")
+//    implementation("androidx.camera:camera-view:1.0.0-alpha20")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+
 }

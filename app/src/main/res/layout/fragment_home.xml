@@ -7,7 +7,10 @@
     android:background="#262629"
     android:scrollbars="vertical"
     tools:context=".ui.home.HomeFragment">
-
+    <androidx.camera.view.PreviewView
+        android:id="@+id/viewFinder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
     <TextView
         android:id="@+id/ball_text"
         android:layout_width="wrap_content"
@@ -49,6 +52,8 @@
 
         <ImageButton
             android:id="@+id/camera_button"
+            android:clickable="true"
+            android:onClick="takeAPhoto"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/camera_selector"
