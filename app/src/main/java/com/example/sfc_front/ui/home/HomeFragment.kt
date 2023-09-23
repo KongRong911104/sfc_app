@@ -1,5 +1,6 @@
 package com.example.sfc_front.ui.home
 
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
@@ -37,7 +38,12 @@ class HomeFragment : Fragment() {
 
         val ballView = root.findViewById<TextView>(R.id.ball_text)
         val progressBar: ProgressBar = root.findViewById(R.id.progressBar)
-        val cameraButton : ImageButton = root.findViewById(R.id.camera_button);
+        val cameraButton : ImageButton = root.findViewById(R.id.camera_button)
+        val noteButton : ImageButton = root.findViewById(R.id.note_button)
+        noteButton.setOnClickListener{
+            val intent = Intent(requireContext(), NoteActivity::class.java)
+            startActivity(intent)
+        }
         progressObserver = Observer { progressInt ->
             ballView.text = "$progressInt%"
             progressBar.progress = progressInt
