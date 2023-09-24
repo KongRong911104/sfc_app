@@ -70,76 +70,78 @@ class HomeFragment : Fragment() {
         viewModel.progressInt.removeObserver(progressObserver)
         _binding = null
     }
-    private fun startCamera() {
-        val cameraProviderFuture = activity?.let { ProcessCameraProvider.getInstance(it) }
+//    private fun startCamera() {
+//        val cameraProviderFuture = activity?.let { ProcessCameraProvider.getInstance(it) }
+//
+//        activity?.let { ContextCompat.getMainExecutor(it) }?.let {
+//            cameraProviderFuture?.addListener({
+//                // Used to bind the lifecycle of cameras to the lifecycle owner
+//                val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
+//
+//                // Preview
+//                val preview = Preview.Builder()
+//                    .build()
+//                    .also {
+//                        it.setSurfaceProvider(_binding?.viewFinder?.surfaceProvider)
+//                    }
+//
+//                // Select back camera as a default
+//                val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+//
+//                try {
+//                    // Unbind use cases before rebinding
+//                    cameraProvider.unbindAll()
+//
+//                    // Bind use cases to camera
+//                    cameraProvider.bindToLifecycle(
+//                        this, cameraSelector, preview)
+//
+//                } catch(exc: Exception) {
+//                    Log.e(MainActivity.TAG, "Use case binding failed", exc)
+//                }
+//
+//            }, it)
+//        }
+//    }
+//    fun takeAPhoto(view: View): View {
+//        requestPermissions()
+//        return view
+//    }
 
-        activity?.let { ContextCompat.getMainExecutor(it) }?.let {
-            cameraProviderFuture?.addListener({
-                // Used to bind the lifecycle of cameras to the lifecycle owner
-                val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
+//    private fun requestPermissions() {
+//        val activityResultLauncher =
+//            registerForActivityResult(
+//                ActivityResultContracts.RequestMultiplePermissions())
+//            { permissions ->
+//                // Handle Permission granted/rejected
+//                var permissionGranted = true
+//                permissions.entries.forEach {
+//                    if (it.key in MainActivity.REQUIRED_PERMISSIONS && !it.value)
+//                        permissionGranted = false
+//                }
+//                if (!permissionGranted) {
+//                    Toast.makeText(
+//                        requireContext(),
+//                        "Permission request denied",
+//                        Toast.LENGTH_SHORT
+//                    ).show()
+//                } else {
+//                    startCamera()
+//                }
+//            }
+//
+//        // 在這裡啟動權限請求
+//        val permissionsToRequest = MainActivity.REQUIRED_PERMISSIONS.filter {
+//            ContextCompat.checkSelfPermission(requireContext(), it) != PackageManager.PERMISSION_GRANTED
+//        }.toTypedArray()
+//
+//        if (permissionsToRequest.isNotEmpty()) {
+//            activityResultLauncher.launch(permissionsToRequest)
+//        } else {
+//            // 所有權限已經被授予
+//            startCamera()
+//        }
+//    }
 
-                // Preview
-                val preview = Preview.Builder()
-                    .build()
-                    .also {
-                        it.setSurfaceProvider(_binding?.viewFinder?.surfaceProvider)
-                    }
-
-                // Select back camera as a default
-                val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-
-                try {
-                    // Unbind use cases before rebinding
-                    cameraProvider.unbindAll()
-
-                    // Bind use cases to camera
-                    cameraProvider.bindToLifecycle(
-                        this, cameraSelector, preview)
-
-                } catch(exc: Exception) {
-                    Log.e(MainActivity.TAG, "Use case binding failed", exc)
-                }
-
-            }, it)
-        }
-    }
-    fun takeAPhoto(view: View) {
-        requestPermissions()
-    }
-
-    private fun requestPermissions() {
-        val activityResultLauncher =
-            registerForActivityResult(
-                ActivityResultContracts.RequestMultiplePermissions())
-            { permissions ->
-                // Handle Permission granted/rejected
-                var permissionGranted = true
-                permissions.entries.forEach {
-                    if (it.key in MainActivity.REQUIRED_PERMISSIONS && !it.value)
-                        permissionGranted = false
-                }
-                if (!permissionGranted) {
-                    Toast.makeText(
-                        requireContext(),
-                        "Permission request denied",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                } else {
-                    startCamera()
-                }
-            }
-
-        // 在這裡啟動權限請求
-        val permissionsToRequest = MainActivity.REQUIRED_PERMISSIONS.filter {
-            ContextCompat.checkSelfPermission(requireContext(), it) != PackageManager.PERMISSION_GRANTED
-        }.toTypedArray()
-
-        if (permissionsToRequest.isNotEmpty()) {
-            activityResultLauncher.launch(permissionsToRequest)
-        } else {
-            // 所有權限已經被授予
-            startCamera()
-        }
-    }
 
 }

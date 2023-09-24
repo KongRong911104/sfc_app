@@ -27,6 +27,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Sfc_front"
+<<<<<<< HEAD
         tools:targetApi="31"
         android:requestLegacyExternalStorage="true"
         >
@@ -46,6 +47,18 @@
         <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
         <!-- </intent-filter> -->
         <!-- </activity> -->
+=======
+        tools:targetApi="31">
+        <provider
+        android:name="androidx.core.content.FileProvider"
+        android:authorities="com.example.sfc_front.fileprovider"
+        android:exported="false"
+        android:grantUriPermissions="true">
+        <meta-data
+            android:name="android.support.FILE_PROVIDER_PATHS"
+            android:resource="@xml/file_paths" />
+    </provider>
+>>>>>>> fbde2f6266cf2ca684b94fede07406a42cf9c521
         <activity
             android:name=".SignUp"
             android:exported="true"
