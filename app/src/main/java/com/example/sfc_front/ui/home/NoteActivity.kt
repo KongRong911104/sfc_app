@@ -1,49 +1,51 @@
 package com.example.sfc_front.ui.home
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
+import android.os.Environment
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import com.example.sfc_front.R
-import com.example.sfc_front.ui.home.ui.theme.Sfc_appTheme
+import java.io.File
+import java.io.FileWriter
+import java.io.IOException
+
 
 class NoteActivity : ComponentActivity() {
+    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.note_activity)
-//        setContent {
-//            Sfc_appTheme {
-//                // A surface container using the 'background' color from the theme
-//                Surface(
-//                    modifier = Modifier.fillMaxSize(),
-//                    color = MaterialTheme.colorScheme.background
-//                ) {
-//                    Greeting("Android")
-//                }
-//            }
-//        }
-//
-//    }
-}
+        val sendButton = findViewById<Button>(R.id.noteSendButton)
+        val cancelButton = findViewById<Button>(R.id.noteCancelButton)
+        val fileName = findViewById<EditText>(R.id.fileNameEditText).text
+        val content = findViewById<EditText>(R.id.contentEditText).text
 
-//@Composable
-//fun Greeting(name: String, modifier: Modifier = Modifier) {
-//    Text(
-//        text = "Hello $name!",
-//        modifier = modifier
-//    )
-//}
-//
-//@Preview(showBackground = true)
-//@Composable
-//fun GreetingPreview() {
-//    Sfc_appTheme {
-//        Greeting("Android")
-//    }
+
+        sendButton.setOnClickListener{
+
+            try {
+
+
+                Toast.makeText(this,fileName, Toast.LENGTH_SHORT).show()
+                val file = File(getExternalFilesDir(null), "$fileName.txt")
+                val fileWriter = FileWriter(file, true)
+                fileWriter.write(content.toString())
+                fileWriter.close()
+
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+            finish()
+
+        }
+        cancelButton.setOnClickListener{
+            finish()
+        }
+
+    }
+
 }

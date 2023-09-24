@@ -1,60 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <EditText
+        android:id="@+id/fileNameEditText"
+        android:layout_width="0dp"
+        android:layout_height="30dp"
+        android:gravity="start"
+        android:hint="Enter your file name here"
+        android:minLines="5"
+        android:inputType="text"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:background="@android:color/transparent"
+        android:padding="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="@color/white"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fileNameEditText"/>
+
+    <EditText
+        android:id="@+id/contentEditText"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="start"
+        android:hint="Write something here"
+        android:inputType="textMultiLine|textCapSentences"
+        android:minLines="5"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:background="@android:color/transparent"
+        android:padding="0dp"
+        android:outlineAmbientShadowColor="@android:color/transparent"
+        android:outlineSpotShadowColor="@android:color/transparent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fileNameEditText"
+        app:layout_constraintBottom_toTopOf="@+id/buttonContainer"/>
+
     <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
+        android:id="@+id/buttonContainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:padding="16dp"
-        tools:context=".MainActivity">
-        <EditText
-            android:id="@+id/fileName"
-            android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:gravity="start"
-            android:hint="Enter your file name here"
-            android:minLines="5"
-            android:textColor="@color/white"
-            android:textSize="18sp"
-            android:background="@android:color/transparent"
-            android:padding="0dp"
-
-            />
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/white" />
-        <EditText
-            android:id="@+id/editBlock"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:gravity="start"
-            android:hint="Write something here"
-            android:inputType="textMultiLine|textCapSentences"
-            android:minLines="5"
-            android:textColor="@color/white"
-            android:textSize="18sp"
-            android:background="@android:color/transparent"
-            android:padding="0dp"
-            android:outlineAmbientShadowColor="@android:color/transparent"
-            android:outlineSpotShadowColor="@android:color/transparent"
-            />
-
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/contentEditText"
+        app:layout_constraintBottom_toBottomOf="parent">
         <Button
-            android:id="@+id/myButton"
-            android:layout_width="wrap_content"
+            android:id="@+id/noteCancelButton"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Click Me"
-            android:layout_gravity="right"
-            />
+            android:layout_weight="1"
+            android:text="cancel"
+            android:layout_gravity="end"/>
+        <Button
+            android:id="@+id/noteSendButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="send"
+            android:layout_gravity="start"/>
+
     </LinearLayout>
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>
