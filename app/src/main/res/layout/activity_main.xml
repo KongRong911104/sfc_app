@@ -9,14 +9,9 @@
     android:fitsSystemWindows="true"
     tools:openDrawer="start">
 
-<<<<<<< HEAD
+
     <include
-=======
-    <androidx.camera.view.PreviewView
-        android:id="@+id/viewFinder"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />    <include
->>>>>>> fbde2f6266cf2ca684b94fede07406a42cf9c521
+
         android:id="@+id/app_bar_main"
         layout="@layout/app_bar_main"
         android:layout_width="match_parent"
