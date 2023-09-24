@@ -51,7 +51,9 @@
             android:hint="Your Name"
             android:inputType="text"
             android:textColor="#FFFFFF"
-            tools:ignore="MissingConstraints" />
+            tools:ignore="MissingConstraints"
+            android:text="0"
+            />
 
         <TextView
             android:id="@+id/gender_text"
@@ -79,7 +81,9 @@
             android:hint="Your Gander"
             android:inputType="text"
             android:textColor="#FFFFFF"
-            tools:ignore="MissingConstraints" />
+            tools:ignore="MissingConstraints"
+            android:text="0"
+            />
 
         <TextView
             android:id="@+id/email_text"
@@ -92,7 +96,8 @@
             android:layout_marginTop="2dp"
             android:text="@string/Email"
             android:textAppearance="@style/name_"
-            tools:ignore="MissingConstraints" />
+            tools:ignore="MissingConstraints"
+            />
 
         <EditText
             android:id="@+id/email"
@@ -107,7 +112,9 @@
             android:hint="Your E-mail"
             android:inputType="textEmailAddress"
             android:textColor="#FFFFFF"
-            tools:ignore="MissingConstraints,TextFields" />
+            tools:ignore="MissingConstraints,TextFields"
+            android:text="0"
+            />
 
         <TextView
             android:id="@+id/password_text"
@@ -120,7 +127,8 @@
             android:layout_marginTop="2dp"
             android:text="@string/Password"
             android:textAppearance="@style/name_"
-            tools:ignore="MissingConstraints" />
+            tools:ignore="MissingConstraints"
+            />
 
         <EditText
             android:id="@+id/password"
@@ -135,7 +143,10 @@
             android:hint="Your Password"
             android:inputType="textPassword"
             android:textColor="#FFFFFF"
-            tools:ignore="MissingConstraints,TextFields" />
+            tools:ignore="MissingConstraints,TextFields"
+            android:text="0"
+
+            />
 
         <TextView
             android:id="@+id/retype_password_text"
@@ -163,7 +174,10 @@
             android:hint="Password again"
             android:inputType="textPassword"
             android:textColor="#FFFFFF"
-            tools:ignore="MissingConstraints,TextFields" />
+            tools:ignore="MissingConstraints,TextFields"
+            android:text="0"
+
+            />
 
         <TextView
             android:id="@+id/phone_text"
@@ -191,7 +205,9 @@
             android:hint="Your Number"
             android:inputType="phone"
             android:textColor="#FFFFFF"
-            tools:ignore="MissingConstraints,TextFields" />
+            tools:ignore="MissingConstraints,TextFields"
+            android:text="0"
+            />
 
         <Button
             android:id="@+id/button"

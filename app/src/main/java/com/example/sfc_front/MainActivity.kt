@@ -1,66 +1,87 @@
 package com.example.sfc_front
+
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.ContentValues
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.os.Handler
 import android.os.Looper
+import android.provider.MediaStore
 import android.util.Log
 import android.view.Menu
-import android.view.View
 import android.widget.ProgressBar
-import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import com.google.android.material.navigation.NavigationView
+import android.view.View
+import android.widget.ImageButton
+import androidx.appcompat.app.AppCompatActivity
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCaptureException
+import androidx.camera.core.Preview
+import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import androidx.drawerlayout.widget.DrawerLayout
-import androidx.appcompat.app.AppCompatActivity
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.ImageCapture
-import androidx.camera.core.Preview
-import androidx.core.content.ContextCompat
 import com.example.sfc_front.databinding.ActivityMainBinding
-
-import androidx.camera.lifecycle.ProcessCameraProvider
+import com.google.android.material.navigation.NavigationView
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
 class MainActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
-    private lateinit var progressBar: ProgressBar
-    private val handler = Handler(Looper.getMainLooper())
-    private var progress = 0
-    companion object {
-        const val TAG = "CameraXApp"
-        private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
-        val REQUIRED_PERMISSIONS =
-            mutableListOf (
-                Manifest.permission.CAMERA,
-                Manifest.permission.RECORD_AUDIO
-            ).apply {
-                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
-                    add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                }
-            }.toTypedArray()
-    }
+    private lateinit var takePictureLauncher: ActivityResultLauncher<Uri>
+    private lateinit var photoUri: Uri
+
+//    companion object {
+//        const val TAG = "CameraXApp"
+//        private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
+//        val REQUIRED_PERMISSIONS = mutableListOf(
+//            Manifest.permission.CAMERA,
+//            Manifest.permission.RECORD_AUDIO
+//        ).apply {
+//            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
+//                add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+//            }
+//        }.toTypedArray()
+//    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         setSupportActionBar(binding.appBarMain.toolbar)
 
         val drawerLayout: DrawerLayout = binding.drawerLayout
         val navView: NavigationView = binding.navView
         val navController = findNavController(R.id.nav_host_fragment_content_main)
 
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top-level destinations.
         appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow
@@ -68,10 +89,25 @@ class MainActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
+        val takePictureButton = findViewById<ImageButton>(R.id.camera_button)
+
+        // 设置点击事件，调用拍照方法
+        takePictureButton.setOnClickListener {
+            takeAPhoto()
+        }
+
+        // 注册一个用于接收拍照结果的ActivityResultLauncher
+        takePictureLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { isTaken ->
+            if (isTaken) {
+                Toast.makeText(this, "Photo has been taken and saved", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Unable to take a photo", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.main, menu)
         return true
     }
@@ -80,56 +116,43 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
-//    fun startCamera() {
-//        val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
-//
-//        cameraProviderFuture.addListener({
-//            // Used to bind the lifecycle of cameras to the lifecycle owner
-//            val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
-//
-//            // Preview
-//            val preview = Preview.Builder()
-//                .build()
-//                .also {
-//                    it.setSurfaceProvider(binding.viewFinder.surfaceProvider)
-//                }
-//
-//            // Select back camera as a default
-//            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-//
-//            try {
-//                // Unbind use cases before rebinding
-//                cameraProvider.unbindAll()
-//
-//                // Bind use cases to camera
-//                cameraProvider.bindToLifecycle(
-//                    this, cameraSelector, preview)
-//
-//            } catch(exc: Exception) {
-//                Log.e(TAG, "Use case binding failed", exc)
-//            }
-//
-//        }, ContextCompat.getMainExecutor(this))
-//    }
-//     public fun takeAPhoto(view: View) {
-//         val activityResultLauncher =
-//             registerForActivityResult(
-//                 ActivityResultContracts.RequestMultiplePermissions())
-//             { permissions ->
-//                 // Handle Permission granted/rejected
-//                 var permissionGranted = true
-//                 permissions.entries.forEach {
-//                     if (it.key in REQUIRED_PERMISSIONS && it.value == false)
-//                         permissionGranted = false
-//                 }
-//                 if (!permissionGranted) {
-//                     Toast.makeText(baseContext,
-//                         "Permission request denied",
-//                         Toast.LENGTH_SHORT).show()
-//                 } else {
-//                     startCamera()
-//                 }
-//             }
-//    }
-}
 
+
+    private fun takeAPhoto() {
+        // 检查相机权限
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), REQUEST_CAMERA_PERMISSION)
+            return
+        }
+
+        // 创建保存照片的目录
+        val photoDirectory = File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), "photo")
+        if (!photoDirectory.exists()) {
+            photoDirectory.mkdirs()
+        }
+
+        // 创建文件名
+        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+        val photoFileName = "IMG_$timeStamp.png"
+
+        // 创建文件
+        val photoFile = File(photoDirectory, photoFileName)
+
+        // 创建用于保存照片的 Uri
+//        photoUri = Uri.fromFile(photoFile)
+// 创建用于保存照片的 Uri，使用 FileProvider
+        val photoUri = FileProvider.getUriForFile(this, "com.example.sfc_front.fileprovider", photoFile)
+
+        // 启动拍照 Intent
+        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
+
+
+        // 启动拍照
+        takePictureLauncher.launch(photoUri)
+    }
+
+    companion object {
+        private const val REQUEST_CAMERA_PERMISSION = 101
+    }
+}
