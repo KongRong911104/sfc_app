@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow
+                R.id.nav_home
             ), drawerLayout
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
@@ -54,7 +54,10 @@ class MainActivity : AppCompatActivity() {
         takePictureButton.setOnClickListener {
             takeAPhoto()
         }
-
+        val takeVideoButton = findViewById<ImageButton>(R.id.video_button)
+        takeVideoButton.setOnClickListener {
+            takeAVideo()
+        }
         // 注册一个用于接收拍照结果的ActivityResultLauncher
         takePictureLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { isTaken ->
             if (isTaken) {
@@ -83,11 +86,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // 创建保存照片的目录
-        val photoDirectory = File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), "photo")
-        if (!photoDirectory.exists()) {
-            photoDirectory.mkdirs()
-        }
-
+        val photoDirectory = File(getExternalFilesDir(null), "")
         // 创建文件名
         val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
         val photoFileName = "IMG_$timeStamp.png"
@@ -104,8 +103,39 @@ class MainActivity : AppCompatActivity() {
         // 启动拍照
         takePictureLauncher.launch(photoUri)
     }
+    private fun takeAVideo() {
+        // 检查相机和录制视频的权限
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
+            ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO), REQUEST_VIDEO_PERMISSION)
+            return
+        }
 
+        // 创建保存视频的目录
+        val videoDirectory = File(getExternalFilesDir(null), "")
+        if (!videoDirectory.exists()) {
+            videoDirectory.mkdirs()
+        }
+
+        // 创建文件名
+        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+        val videoFileName = "VID_$timeStamp.mp4"
+
+        // 创建文件
+        val videoFile = File(videoDirectory, videoFileName)
+
+        val videoUri = FileProvider.getUriForFile(this, "com.example.sfc_front.fileprovider", videoFile)
+
+        // 启动视频录制 Intent
+        val takeVideoIntent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
+        takeVideoIntent.putExtra(MediaStore.EXTRA_OUTPUT, videoUri)
+
+        // 启动录制视频
+        startActivityForResult(takeVideoIntent, REQUEST_VIDEO_CAPTURE)
+    }
     companion object {
         private const val REQUEST_CAMERA_PERMISSION = 101
+        private const val REQUEST_VIDEO_PERMISSION = 102
+        private const val REQUEST_VIDEO_CAPTURE = 103
     }
 }

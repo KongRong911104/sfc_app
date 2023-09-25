@@ -11,10 +11,10 @@
             android:title="@string/menu_home"
             android:textAppearance="@style/read_file"
             />
-        <item
-            android:background="#FFFFFFFF"
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/file_text"
-            android:title="@string/menu_read_file" />
+<!--        <item-->
+<!--            android:background="#FFFFFFFF"-->
+<!--            android:id="@+id/nav_gallery"-->
+<!--            android:icon="@drawable/file_text"-->
+<!--            android:title="@string/menu_read_file" />-->
     </group>
 </menu>
