@@ -16,5 +16,16 @@
             android:id="@+id/nav_gallery"
             android:icon="@drawable/file_text"
             android:title="@string/menu_read_file" />
+
     </group>
+    <item android:title="">
+        <menu>
+            <item
+                android:id="@+id/nav_logout"
+                android:background="#FFFFFFFF"
+                android:title="Logout"
+                android:textAppearance="@style/read_file"
+                />
+        </menu>
+    </item>
 </menu>
