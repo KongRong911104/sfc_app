@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:showIn="navigation_view">
 
     <group android:checkableBehavior="single" >
@@ -12,20 +13,7 @@
             android:textAppearance="@style/read_file"
             />
 
-<!--        <item-->
-<!--            android:background="#FFFFFFFF"-->
-<!--            android:id="@+id/nav_gallery"-->
-<!--            android:icon="@drawable/file_text"-->
-<!--            android:title="@string/menu_read_file" />-->
+
     </group>
-    <item android:title="">
-        <menu>
-            <item
-                android:id="@+id/nav_logout"
-                android:background="#FFFFFFFF"
-                android:title="Logout"
-                android:textAppearance="@style/read_file"
-                />
-        </menu>
-    </item>
+
 </menu>

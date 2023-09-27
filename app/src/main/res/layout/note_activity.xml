@@ -10,22 +10,22 @@
         android:id="@+id/fileNameEditText"
         android:layout_width="0dp"
         android:layout_height="30dp"
+        android:background="@color/purple_500"
         android:gravity="start"
         android:hint="Enter your file name here"
-        android:minLines="5"
         android:inputType="text"
+        android:minLines="5"
+        android:padding="0dp"
         android:textColor="@color/white"
         android:textSize="18sp"
-        android:background="@android:color/transparent"
-        android:padding="0dp"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <View
         android:layout_width="0dp"
         android:layout_height="1dp"
-        android:background="@color/white"
+        android:background="#00000000"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/fileNameEditText"/>
@@ -35,45 +35,59 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:background="@color/purple_500"
         android:gravity="start"
         android:hint="Write something here"
         android:inputType="textMultiLine|textCapSentences"
         android:minLines="5"
-        android:textColor="@color/white"
-        android:textSize="18sp"
-        android:background="@android:color/transparent"
-        android:padding="0dp"
         android:outlineAmbientShadowColor="@android:color/transparent"
         android:outlineSpotShadowColor="@android:color/transparent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:padding="0dp"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/buttonContainer"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/fileNameEditText"
-        app:layout_constraintBottom_toTopOf="@+id/buttonContainer"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fileNameEditText" />
 
     <LinearLayout
         android:id="@+id/buttonContainer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:background="@color/purple_500"
         android:orientation="horizontal"
         android:padding="16dp"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/contentEditText"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/contentEditText">
+
         <Button
             android:id="@+id/noteCancelButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_gravity="end"
             android:layout_weight="1"
+            android:background="#FFFFFF"
             android:text="cancel"
-            android:layout_gravity="end"/>
+            android:textColor="#000000" />
+
+        <View
+            android:id="@+id/view"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
         <Button
             android:id="@+id/noteSendButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_gravity="start"
             android:layout_weight="1"
+            android:background="#FFFFFF"
             android:text="send"
-            android:layout_gravity="start"/>
+            android:textColor="#000000"
+            app:strokeColor="#676767" />
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import android.widget.ImageButton
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -28,6 +29,7 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlin.system.exitProcess
 
 class MainActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -62,6 +64,11 @@ class MainActivity : AppCompatActivity() {
         readFileButton.setOnClickListener {
             val intent = Intent(this, ReadFile::class.java)
             startActivity(intent)
+        }
+        val goBack = findViewById<TextView>(R.id.logout)
+        goBack.setOnClickListener {
+            moveTaskToBack(true);
+            exitProcess(-1)
         }
         // 注册一个用于接收拍照结果的ActivityResultLauncher
         takePictureLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { isTaken ->
