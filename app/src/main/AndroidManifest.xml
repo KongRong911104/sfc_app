@@ -12,7 +12,9 @@
         tools:ignore="ScopedStorage" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
-
+    <permission android:protectionLevel="signature"
+        android:name="com.example.permission.C2D_MESSAGE" />
+    <uses-permission android:name="com.example.permission.C2D_MESSAGE" />
 
     <uses-feature
         android:name="android.hardware.biometrics"

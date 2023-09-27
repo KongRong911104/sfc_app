@@ -1,5 +1,5 @@
 package com.example.sfc_front.ui.home
-
+import android.net.Uri
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -40,6 +40,10 @@ class HomeFragment : Fragment() {
         val progressBar: ProgressBar = root.findViewById(R.id.progressBar)
         val cameraButton : ImageButton = root.findViewById(R.id.camera_button)
         val noteButton : ImageButton = root.findViewById(R.id.note_button)
+        val fileProtectButton : ImageButton = root.findViewById(R.id.file_protection_button)
+        fileProtectButton.setOnClickListener{
+            protectFile()
+        }
         noteButton.setOnClickListener{
             val intent = Intent(requireContext(), NoteActivity::class.java)
             startActivity(intent)
@@ -65,11 +69,41 @@ class HomeFragment : Fragment() {
 
         return root
     }
+    fun openFile(pickerInitialUri: Uri) {
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "*/*"
+
+            // Optionally, specify a URI for the file that should appear in the
+            // system file picker when it loads.
+//            putExtra(DocumentsContract.EXTRA_INITIAL_URI, pickerInitialUri)
+            addCategory(Intent.CATEGORY_OPENABLE)
+
+        }
+
+        startActivityForResult(intent,2)
+    }
+    private fun protectFile() {
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "*/*"
+
+            // Optionally, specify a URI for the file that should appear in the
+            // system file picker when it loads.
+//            putExtra(DocumentsContract.EXTRA_INITIAL_URI, pickerInitialUri)
+
+        }
+
+        startActivityForResult(intent, 2)
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         viewModel.progressInt.removeObserver(progressObserver)
         _binding = null
     }
+
+
 //    private fun startCamera() {
 //        val cameraProviderFuture = activity?.let { ProcessCameraProvider.getInstance(it) }
 //
@@ -142,6 +176,10 @@ class HomeFragment : Fragment() {
 //            startCamera()
 //        }
 //    }
+    companion object {
+        const val PICK_PDF_FILE = 2
+    }
 
 
 }
+
