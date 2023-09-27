@@ -1,5 +1,5 @@
-package FDAES;
-import library.library;
+package com.example.sfc_front.ui.FDAES;
+import com.example.sfc_front.ui.library.library;
 
 import java.io.*;
 

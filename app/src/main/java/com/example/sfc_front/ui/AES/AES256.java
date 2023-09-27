@@ -1,7 +1,7 @@
-package AES;
+package com.example.sfc_front.ui.AES;
 
-import library.library;
 
+import com.example.sfc_front.ui.library.library;
 import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;

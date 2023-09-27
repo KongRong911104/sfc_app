@@ -1,4 +1,4 @@
-package library;
+package com.example.sfc_front.ui.library;
 public class library {
     //直接修改P就不會再需要一個記憶體
     public static int[] SubBytes(int[] P, int[] D_Box) {

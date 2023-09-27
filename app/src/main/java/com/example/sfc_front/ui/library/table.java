@@ -1,7 +1,5 @@
-package library;
+package com.example.sfc_front.ui.library;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class table {
     public static final int[] S_Box =
