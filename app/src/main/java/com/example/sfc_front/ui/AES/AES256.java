@@ -1,97 +1,81 @@
 package com.example.sfc_front.ui.AES;
 
 
-import com.example.sfc_front.ui.library.library;
 import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.*;
-
 import java.security.SecureRandom;
 
-
 public class AES256 {
-    private final IvParameterSpec ivSpec;
-    private final SecretKey secretKey;
-    public AES256(){
-        String keyString = "MySecretKey12345";
-        byte[] keyBytes = keyString.getBytes();
-        secretKey = new SecretKeySpec(keyBytes, "AES");
+    private static final String AES_ALGORITHM = "AES";
+    private static final String CIPHER_ALGORITHM = "AES/CTR/NoPadding";
+    String secretKey; // 16字元長度的密鑰
+    public AES256(String PW){
+        secretKey = PW;
+    }
 
-        // 創建初始化向量（IV），在CTR模式中，IV是必需的
-        byte[] ivBytes = new byte[16]; // 16字節的IV，與AES區塊大小相同
+
+    // 加密函式
+    public void encryptFile( String inputFile, String outputFile) throws Exception {
+        SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey.getBytes(), AES_ALGORITHM);
+        Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
+
+        // 生成隨機初始化向量
         SecureRandom random = new SecureRandom();
+        byte[] ivBytes = new byte[16];
         random.nextBytes(ivBytes);
-        ivSpec = new IvParameterSpec(ivBytes);
-    }
+        IvParameterSpec ivSpec = new IvParameterSpec(ivBytes);
 
-    public static byte[] encrypt(String plaintext, SecretKey secretKey, IvParameterSpec ivSpec) throws Exception {
-        Cipher cipher = Cipher.getInstance("AES/CTR/NoPadding");
-        cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivSpec);
-        return cipher.doFinal(plaintext.getBytes());
-    }
+        cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, ivSpec);
 
-    public static String decrypt(byte[] encryptedBytes, SecretKey secretKey, IvParameterSpec ivSpec) throws Exception {
-        Cipher cipher = Cipher.getInstance("AES/CTR/NoPadding");
-        cipher.init(Cipher.DECRYPT_MODE, secretKey, ivSpec);
-        byte[] decryptedBytes = cipher.doFinal(encryptedBytes);
-        return new String(decryptedBytes);
-    }
-    public void FileEncryption(String filePath) throws FileNotFoundException {
-        String EncFile = ".\\src\\main\\java\\AES\\AESEncryption\\" + library.FileNameSplit(filePath);
-        try (InputStream inputStream = new BufferedInputStream(new FileInputStream(filePath))) {
-            try (OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(EncFile))) {
+        FileInputStream inputStream = new FileInputStream(inputFile);
+        FileOutputStream outputStream = new FileOutputStream(outputFile);
 
-                byte[] buffer = new byte[inputStream.available()];
+        // 寫入初始化向量到輸出檔案（用於解密）
+        outputStream.write(ivBytes);
 
-                while (inputStream.read(buffer) != -1) {
-                    String str = new String(buffer);
-                    int[] enc = library.ByteTOInt(encrypt(str, this.secretKey,this.ivSpec));
-
-                    outputStream.write(library.IntTOByte(enc));
-
-                }
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        byte[] buffer = new byte[1024];
+        int bytesRead;
+        while ((bytesRead = inputStream.read(buffer)) != -1) {
+            byte[] encryptedBytes = cipher.update(buffer, 0, bytesRead);
+            outputStream.write(encryptedBytes);
         }
-    }
-    public void FileDecryption(String filePath)  {
-        String DecFile = ".\\src\\main\\java\\AES\\AESDecryption\\" + library.FileNameSplit(filePath);
-        try (InputStream inputStream = new BufferedInputStream(new FileInputStream(filePath))) {
-            try (OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(DecFile))) {
-                byte[] buffer = new byte[inputStream.available()];
-                while (inputStream.read(buffer) != -1) {
-                    String str = new String(buffer);
-                    int[] enc = library.StringToInt(decrypt(str.getBytes(), this.secretKey,this.ivSpec));
-                    outputStream.write(library.IntTOByte(enc));
-                }
 
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        byte[] finalEncryptedBytes = cipher.doFinal();
+        outputStream.write(finalEncryptedBytes);
+
+        inputStream.close();
+        outputStream.close();
+    }
+
+    // 解密函式
+    public void decryptFile(String inputFile, String outputFile) throws Exception {
+        SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey.getBytes(), AES_ALGORITHM);
+        Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
+
+        FileInputStream inputStream = new FileInputStream(inputFile);
+        byte[] ivBytes = new byte[16];
+
+        // 讀取初始化向量
+        inputStream.read(ivBytes);
+        IvParameterSpec ivSpec = new IvParameterSpec(ivBytes);
+
+        cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, ivSpec);
+
+        FileOutputStream outputStream = new FileOutputStream(outputFile);
+
+        byte[] buffer = new byte[1024];
+        int bytesRead;
+        while ((bytesRead = inputStream.read(buffer)) != -1) {
+            byte[] decryptedBytes = cipher.update(buffer, 0, bytesRead);
+            outputStream.write(decryptedBytes);
         }
-    }
-    public static void main(String[]args) throws Exception {
-//        String plainText = "Hello, World!sib";
-//        String key = "MySecretKey12345"; // 16字元的金鑰 (128位元)
-//
-//        // 加密
-//        String encryptedText = encrypt(plainText, key);
-//        System.out.println("加密後的文字: " + encryptedText);
-//
-//        // 解密
-//        String decryptedText = decrypt(encryptedText, key);
-//        System.out.println("解密後的文字: " + decryptedText);
-        AES256 aes256 = new AES256();
-        String inputFile = "1.txt";
-        aes256.FileEncryption(".\\src\\main\\java\\txt_file\\" + inputFile);
-        aes256.FileDecryption(".\\src\\main\\java\\AES\\AESEncryption\\" + inputFile);
-    }
 
+        byte[] finalDecryptedBytes = cipher.doFinal();
+        outputStream.write(finalDecryptedBytes);
 
+        inputStream.close();
+        outputStream.close();
+    }
 }

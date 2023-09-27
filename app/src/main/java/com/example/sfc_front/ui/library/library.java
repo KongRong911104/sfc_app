@@ -1,4 +1,7 @@
 package com.example.sfc_front.ui.library;
+
+import java.nio.charset.StandardCharsets;
+
 public class library {
     //直接修改P就不會再需要一個記憶體
     public static int[] SubBytes(int[] P, int[] D_Box) {
@@ -96,7 +99,13 @@ public class library {
     }
 
     public static int[] StringToInt(String str) {
-        return str.chars().toArray();
+        int length = str.length();
+        int[] outcome = new int[length];
+        for(int i=0;i<length;i++){
+            char c = str.charAt(i);
+            outcome[i] = c;
+        }
+        return outcome;
     }
     public static String IntToString(int[] c) {
         StringBuilder str = new StringBuilder();
