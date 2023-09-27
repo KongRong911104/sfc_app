@@ -49,8 +49,6 @@
 
         <ImageButton
             android:id="@+id/camera_button"
-            android:clickable="true"
-            android:onClick="takeAPhoto"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/camera_selector"

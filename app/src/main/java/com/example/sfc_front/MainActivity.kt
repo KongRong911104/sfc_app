@@ -58,6 +58,11 @@ class MainActivity : AppCompatActivity() {
         takeVideoButton.setOnClickListener {
             takeAVideo()
         }
+        val readFileButton = findViewById<ImageButton>(R.id.read_file_button)
+        readFileButton.setOnClickListener {
+            val intent = Intent(this, ReadFile::class.java)
+            startActivity(intent)
+        }
         // 注册一个用于接收拍照结果的ActivityResultLauncher
         takePictureLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { isTaken ->
             if (isTaken) {
