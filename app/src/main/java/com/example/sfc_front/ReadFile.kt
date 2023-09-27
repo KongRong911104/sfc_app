@@ -2,9 +2,13 @@ package com.example.sfc_front
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
@@ -52,7 +56,7 @@ class MyAdapter(private val data: List<String>,private val iconResourceId: Int) 
     }
 }
 
-fun listFilesInDirectory(directoryPath: File, fileExtension: String): List<String> {
+fun listFilesInDirectory(directoryPath: File,input:String, fileExtension: String): List<String> {
     val directory = directoryPath
 
     // 检查目录是否存在
@@ -71,7 +75,9 @@ fun listFilesInDirectory(directoryPath: File, fileExtension: String): List<Strin
     // 提取文件名并添加到列表中
     val fileNames = mutableListOf<String>()
     for (file in files) {
-        if (file.isFile && file.name.endsWith(fileExtension)) {
+        var userInput=file.name.contains(input, true)
+        Log.e("nonono", userInput.toString())
+        if (file.isFile && userInput &&file.name.endsWith(fileExtension)) {
             fileNames.add(file.name)
         }
     }
@@ -95,15 +101,33 @@ class ReadFile : AppCompatActivity() {
         recyclerView.setPadding(50, topPadding, 0, 0)
         // 准备模拟的数据集合
         val data = listOf("Item 1", "Item 2", "Item 3", "Item 4", "Item 5","Item 6","Item 7","Item 8","Item 9","Item 10","Item 11","Item 12","Item 13","Item 14","Item 15","Item 16")
-
+        var fileType = ".png"
         // 创建 RecyclerView 的适配器并设置数据
 
 
         // 设置 RecyclerView 的布局管理器，例如 LinearLayoutManager
         recyclerView.layoutManager = LinearLayoutManager(this)
         val directoryPath = getExternalFilesDir(null) // 替换为你要读取的目录路径
+        val searchFile = findViewById<EditText>(R.id.search_file)
+        var userInput =""
+        searchFile.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                // Not implemented
+            }
 
-        val fileNames = directoryPath?.let { listFilesInDirectory(it,".png") }
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                userInput = s.toString()
+                val fileNames = directoryPath?.let { listFilesInDirectory(it,userInput,fileType) }
+                val adapter = fileNames?.let { MyAdapter(it,R.drawable.photo_file) }
+                recyclerView.adapter = adapter
+                true
+            }
+
+            override fun afterTextChanged(p0: Editable?) {
+                // Not implemented
+            }
+        })
+        val fileNames = directoryPath?.let { listFilesInDirectory(it,userInput,".png") }
         val adapter = fileNames?.let { MyAdapter(it,R.drawable.photo_file) }
         recyclerView.adapter = adapter
         bottomNavigationView.setOnNavigationItemSelectedListener { menuItem ->
@@ -112,7 +136,8 @@ class ReadFile : AppCompatActivity() {
                     // 处理点击 item1 的逻辑
                     // 这里可以执行相应的操作
 //                    Toast.makeText(this, "Item 1 Clicked", Toast.LENGTH_SHORT).show()
-                    val fileNames = directoryPath?.let { listFilesInDirectory(it,".png") }
+                    fileType=".png"
+                    val fileNames = directoryPath?.let { listFilesInDirectory(it,userInput,".png") }
                     val adapter = fileNames?.let { MyAdapter(it,R.drawable.photo_file) }
                     recyclerView.adapter = adapter
                     true
@@ -121,7 +146,8 @@ class ReadFile : AppCompatActivity() {
                     // 处理点击 item2 的逻辑
                     // 这里可以执行相应的操作
 //                    Toast.makeText(this, "Item 2 Clicked", Toast.LENGTH_SHORT).show()
-                    val fileNames = directoryPath?.let { listFilesInDirectory(it,".mp4") }
+                    fileType=".mp4"
+                    val fileNames = directoryPath?.let { listFilesInDirectory(it,userInput,".mp4") }
                     val adapter = fileNames?.let { MyAdapter(it,R.drawable.video_file) }
                     recyclerView.adapter = adapter
                     true
@@ -130,7 +156,8 @@ class ReadFile : AppCompatActivity() {
                     // 处理点击 item2 的逻辑
                     // 这里可以执行相应的操作
 //                    Toast.makeText(this, "Item 3 Clicked", Toast.LENGTH_SHORT).show()
-                    val fileNames = directoryPath?.let { listFilesInDirectory(it,".mp3") }
+                    fileType=".mp3"
+                    val fileNames = directoryPath?.let { listFilesInDirectory(it,userInput,".mp3") }
                     val adapter = fileNames?.let { MyAdapter(it,R.drawable.music_file) }
                     recyclerView.adapter = adapter
                     true
@@ -139,7 +166,8 @@ class ReadFile : AppCompatActivity() {
                     // 处理点击 item2 的逻辑
                     // 这里可以执行相应的操作
 //                    Toast.makeText(this, "Item 4 Clicked", Toast.LENGTH_SHORT).show()
-                    val fileNames = directoryPath?.let { listFilesInDirectory(it,".txt") }
+                    fileType=".txt"
+                    val fileNames = directoryPath?.let { listFilesInDirectory(it,userInput,".txt") }
                     val adapter = fileNames?.let { MyAdapter(it,R.drawable.txt_file) }
                     recyclerView.adapter = adapter
                     true
@@ -148,7 +176,8 @@ class ReadFile : AppCompatActivity() {
                     // 处理点击 item2 的逻辑
                     // 这里可以执行相应的操作
 //                    Toast.makeText(this, "Item 5 Clicked", Toast.LENGTH_SHORT).show()
-                    val fileNames = directoryPath?.let { listFilesInDirectory(it,"") }
+                    fileType=""
+                    val fileNames = directoryPath?.let { listFilesInDirectory(it,userInput,"") }
                     val adapter = fileNames?.let { MyAdapter(it,R.drawable.file_file) }
                     recyclerView.adapter = adapter
                     true
