@@ -60,7 +60,7 @@
                 android:gravity="center_horizontal"
                 android:hint="Your ID"
                 android:inputType="text"
-                android:text="O"
+                android:text="Ov6c4Fyk"
                 android:textColor="#FFFFFF"
                 tools:ignore="MissingConstraints" />
 
@@ -88,9 +88,9 @@
                 android:autofillHints=""
                 android:background="@drawable/input_background"
                 android:gravity="center_horizontal"
-                android:hint="Your ID"
+                android:hint="Your Product Key"
                 android:inputType="text"
-                android:text="0"
+                android:text="DSMuFv3XY4fN"
                 android:textColor="#FFFFFF"
                 tools:ignore="MissingConstraints" />
 
@@ -120,7 +120,7 @@
                 android:gravity="center_horizontal"
                 android:hint="Your Name"
                 android:inputType="text"
-                android:text="陳柏融"
+                android:text="王小明"
                 android:textColor="#FFFFFF"
                 tools:ignore="MissingConstraints" />
 
@@ -235,7 +235,7 @@
                 android:gravity="center_horizontal"
                 android:hint="Your Number"
                 android:inputType="phone"
-                android:text="0933547910"
+                android:text="0912345678"
                 android:textColor="#FFFFFF"
                 tools:ignore="MissingConstraints,TextFields" />
 

@@ -9,10 +9,11 @@ public class FDAES {
     //D_Box is D0_Box~D10_Box
     private final int[][] D_Box = new int[11][256];
     private final int[][] LP;
+    private final int[] K_CK = new int[16];
     //input 16~128 byte
     public FDAES(String PW) {
         int[] P = library.StringToInt(PW);
-        int[] K_CK = new int[16];
+
         System.arraycopy(P,0,K_CK,0,16);
         int[] i_Box = {52, 91, 130, 169, 208, 247, 30, 71, 112, 153, 194, 235, 20, 63, 106, 149, 192, 236, 23, 68,
                 114, 159, 204, 250, 39, 86, 134, 181, 228, 19, 70, 120, 170, 219, 12, 64, 117, 168, 221, 16, 73,
@@ -170,9 +171,10 @@ public class FDAES {
             throw new RuntimeException(e);
         }
     }
-    public void FileEncryption_CBC(String filePath,String EncFile,int[] IV){
+    public void FileEncryption_CBC(String filePath,String EncFile){
         try (InputStream inputStream = new BufferedInputStream(new FileInputStream(filePath))) {
             try (OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(EncFile))) {
+                int[] IV = this.K_CK.clone();
                 byte[] buffer = new byte[inputStream.available()];
                 int[] tmp = new int[16];
                 int[] enc = IV;
@@ -212,9 +214,10 @@ public class FDAES {
             e.printStackTrace();
         }
     }
-    public void FileDecryption_CBC(String filePath,String DecFile,int[] IV)  {
+    public void FileDecryption_CBC(String filePath,String DecFile)  {
         try (InputStream inputStream = new BufferedInputStream(new FileInputStream(filePath))) {
             try (OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(DecFile))) {
+                int[] IV = this.K_CK.clone();
                 byte[] buffer = new byte[inputStream.available()];
                 int[] tmp = new int[16];
                 int[] dec;
@@ -272,17 +275,5 @@ public class FDAES {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-
-    public static void main(String[]args){
-        FDAES fdaes = new FDAES("vbitsnbmc;oasd;vlmsfdvdafb");
-        String name ="test.mkv";
-        String filePath = "C:\\Users\\user\\Desktop\\"+name;
-        String EncFile = "C:\\Users\\user\\Desktop\\ios\\"+name;
-        String DecFile = "C:\\Users\\user\\Desktop\\ios\\a\\"+name;
-        int [] IV = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
-        fdaes.FileEncryption_CBC(filePath, EncFile, IV);
-        fdaes.FileDecryption_CBC(EncFile,DecFile, IV);
     }
 }
