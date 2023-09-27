@@ -111,7 +111,7 @@ class ReadFile : AppCompatActivity() {
                 R.id.navigation_fragment_image_button -> {
                     // 处理点击 item1 的逻辑
                     // 这里可以执行相应的操作
-                    Toast.makeText(this, "Item 1 Clicked", Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(this, "Item 1 Clicked", Toast.LENGTH_SHORT).show()
                     val fileNames = directoryPath?.let { listFilesInDirectory(it,".png") }
                     val adapter = fileNames?.let { MyAdapter(it,R.drawable.photo_file) }
                     recyclerView.adapter = adapter
@@ -120,7 +120,7 @@ class ReadFile : AppCompatActivity() {
                 R.id.navigation_video_button -> {
                     // 处理点击 item2 的逻辑
                     // 这里可以执行相应的操作
-                    Toast.makeText(this, "Item 2 Clicked", Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(this, "Item 2 Clicked", Toast.LENGTH_SHORT).show()
                     val fileNames = directoryPath?.let { listFilesInDirectory(it,".mp4") }
                     val adapter = fileNames?.let { MyAdapter(it,R.drawable.video_file) }
                     recyclerView.adapter = adapter
@@ -129,7 +129,7 @@ class ReadFile : AppCompatActivity() {
                 R.id.navigation_audio_button -> {
                     // 处理点击 item2 的逻辑
                     // 这里可以执行相应的操作
-                    Toast.makeText(this, "Item 3 Clicked", Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(this, "Item 3 Clicked", Toast.LENGTH_SHORT).show()
                     val fileNames = directoryPath?.let { listFilesInDirectory(it,".mp3") }
                     val adapter = fileNames?.let { MyAdapter(it,R.drawable.music_file) }
                     recyclerView.adapter = adapter
@@ -138,7 +138,7 @@ class ReadFile : AppCompatActivity() {
                 R.id.navigation_text_file_button -> {
                     // 处理点击 item2 的逻辑
                     // 这里可以执行相应的操作
-                    Toast.makeText(this, "Item 4 Clicked", Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(this, "Item 4 Clicked", Toast.LENGTH_SHORT).show()
                     val fileNames = directoryPath?.let { listFilesInDirectory(it,".txt") }
                     val adapter = fileNames?.let { MyAdapter(it,R.drawable.txt_file) }
                     recyclerView.adapter = adapter
@@ -147,7 +147,7 @@ class ReadFile : AppCompatActivity() {
                 R.id.navigation_file_button -> {
                     // 处理点击 item2 的逻辑
                     // 这里可以执行相应的操作
-                    Toast.makeText(this, "Item 5 Clicked", Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(this, "Item 5 Clicked", Toast.LENGTH_SHORT).show()
                     val fileNames = directoryPath?.let { listFilesInDirectory(it,"") }
                     val adapter = fileNames?.let { MyAdapter(it,R.drawable.file_file) }
                     recyclerView.adapter = adapter
