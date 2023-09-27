@@ -65,6 +65,11 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, ReadFile::class.java)
             startActivity(intent)
         }
+        val fileUpgradeButton = findViewById<ImageButton>(R.id.file_upgrade_button)
+        fileUpgradeButton.setOnClickListener {
+            val intent = Intent(this, FileUpgrade::class.java)
+            startActivity(intent)
+        }
         val goBack = findViewById<TextView>(R.id.logout)
         goBack.setOnClickListener {
             moveTaskToBack(true);

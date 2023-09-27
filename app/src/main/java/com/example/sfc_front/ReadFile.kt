@@ -1,105 +1,16 @@
 package com.example.sfc_front
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.os.StrictMode
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.biometric.BiometricManager
-import androidx.biometric.BiometricPrompt
-import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import java.io.File
-import java.util.concurrent.Executor
-import java.util.concurrent.Executors
 
-class MyAdapter(private val data: List<String>, private val iconResourceId: Int, private val context: AppCompatActivity) : RecyclerView.Adapter<MyAdapter.ViewHolder>() {
-
-    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val fileName: TextView = itemView.findViewById(R.id.file_name) // 通过ID找到文本视图
-        val icon: ImageView = itemView.findViewById(R.id.view_icon) // 通过ID找到图标视图
-
-        init {
-            // 在这里初始化 icon，如果需要的话
-            itemView.setOnClickListener {
-                val position = adapterPosition
-                if (position != RecyclerView.NO_POSITION) {
-                    val fileToOpen = File(context.getExternalFilesDir(null), data[position])
-                    openFile(fileToOpen, context)
-                }
-            }
-        }
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_layout, parent, false)
-
-        return ViewHolder(itemView)
-    }
-
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = data[position]
-        holder.fileName.text = item
-        holder.icon.setImageResource(iconResourceId)
-    }
-
-    override fun getItemCount(): Int {
-        return data.size
-    }
-
-    private fun openFile(file: File, context: AppCompatActivity) {
-        val uri = FileProvider.getUriForFile(context, context.packageName + ".fileprovider", file)
-        val mime = context.contentResolver.getType(uri)
-        val intent = Intent(Intent.ACTION_VIEW)
-        intent.setDataAndType(uri, mime)
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        try {
-            context.startActivity(intent)
-        } catch (e: Exception) {
-            Toast.makeText(context, "無法開啟檔案", Toast.LENGTH_SHORT).show()
-        }
-    }
-}
-
-fun listFilesInDirectory(directoryPath: File, input: String, fileExtension: String): List<String> {
-    val directory = directoryPath
-
-    // 检查目录是否存在
-    if (!directory.exists() || !directory.isDirectory) {
-        return emptyList()
-    }
-
-    // 使用 listFiles() 方法获取目录下的所有文件
-    val files = directory.listFiles()
-
-    // 如果没有文件，返回空列表
-    if (files == null || files.isEmpty()) {
-        return emptyList()
-    }
-
-    // 提取文件名并添加到列表中
-    val fileNames = mutableListOf<String>()
-    for (file in files) {
-        val userInput = file.name.contains(input, true)
-        if (file.isFile && userInput && file.name.endsWith(fileExtension)) {
-            fileNames.add(file.name)
-        }
-    }
-
-    return fileNames
-}
 
 class ReadFile : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -149,42 +60,42 @@ class ReadFile : AppCompatActivity() {
             }
         })
         val fileNames = directoryPath?.let { listFilesInDirectory(it, userInput, ".png") }
-        val adapter = fileNames?.let { MyAdapter(it, R.drawable.photo_file, this) }
+        val adapter = fileNames?.let { MyAdapter(it, R.drawable.photo_file, this@ReadFile) }
         recyclerView.adapter = adapter
         bottomNavigationView.setOnNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.navigation_fragment_image_button -> {
                     fileType = ".png"
                     val fileNames = directoryPath?.let { listFilesInDirectory(it, userInput, ".png") }
-                    val adapter = fileNames?.let { MyAdapter(it, R.drawable.photo_file, this) }
+                    val adapter = fileNames?.let { MyAdapter(it, R.drawable.photo_file, this@ReadFile) }
                     recyclerView.adapter = adapter
                     true
                 }
                 R.id.navigation_video_button -> {
                     fileType = ".mp4"
                     val fileNames = directoryPath?.let { listFilesInDirectory(it, userInput, ".mp4") }
-                    val adapter = fileNames?.let { MyAdapter(it, R.drawable.video_file, this) }
+                    val adapter = fileNames?.let { MyAdapter(it, R.drawable.video_file, this@ReadFile) }
                     recyclerView.adapter = adapter
                     true
                 }
                 R.id.navigation_audio_button -> {
                     fileType = ".mp3"
                     val fileNames = directoryPath?.let { listFilesInDirectory(it, userInput, ".mp3") }
-                    val adapter = fileNames?.let { MyAdapter(it, R.drawable.music_file, this) }
+                    val adapter = fileNames?.let { MyAdapter(it, R.drawable.music_file, this@ReadFile) }
                     recyclerView.adapter = adapter
                     true
                 }
                 R.id.navigation_text_file_button -> {
                     fileType = ".txt"
                     val fileNames = directoryPath?.let { listFilesInDirectory(it, userInput, ".txt") }
-                    val adapter = fileNames?.let { MyAdapter(it, R.drawable.txt_file, this) }
+                    val adapter = fileNames?.let { MyAdapter(it, R.drawable.txt_file, this@ReadFile) }
                     recyclerView.adapter = adapter
                     true
                 }
                 R.id.navigation_file_button -> {
                     fileType = ""
                     val fileNames = directoryPath?.let { listFilesInDirectory(it, userInput, "") }
-                    val adapter = fileNames?.let { MyAdapter(it, R.drawable.file_file, this) }
+                    val adapter = fileNames?.let { MyAdapter(it, R.drawable.file_file, this@ReadFile) }
                     recyclerView.adapter = adapter
                     true
                 }
