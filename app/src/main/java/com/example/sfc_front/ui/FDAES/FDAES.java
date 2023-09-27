@@ -1,7 +1,11 @@
 package com.example.sfc_front.ui.FDAES;
+import android.net.Uri;
+
 import com.example.sfc_front.ui.library.library;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class FDAES {
     //RK is RK0~RK10
@@ -171,9 +175,9 @@ public class FDAES {
             throw new RuntimeException(e);
         }
     }
-    public void FileEncryption_CBC(String filePath,String EncFile){
-        try (InputStream inputStream = new BufferedInputStream(new FileInputStream(filePath))) {
-            try (OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(EncFile))) {
+    public void FileEncryption_CBC(File filePath,File EncFile){
+        try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(filePath.toPath()))) {
+            try (OutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(EncFile.toPath()))) {
                 int[] IV = this.K_CK.clone();
                 byte[] buffer = new byte[inputStream.available()];
                 int[] tmp = new int[16];
@@ -215,8 +219,8 @@ public class FDAES {
         }
     }
     public void FileDecryption_CBC(String filePath,String DecFile)  {
-        try (InputStream inputStream = new BufferedInputStream(new FileInputStream(filePath))) {
-            try (OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(DecFile))) {
+        try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(Paths.get(filePath)))) {
+            try (OutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(Paths.get(DecFile)))) {
                 int[] IV = this.K_CK.clone();
                 byte[] buffer = new byte[inputStream.available()];
                 int[] tmp = new int[16];

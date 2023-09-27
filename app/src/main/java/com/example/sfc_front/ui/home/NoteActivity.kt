@@ -15,6 +15,7 @@ import androidx.activity.ComponentActivity
 import androidx.core.content.ContextCompat
 //import com.example.sfc_front.Manifest
 import com.example.sfc_front.R
+import com.example.sfc_front.ui.FDAES.FDAES
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
@@ -56,7 +57,9 @@ class NoteActivity : ComponentActivity() {
                 val fileWriter = FileWriter(file, true)
                 fileWriter.write(content.toString())
                 fileWriter.close()
-
+//                val fdaes = FDAES("vljjnsvljnlkdmc;alsmc;lsad")
+//                val outputFile=File(dir,"$fileName"+"En.txt")
+//                fdaes.FileEncryption_CBC(file,outputFile)
             } catch (e: IOException) {
                 e.printStackTrace()
             }

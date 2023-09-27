@@ -1,5 +1,6 @@
 package com.example.sfc_front
 
+import com.example.sfc_front.ui.AES.AES256
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -7,6 +8,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
 import android.view.Menu
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
@@ -23,8 +25,10 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.sfc_front.databinding.ActivityMainBinding
+import com.example.sfc_front.ui.FDAES.FDAES
 import com.google.android.material.navigation.NavigationView
 import java.io.File
+import java.io.FileInputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -67,6 +71,7 @@ class MainActivity : AppCompatActivity() {
         takePictureLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { isTaken ->
             if (isTaken) {
                 Toast.makeText(this, "Photo has been taken and saved", Toast.LENGTH_SHORT).show()
+
             } else {
                 Toast.makeText(this, "Unable to take a photo", Toast.LENGTH_SHORT).show()
             }
@@ -101,12 +106,14 @@ class MainActivity : AppCompatActivity() {
 
         val photoUri = FileProvider.getUriForFile(this, "com.example.sfc_front.fileprovider", photoFile)
 
+
         // 启动拍照 Intent
         val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
-
         // 启动拍照
         takePictureLauncher.launch(photoUri)
+
+
     }
     private fun takeAVideo() {
         // 检查相机和录制视频的权限

@@ -1,5 +1,6 @@
 package com.example.sfc_front.ui.AES;
 
+import android.net.Uri;
 
 import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
@@ -17,7 +18,7 @@ public class AES256 {
 
 
     // 加密函式
-    public void encryptFile( String inputFile, String outputFile) throws Exception {
+    public void encryptFile(String inputFile, String outputFile) throws Exception {
         SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey.getBytes(), AES_ALGORITHM);
         Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
 
