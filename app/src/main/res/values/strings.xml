@@ -21,4 +21,9 @@
     <string name="login_title2">use your biometric to login</string>
     <string name="ball_text">0%</string>
     <string name="title_activity_note">NoteActivity</string>
+    <string name="gender_prompt">Choose your gender</string>
+    <string-array name="gender_options">
+        <item>Male</item>
+        <item>Female</item>
+    </string-array>
 </resources>
