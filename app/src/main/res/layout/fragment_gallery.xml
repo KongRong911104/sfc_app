@@ -6,7 +6,10 @@
     android:layout_height="match_parent"
     android:background="#262629"
     tools:context=".ui.gallery.GalleryFragment">
-
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -23,7 +26,7 @@
             android:background="@drawable/go_back" />
 
         <EditText
-            android:id="@+id/editTextText"
+            android:id="@+id/search_file"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="25"

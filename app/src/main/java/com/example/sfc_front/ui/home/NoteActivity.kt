@@ -51,9 +51,9 @@ class NoteActivity : ComponentActivity() {
 
 
                 Toast.makeText(this,fileName, Toast.LENGTH_SHORT).show()
-//                val file = File(getExternalFilesDir(null), "$fileName.txt")
+                val file = File(getExternalFilesDir(null), "$fileName.txt")
                 val dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
-                val file = File(dir,"$fileName.txt")
+//                val file = File(dir,"$fileName.txt")
                 val fileWriter = FileWriter(file, true)
                 fileWriter.write(content.toString())
                 fileWriter.close()
