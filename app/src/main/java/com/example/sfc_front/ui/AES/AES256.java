@@ -51,11 +51,11 @@ public class AES256 {
     }
 
     // 解密函式
-    public void decryptFile(String inputFile, String outputFile) throws Exception {
+    public void decryptFile(File inputFile, File outputFile) throws Exception {
         SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey.getBytes(), AES_ALGORITHM);
         Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
 
-        FileInputStream inputStream = new FileInputStream(inputFile);
+        FileInputStream inputStream = new FileInputStream(inputFile.getPath());
         byte[] ivBytes = new byte[16];
 
         // 讀取初始化向量
@@ -64,7 +64,7 @@ public class AES256 {
 
         cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, ivSpec);
 
-        FileOutputStream outputStream = new FileOutputStream(outputFile);
+        FileOutputStream outputStream = new FileOutputStream(outputFile.getPath());
 
         byte[] buffer = new byte[1024];
         int bytesRead;

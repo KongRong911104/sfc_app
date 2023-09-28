@@ -59,7 +59,7 @@ class NoteActivity : ComponentActivity() {
                 fileWriter.close()
                 //加密
                 val fdaes = FDAES("sixsquare1234567")
-                val outputFile=File(getExternalFilesDir(null),"$fileName"+"En.txt")
+                val outputFile=File(getExternalFilesDir(null),"Encrypted_$fileName.txt")
                 fdaes.FileEncryption_CBC(file,outputFile)
                 file.delete()
                 //刪除原本檔案

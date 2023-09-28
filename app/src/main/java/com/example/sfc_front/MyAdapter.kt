@@ -11,6 +11,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.RecyclerView
+import com.example.sfc_front.ui.AES.AES256
+import com.example.sfc_front.ui.FDAES.FDAES
 import java.io.File
 fun listFilesInDirectory(directoryPath: File,input:String, fileExtension: String): List<String> {
     val directory = directoryPath
@@ -42,7 +44,8 @@ fun listFilesInDirectory(directoryPath: File,input:String, fileExtension: String
 }
 
 class MyAdapter(private val data: List<String>, private val iconResourceId: Int, private val context: AppCompatActivity,private val open:Int = 1) : RecyclerView.Adapter<MyAdapter.ViewHolder>() {
-
+    val fdaes = FDAES("sixsquare1234567")
+    val aeS256 = AES256("sixsquare1234567")
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val fileName: TextView = itemView.findViewById(R.id.file_name) // 通过ID找到文本视图
         val icon: ImageView = itemView.findViewById(R.id.view_icon) // 通过ID找到图标视图
@@ -53,8 +56,12 @@ class MyAdapter(private val data: List<String>, private val iconResourceId: Int,
                 itemView.setOnClickListener {
                     val position = adapterPosition
                     if (position != RecyclerView.NO_POSITION) {
-                        val fileToOpen = File(context.getExternalFilesDir(null), data[position])
-                        openFile(fileToOpen, context)
+                        val string = data[position]
+                        val fileToOpen = File(context.getExternalFilesDir(null), string)
+                        val subString:String = string.subSequence(10,string.length) as String
+                        val outputFile = File(context.getExternalFilesDir(null),subString)
+                        aeS256.decryptFile(fileToOpen,outputFile)
+                        openFile(outputFile, context)
                     }
                 }
             }
