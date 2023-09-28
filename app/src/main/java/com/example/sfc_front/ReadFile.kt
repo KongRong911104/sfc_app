@@ -29,7 +29,8 @@ class ReadFile : AppCompatActivity() {
 
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
         val topPadding = resources.getDimensionPixelSize(R.dimen.top_padding) // 从资源文件获取内边距值
-        recyclerView.setPadding(50, topPadding, 0, 0)
+        val bottomPadding = resources.getDimensionPixelSize(R.dimen.bottom_padding)
+        recyclerView.setPadding(50, topPadding, 0, bottomPadding)
         // 准备模拟的数据集合
         val data = listOf(
             "Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6", "Item 7", "Item 8", "Item 9", "Item 10",
