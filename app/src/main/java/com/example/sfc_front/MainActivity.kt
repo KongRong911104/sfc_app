@@ -37,7 +37,7 @@ import java.util.Locale
 import kotlin.system.exitProcess
 
 class MainActivity : AppCompatActivity() {
-    val aeS256 = AES256("sixsquare1234567")
+    val aes256 = AES256("sixsquare1234567")
     val fdaes = FDAES("sixsquare1234567")
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
@@ -89,7 +89,7 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Photo has been taken and saved", Toast.LENGTH_SHORT).show()
                 val inputFile  = File(getExternalFilesDir(null), FileName)
                 val outputFile=File(getExternalFilesDir(null),"Encrypted_$FileName")
-                aeS256.encryptFile(inputFile,outputFile)
+                aes256.encryptFile(inputFile,outputFile)
                 inputFile.delete()
             } else {
                 Toast.makeText(this, "Unable to take a photo", Toast.LENGTH_SHORT).show()
@@ -171,7 +171,7 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == REQUEST_VIDEO_CAPTURE && resultCode == Activity.RESULT_OK) {
             val inputFile  = File(getExternalFilesDir(null), FileName)
             val outputFile=File(getExternalFilesDir(null),"Encrypted_$FileName")
-            aeS256.encryptFile(inputFile,outputFile)
+            aes256.encryptFile(inputFile,outputFile)
             inputFile.delete()
         }
     }

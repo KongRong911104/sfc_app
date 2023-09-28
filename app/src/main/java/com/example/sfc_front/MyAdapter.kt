@@ -45,7 +45,7 @@ fun listFilesInDirectory(directoryPath: File,input:String, fileExtension: String
 
 class MyAdapter(private val data: List<String>, private val iconResourceId: Int, private val context: AppCompatActivity,private val open:Int = 1) : RecyclerView.Adapter<MyAdapter.ViewHolder>() {
     val fdaes = FDAES("sixsquare1234567")
-    val aeS256 = AES256("sixsquare1234567")
+    val aes256 = AES256("sixsquare1234567")
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val fileName: TextView = itemView.findViewById(R.id.file_name) // 通过ID找到文本视图
         val icon: ImageView = itemView.findViewById(R.id.view_icon) // 通过ID找到图标视图
@@ -60,7 +60,7 @@ class MyAdapter(private val data: List<String>, private val iconResourceId: Int,
                         val fileToOpen = File(context.getExternalFilesDir(null), string)
                         val subString:String = string.subSequence(10,string.length) as String
                         val outputFile = File(context.getExternalFilesDir(null),subString)
-                        aeS256.decryptFile(fileToOpen,outputFile)
+                        aes256.decryptFile(fileToOpen,outputFile)
                         openFile(outputFile, context)
                     }
                 }

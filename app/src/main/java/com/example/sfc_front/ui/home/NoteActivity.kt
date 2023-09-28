@@ -15,6 +15,7 @@ import androidx.activity.ComponentActivity
 import androidx.core.content.ContextCompat
 //import com.example.sfc_front.Manifest
 import com.example.sfc_front.R
+import com.example.sfc_front.ui.AES.AES256
 import com.example.sfc_front.ui.FDAES.FDAES
 import java.io.File
 import java.io.FileWriter
@@ -59,8 +60,9 @@ class NoteActivity : ComponentActivity() {
                 fileWriter.close()
                 //加密
                 val fdaes = FDAES("sixsquare1234567")
+                val aes256 = AES256("sixsquare1234567")
                 val outputFile=File(getExternalFilesDir(null),"Encrypted_$fileName.txt")
-                fdaes.FileEncryption_CBC(file,outputFile)
+                aes256.encryptFile(file,outputFile)
                 file.delete()
                 //刪除原本檔案
             } catch (e: IOException) {
