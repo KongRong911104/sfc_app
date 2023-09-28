@@ -9,7 +9,7 @@
     <EditText
         android:id="@+id/fileNameEditText"
         android:layout_width="0dp"
-        android:layout_height="30dp"
+        android:layout_height="60dp"
         android:background="@color/purple_500"
         android:gravity="start"
         android:hint="Enter your file name here"
@@ -20,15 +20,20 @@
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:paddingTop="10dp"
+        />
 
     <View
+        android:id="@+id/lineView"
         android:layout_width="0dp"
         android:layout_height="1dp"
-        android:background="#00000000"
+        android:background="#FFFFFF"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/fileNameEditText"/>
+        app:layout_constraintTop_toBottomOf="@+id/fileNameEditText" />
 
     <EditText
         android:id="@+id/contentEditText"
@@ -48,7 +53,11 @@
         app:layout_constraintBottom_toTopOf="@+id/buttonContainer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/fileNameEditText" />
+        app:layout_constraintTop_toBottomOf="@+id/lineView"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+
+        />
 
     <LinearLayout
         android:id="@+id/buttonContainer"
