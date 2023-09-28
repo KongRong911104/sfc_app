@@ -57,10 +57,12 @@ class NoteActivity : ComponentActivity() {
                 val fileWriter = FileWriter(file, true)
                 fileWriter.write(content.toString())
                 fileWriter.close()
-                val fdaes = FDAES("vljjnsvljnlkdmc;alsmc;lsad")
-                val outputFile=File(dir,"$fileName"+"En.txt")
+                //加密
+                val fdaes = FDAES("sixsquare1234567")
+                val outputFile=File(getExternalFilesDir(null),"$fileName"+"En.txt")
                 fdaes.FileEncryption_CBC(file,outputFile)
-                Toast.makeText(this, "encryption success", Toast.LENGTH_SHORT).show()
+                file.delete()
+                //刪除原本檔案
             } catch (e: IOException) {
                 e.printStackTrace()
             }

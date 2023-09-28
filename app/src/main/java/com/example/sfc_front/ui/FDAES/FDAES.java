@@ -218,9 +218,9 @@ public class FDAES {
             e.printStackTrace();
         }
     }
-    public void FileDecryption_CBC(String filePath,String DecFile)  {
-        try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(Paths.get(filePath)))) {
-            try (OutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(Paths.get(DecFile)))) {
+    public void FileDecryption_CBC(File filePath,File DecFile)  {
+        try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(filePath.toPath()))) {
+            try (OutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(DecFile.toPath()))) {
                 int[] IV = this.K_CK.clone();
                 byte[] buffer = new byte[inputStream.available()];
                 int[] tmp = new int[16];

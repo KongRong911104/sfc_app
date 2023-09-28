@@ -36,9 +36,12 @@ import java.util.Locale
 import kotlin.system.exitProcess
 
 class MainActivity : AppCompatActivity() {
+    val aeS256 = AES256("sixsquare1234567")
+    val fdaes = FDAES("sixsquare1234567")
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
     private lateinit var takePictureLauncher: ActivityResultLauncher<Uri>
+    private var FileName =""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -83,7 +86,10 @@ class MainActivity : AppCompatActivity() {
         takePictureLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { isTaken ->
             if (isTaken) {
                 Toast.makeText(this, "Photo has been taken and saved", Toast.LENGTH_SHORT).show()
-
+                val inputFile  = File(getExternalFilesDir(null), FileName)
+                val outputFile=File(getExternalFilesDir(null),"Encrypted_$FileName")
+                aeS256.encryptFile(inputFile,outputFile)
+                inputFile.delete()
             } else {
                 Toast.makeText(this, "Unable to take a photo", Toast.LENGTH_SHORT).show()
             }
@@ -112,7 +118,8 @@ class MainActivity : AppCompatActivity() {
         // 创建文件名
         val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
         val photoFileName = "IMG_$timeStamp.png"
-
+        //等關閉後執行加密用
+        FileName = photoFileName
         // 创建文件
         val photoFile = File(photoDirectory, photoFileName)
 
@@ -124,7 +131,6 @@ class MainActivity : AppCompatActivity() {
         takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
         // 启动拍照
         takePictureLauncher.launch(photoUri)
-
 
     }
     private fun takeAVideo() {
@@ -144,7 +150,8 @@ class MainActivity : AppCompatActivity() {
         // 创建文件名
         val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
         val videoFileName = "VID_$timeStamp.mp4"
-
+        //等關閉後執行加密用
+        FileName = videoFileName
         // 创建文件
         val videoFile = File(videoDirectory, videoFileName)
 
