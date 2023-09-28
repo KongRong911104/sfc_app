@@ -2,6 +2,7 @@ package com.example.sfc_front
 
 import com.example.sfc_front.ui.AES.AES256
 import android.Manifest
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -163,6 +164,16 @@ class MainActivity : AppCompatActivity() {
 
         // 启动录制视频
         startActivityForResult(takeVideoIntent, REQUEST_VIDEO_CAPTURE)
+    }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == REQUEST_VIDEO_CAPTURE && resultCode == Activity.RESULT_OK) {
+            val inputFile  = File(getExternalFilesDir(null), FileName)
+            val outputFile=File(getExternalFilesDir(null),"Encrypted_$FileName")
+            aeS256.encryptFile(inputFile,outputFile)
+            inputFile.delete()
+        }
     }
     companion object {
         private const val REQUEST_CAMERA_PERMISSION = 101
