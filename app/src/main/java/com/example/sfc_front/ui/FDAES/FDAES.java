@@ -2,6 +2,8 @@ package com.example.sfc_front.ui.FDAES;
 import com.example.sfc_front.ui.library.library;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class FDAES {
     //RK is RK0~RK10
@@ -171,7 +173,7 @@ public class FDAES {
             throw new RuntimeException(e);
         }
     }
-    public void FileEncryption_CBC(String filePath,String EncFile){
+    public void FileEncryption_CBC(File filePath,File EncFile){
         try (InputStream inputStream = new BufferedInputStream(new FileInputStream(filePath))) {
             try (OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(EncFile))) {
                 int[] IV = this.K_CK.clone();
@@ -214,7 +216,7 @@ public class FDAES {
             e.printStackTrace();
         }
     }
-    public void FileDecryption_CBC(String filePath,String DecFile)  {
+    public void FileDecryption_CBC(File filePath,File DecFile)  {
         try (InputStream inputStream = new BufferedInputStream(new FileInputStream(filePath))) {
             try (OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(DecFile))) {
                 int[] IV = this.K_CK.clone();

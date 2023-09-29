@@ -1,20 +1,17 @@
 package com.example.sfc_front.ui.home
 
+//import com.example.sfc_front.Manifest
 import android.annotation.SuppressLint
-import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
-import android.provider.DocumentsContract
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.core.content.ContextCompat
-//import com.example.sfc_front.Manifest
 import com.example.sfc_front.R
+import com.example.sfc_front.ui.FDAES.FDAES
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
@@ -56,6 +53,9 @@ class NoteActivity : ComponentActivity() {
                 val fileWriter = FileWriter(file, true)
                 fileWriter.write(content.toString())
                 fileWriter.close()
+//                val fdaes = FDAES("explosion0123456")
+//                fdaes.FileEncryption_CBC(File(getExternalFilesDir(null),"$fileName.txt"),File(dir,"fdaes-$fileName.txt"))
+//                fdaes.FileDecryption_CBC(File(dir,"fdaes-$fileName.txt"),File(dir,"d-fdaes-$fileName.txt"))
 
             } catch (e: IOException) {
                 e.printStackTrace()

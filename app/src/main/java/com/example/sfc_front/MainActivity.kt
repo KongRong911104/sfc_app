@@ -79,6 +79,8 @@ class MainActivity : AppCompatActivity() {
         takePictureLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { isTaken ->
             if (isTaken) {
                 Toast.makeText(this, "Photo has been taken and saved", Toast.LENGTH_SHORT).show()
+                '[\
+                '
             } else {
                 Toast.makeText(this, "Unable to take a photo", Toast.LENGTH_SHORT).show()
             }
