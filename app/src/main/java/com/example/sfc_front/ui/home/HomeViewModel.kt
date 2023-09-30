@@ -1,5 +1,6 @@
 package com.example.sfc_front.ui.home
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -14,15 +15,14 @@ class HomeViewModel : ViewModel() {
         get() = _progressInt
 
     private var job: Job? = null
-    private var currentProgress = 0
-
+//    private var currentProgress = 0
+//    @JvmField
+//    var currentProgress: Int = 0
     fun startTask() {
         if (!isTaskRunning()) {
             job = GlobalScope.launch {
                 while (currentProgress <= 100) {
                     _progressInt.postValue(currentProgress)
-                    currentProgress++
-                    delay(60) // 200 毫秒（0.2秒）延迟
                 }
             }
         }
@@ -42,5 +42,10 @@ class HomeViewModel : ViewModel() {
 
     fun setCurrentProgress(progress: Int) {
         currentProgress = progress
+    }
+
+    companion object {
+        @JvmField
+        var currentProgress: Int = 0
     }
 }

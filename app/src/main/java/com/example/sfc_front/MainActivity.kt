@@ -34,6 +34,7 @@ import java.io.FileInputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.concurrent.Executors
 import kotlin.system.exitProcess
 
 class MainActivity : AppCompatActivity() {
@@ -88,9 +89,22 @@ class MainActivity : AppCompatActivity() {
             if (isTaken) {
                 Toast.makeText(this, "Photo has been taken and saved", Toast.LENGTH_SHORT).show()
                 val inputFile  = File(getExternalFilesDir(null), FileName)
+
                 val outputFile=File(getExternalFilesDir(null),"AES_Encrypted_$FileName")
-                aes256.encryptFile(inputFile,outputFile)
-                inputFile.delete()
+                val executor = Executors.newSingleThreadExecutor()
+                executor.execute {
+                    try {
+                        // 在線程池中執行加密操作
+                        aes256.encryptFile(inputFile, outputFile)
+
+                        // 刪除inputFile
+                        if (inputFile.exists()) {
+                            inputFile.delete()
+                        }
+                    } finally {
+                        executor.shutdown()
+                    }
+                }
             } else {
                 Toast.makeText(this, "Unable to take a photo", Toast.LENGTH_SHORT).show()
             }
@@ -171,8 +185,20 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == REQUEST_VIDEO_CAPTURE && resultCode == Activity.RESULT_OK) {
             val inputFile  = File(getExternalFilesDir(null), FileName)
             val outputFile=File(getExternalFilesDir(null),"AES_Encrypted_$FileName")
-            aes256.encryptFile(inputFile,outputFile)
-            inputFile.delete()
+            val executor = Executors.newSingleThreadExecutor()
+            executor.execute {
+                try {
+                    // 在線程池中執行加密操作
+                    aes256.encryptFile(inputFile, outputFile)
+
+                    // 刪除inputFile
+                    if (inputFile.exists()) {
+                        inputFile.delete()
+                    }
+                } finally {
+                    executor.shutdown()
+                }
+            }
         }
     }
     companion object {
