@@ -76,13 +76,23 @@ class MyAdapter(
                 itemView.setOnClickListener {
                     val position = adapterPosition
                     if (position != RecyclerView.NO_POSITION) {
-                        val string = data[position]
-                        val fileToOpen = File(context.getExternalFilesDir(null), string)
-                        val subString: String = string.subSequence(10, string.length) as String
-                        val outputFile = File(context.getExternalFilesDir(null), subString)
-                        aes256.decryptFile(fileToOpen, outputFile)
-                        openFile(outputFile, context)
-                        updateData(listFilesInDirectory(directoryPath,"",fileType,open))
+                        val FileName = data[position]
+                        val fileToOpen = File(context.getExternalFilesDir(null), FileName)
+                        if(FileName.contains("FDAES_Encrypted")){
+                            val subString: String = FileName.subSequence(16, FileName.length) as String
+                            val outputFile = File(context.getExternalFilesDir(null), subString)
+                            fdaes.FileDecryption_CBC(fileToOpen, outputFile)
+                            openFile(outputFile, context)
+                            updateData(listFilesInDirectory(directoryPath,"",fileType,open))
+                        }
+                        else if(FileName.contains("AES_Encrypted")){
+                            val subString: String = FileName.subSequence(14, FileName.length) as String
+                            val outputFile = File(context.getExternalFilesDir(null), subString)
+                            aes256.decryptFile(fileToOpen, outputFile)
+                            openFile(outputFile, context)
+                            updateData(listFilesInDirectory(directoryPath,"",fileType,open))
+                        }
+
 
                     }
 

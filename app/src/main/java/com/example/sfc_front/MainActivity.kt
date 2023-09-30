@@ -2,6 +2,7 @@ package com.example.sfc_front
 
 import com.example.sfc_front.ui.AES.AES256
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -11,10 +12,12 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.view.Menu
+import android.view.View
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import android.widget.ImageButton
+import android.widget.Switch
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -37,13 +40,16 @@ import java.util.Locale
 import java.util.concurrent.Executors
 import kotlin.system.exitProcess
 
+import com.example.sfc_front.SwitchStatus
 class MainActivity : AppCompatActivity() {
     val aes256 = AES256("sixsquare1234567")
     val fdaes = FDAES("sixsquare1234567")
+
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
     private lateinit var takePictureLauncher: ActivityResultLauncher<Uri>
     private var FileName =""
+    @SuppressLint("UseSwitchCompatOrMaterialCode")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -52,6 +58,9 @@ class MainActivity : AppCompatActivity() {
         val drawerLayout: DrawerLayout = binding.drawerLayout
         val navView: NavigationView = binding.navView
         val navController = findNavController(R.id.nav_host_fragment_content_main)
+//        var rootView = findViewById<View>(android.R.id.content)
+
+
         appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.nav_home
@@ -91,12 +100,22 @@ class MainActivity : AppCompatActivity() {
 
                 val inputFile  = File(getExternalFilesDir(null), FileName)
 
-                val outputFile=File(getExternalFilesDir(null),"AES_Encrypted_$FileName")
                 val executor = Executors.newSingleThreadExecutor()
                 executor.execute {
                     try {
-                        // 在線程池中執行加密操作
-                        aes256.encryptFile(inputFile, outputFile)
+                        val switch : Switch = findViewById<Switch>(R.id.switchButton)
+
+                        if (switch.isChecked){
+                            val outputFile=File(getExternalFilesDir(null),"FDAES_Encrypted_$FileName")
+                            fdaes.FileEncryption_CBC(inputFile,outputFile)
+
+                        }
+                        else{
+                            val outputFile=File(getExternalFilesDir(null),"AES_Encrypted_$FileName")
+                            // 在線程池中執行加密操作
+                            aes256.encryptFile(inputFile, outputFile)
+                        }
+
 
                         // 刪除inputFile
                         if (inputFile.exists()) {
@@ -180,17 +199,28 @@ class MainActivity : AppCompatActivity() {
         // 启动录制视频
         startActivityForResult(takeVideoIntent, REQUEST_VIDEO_CAPTURE)
     }
+    @SuppressLint("UseSwitchCompatOrMaterialCode")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == REQUEST_VIDEO_CAPTURE && resultCode == Activity.RESULT_OK) {
             val inputFile  = File(getExternalFilesDir(null), FileName)
-            val outputFile=File(getExternalFilesDir(null),"AES_Encrypted_$FileName")
+
             val executor = Executors.newSingleThreadExecutor()
             executor.execute {
                 try {
-                    // 在線程池中執行加密操作
-                    aes256.encryptFile(inputFile, outputFile)
+                    val switch : Switch = findViewById<Switch>(R.id.switchButton)
+
+                    if (switch.isChecked){
+                        val outputFile=File(getExternalFilesDir(null),"FDAES_Encrypted_$FileName")
+                        fdaes.FileEncryption_CBC(inputFile,outputFile)
+                    }
+                    else{
+                        val outputFile=File(getExternalFilesDir(null),"AES_Encrypted_$FileName")
+                        // 在線程池中執行加密操作
+                        aes256.encryptFile(inputFile, outputFile)
+                    }
+
 
                     // 刪除inputFile
                     if (inputFile.exists()) {

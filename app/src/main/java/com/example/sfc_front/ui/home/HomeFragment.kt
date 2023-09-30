@@ -30,7 +30,10 @@ import com.example.sfc_front.ui.FDAES.FDAES
 import java.io.File
 import android.content.Context
 import android.provider.OpenableColumns
+import android.widget.Switch
 import java.io.FileWriter
+import androidx.biometric.BiometricPrompt
+import androidx.fragment.app.FragmentActivity
 
 
 class HomeFragment : Fragment() {
