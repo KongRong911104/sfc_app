@@ -2,11 +2,14 @@ package com.example.sfc_front.ui.AES;
 
 import android.net.Uri;
 
+import com.example.sfc_front.ui.home.HomeViewModel;
+
 import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.*;
 import java.security.SecureRandom;
+import java.util.logging.Logger;
 
 public class AES256 {
     private static final String AES_ALGORITHM = "AES";
@@ -32,13 +35,16 @@ public class AES256 {
 
         FileInputStream inputStream = new FileInputStream(inputFile.getPath());
         FileOutputStream outputStream = new FileOutputStream(outputFile.getPath());
-
+        long fileSize = inputFile.length();
+        long ii = 0;
         // 寫入初始化向量到輸出檔案（用於解密）
         outputStream.write(ivBytes);
-
+        HomeViewModel.currentProgress =0;
         byte[] buffer = new byte[1024];
         int bytesRead;
         while ((bytesRead = inputStream.read(buffer)) != -1) {
+            ii+=bytesRead;
+            HomeViewModel.currentProgress = (int) (ii*100/fileSize);
             byte[] encryptedBytes = cipher.update(buffer, 0, bytesRead);
             outputStream.write(encryptedBytes);
         }
