@@ -1,4 +1,6 @@
 package com.example.sfc_front.ui.FDAES;
+import android.net.Uri;
+
 import com.example.sfc_front.ui.library.library;
 
 import java.io.*;
@@ -174,8 +176,10 @@ public class FDAES {
         }
     }
     public void FileEncryption_CBC(File filePath,File EncFile){
-        try (InputStream inputStream = new BufferedInputStream(new FileInputStream(filePath))) {
-            try (OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(EncFile))) {
+
+        try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(filePath.toPath()))) {
+            try (OutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(EncFile.toPath()))) {
+
                 int[] IV = this.K_CK.clone();
                 byte[] buffer = new byte[inputStream.available()];
                 int[] tmp = new int[16];
@@ -217,8 +221,8 @@ public class FDAES {
         }
     }
     public void FileDecryption_CBC(File filePath,File DecFile)  {
-        try (InputStream inputStream = new BufferedInputStream(new FileInputStream(filePath))) {
-            try (OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(DecFile))) {
+        try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(filePath.toPath()))) {
+            try (OutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(DecFile.toPath()))) {
                 int[] IV = this.K_CK.clone();
                 byte[] buffer = new byte[inputStream.available()];
                 int[] tmp = new int[16];

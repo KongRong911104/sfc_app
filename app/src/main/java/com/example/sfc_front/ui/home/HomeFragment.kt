@@ -51,21 +51,10 @@ class HomeFragment : Fragment() {
         progressObserver = Observer { progressInt ->
             ballView.text = "$progressInt%"
             progressBar.progress = progressInt
-
-            if (progressInt == 100) {
-                viewModel.progressInt.removeObserver(progressObserver)
-            }
         }
-
         viewModel.progressInt.observe(viewLifecycleOwner, progressObserver)
+        viewModel.startTask()
 
-        val savedProgress = viewModel.getCurrentProgress()
-        if (savedProgress < 100) {
-            viewModel.startTask()
-        } else {
-            ballView.text = "100%"
-            progressBar.progress = 100
-        }
 
         return root
     }

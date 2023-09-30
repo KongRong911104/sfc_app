@@ -1,12 +1,15 @@
 package com.example.sfc_front
 
+import com.example.sfc_front.ui.AES.AES256
 import android.Manifest
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
 import android.view.Menu
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
@@ -24,17 +27,23 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.sfc_front.databinding.ActivityMainBinding
+import com.example.sfc_front.ui.FDAES.FDAES
 import com.google.android.material.navigation.NavigationView
 import java.io.File
+import java.io.FileInputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.concurrent.Executors
 import kotlin.system.exitProcess
 
 class MainActivity : AppCompatActivity() {
+    val aes256 = AES256("sixsquare1234567")
+    val fdaes = FDAES("sixsquare1234567")
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
     private lateinit var takePictureLauncher: ActivityResultLauncher<Uri>
+    private var FileName =""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -79,8 +88,24 @@ class MainActivity : AppCompatActivity() {
         takePictureLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { isTaken ->
             if (isTaken) {
                 Toast.makeText(this, "Photo has been taken and saved", Toast.LENGTH_SHORT).show()
-                '[\
-                '
+
+                val inputFile  = File(getExternalFilesDir(null), FileName)
+
+                val outputFile=File(getExternalFilesDir(null),"AES_Encrypted_$FileName")
+                val executor = Executors.newSingleThreadExecutor()
+                executor.execute {
+                    try {
+                        // 在線程池中執行加密操作
+                        aes256.encryptFile(inputFile, outputFile)
+
+                        // 刪除inputFile
+                        if (inputFile.exists()) {
+                            inputFile.delete()
+                        }
+                    } finally {
+                        executor.shutdown()
+                    }
+                }
             } else {
                 Toast.makeText(this, "Unable to take a photo", Toast.LENGTH_SHORT).show()
             }
@@ -109,18 +134,20 @@ class MainActivity : AppCompatActivity() {
         // 创建文件名
         val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
         val photoFileName = "IMG_$timeStamp.png"
-
+        //等關閉後執行加密用
+        FileName = photoFileName
         // 创建文件
         val photoFile = File(photoDirectory, photoFileName)
 
         val photoUri = FileProvider.getUriForFile(this, "com.example.sfc_front.fileprovider", photoFile)
 
+
         // 启动拍照 Intent
         val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
-
         // 启动拍照
         takePictureLauncher.launch(photoUri)
+
     }
     private fun takeAVideo() {
         // 检查相机和录制视频的权限
@@ -139,7 +166,8 @@ class MainActivity : AppCompatActivity() {
         // 创建文件名
         val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
         val videoFileName = "VID_$timeStamp.mp4"
-
+        //等關閉後執行加密用
+        FileName = videoFileName
         // 创建文件
         val videoFile = File(videoDirectory, videoFileName)
 
@@ -151,6 +179,28 @@ class MainActivity : AppCompatActivity() {
 
         // 启动录制视频
         startActivityForResult(takeVideoIntent, REQUEST_VIDEO_CAPTURE)
+    }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == REQUEST_VIDEO_CAPTURE && resultCode == Activity.RESULT_OK) {
+            val inputFile  = File(getExternalFilesDir(null), FileName)
+            val outputFile=File(getExternalFilesDir(null),"AES_Encrypted_$FileName")
+            val executor = Executors.newSingleThreadExecutor()
+            executor.execute {
+                try {
+                    // 在線程池中執行加密操作
+                    aes256.encryptFile(inputFile, outputFile)
+
+                    // 刪除inputFile
+                    if (inputFile.exists()) {
+                        inputFile.delete()
+                    }
+                } finally {
+                    executor.shutdown()
+                }
+            }
+        }
     }
     companion object {
         private const val REQUEST_CAMERA_PERMISSION = 101

@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.core.content.ContextCompat
 import com.example.sfc_front.R
+import com.example.sfc_front.ui.AES.AES256
 import com.example.sfc_front.ui.FDAES.FDAES
 import java.io.File
 import java.io.FileWriter
@@ -53,10 +54,13 @@ class NoteActivity : ComponentActivity() {
                 val fileWriter = FileWriter(file, true)
                 fileWriter.write(content.toString())
                 fileWriter.close()
-//                val fdaes = FDAES("explosion0123456")
-//                fdaes.FileEncryption_CBC(File(getExternalFilesDir(null),"$fileName.txt"),File(dir,"fdaes-$fileName.txt"))
-//                fdaes.FileDecryption_CBC(File(dir,"fdaes-$fileName.txt"),File(dir,"d-fdaes-$fileName.txt"))
-
+                //加密
+                val fdaes = FDAES("sixsquare1234567")
+                val aes256 = AES256("sixsquare1234567")
+                val outputFile=File(getExternalFilesDir(null),"AES_Encrypted_$fileName.txt")
+                aes256.encryptFile(file,outputFile)
+                file.delete()
+                //刪除原本檔案
             } catch (e: IOException) {
                 e.printStackTrace()
             }

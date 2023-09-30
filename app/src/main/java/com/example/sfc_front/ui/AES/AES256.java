@@ -1,11 +1,15 @@
 package com.example.sfc_front.ui.AES;
 
+import android.net.Uri;
+
+import com.example.sfc_front.ui.home.HomeViewModel;
 
 import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.*;
 import java.security.SecureRandom;
+import java.util.logging.Logger;
 
 public class AES256 {
     private static final String AES_ALGORITHM = "AES";
@@ -17,7 +21,7 @@ public class AES256 {
 
 
     // 加密函式
-    public void encryptFile( String inputFile, String outputFile) throws Exception {
+    public void encryptFile(File inputFile, File outputFile) throws Exception {
         SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey.getBytes(), AES_ALGORITHM);
         Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
 
@@ -29,15 +33,18 @@ public class AES256 {
 
         cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, ivSpec);
 
-        FileInputStream inputStream = new FileInputStream(inputFile);
-        FileOutputStream outputStream = new FileOutputStream(outputFile);
-
+        FileInputStream inputStream = new FileInputStream(inputFile.getPath());
+        FileOutputStream outputStream = new FileOutputStream(outputFile.getPath());
+        long fileSize = inputFile.length();
+        long ii = 0;
         // 寫入初始化向量到輸出檔案（用於解密）
         outputStream.write(ivBytes);
-
+        HomeViewModel.currentProgress =0;
         byte[] buffer = new byte[1024];
         int bytesRead;
         while ((bytesRead = inputStream.read(buffer)) != -1) {
+            ii+=bytesRead;
+            HomeViewModel.currentProgress = (int) (ii*100/fileSize);
             byte[] encryptedBytes = cipher.update(buffer, 0, bytesRead);
             outputStream.write(encryptedBytes);
         }
@@ -50,11 +57,11 @@ public class AES256 {
     }
 
     // 解密函式
-    public void decryptFile(String inputFile, String outputFile) throws Exception {
+    public void decryptFile(File inputFile, File outputFile) throws Exception {
         SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey.getBytes(), AES_ALGORITHM);
         Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
 
-        FileInputStream inputStream = new FileInputStream(inputFile);
+        FileInputStream inputStream = new FileInputStream(inputFile.getPath());
         byte[] ivBytes = new byte[16];
 
         // 讀取初始化向量
@@ -63,7 +70,7 @@ public class AES256 {
 
         cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, ivSpec);
 
-        FileOutputStream outputStream = new FileOutputStream(outputFile);
+        FileOutputStream outputStream = new FileOutputStream(outputFile.getPath());
 
         byte[] buffer = new byte[1024];
         int bytesRead;
