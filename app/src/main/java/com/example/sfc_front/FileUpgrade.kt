@@ -44,7 +44,7 @@ class FileUpgrade : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 userInput = s.toString()
                 val fileNames = directoryPath?.let { listFilesInDirectory(it,userInput,fileType,0) }
-                val adapter = fileNames?.let { MyAdapter(it,R.drawable.photo_file, this@FileUpgrade,0) }
+                val adapter = fileNames?.let { MyAdapter(it,R.drawable.photo_file, this@FileUpgrade,0,directoryPath = directoryPath, fileType = fileType) }
                 recyclerView.adapter = adapter
                 true
             }
@@ -55,7 +55,7 @@ class FileUpgrade : AppCompatActivity() {
             }
         })
         val fileNames = directoryPath?.let { listFilesInDirectory(it,userInput,".png",0) }
-        val adapter = fileNames?.let { MyAdapter(it,R.drawable.photo_file, this@FileUpgrade,0) }
+        val adapter = fileNames?.let { MyAdapter(it,R.drawable.photo_file, this@FileUpgrade,0,directoryPath = directoryPath, fileType = ".png") }
         recyclerView.adapter = adapter
         bottomNavigationView.setOnNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
@@ -65,7 +65,7 @@ class FileUpgrade : AppCompatActivity() {
 //                    Toast.makeText(this, "Item 1 Clicked", Toast.LENGTH_SHORT).show()
                     fileType=".png"
                     val fileNames = directoryPath?.let { listFilesInDirectory(it,userInput,".png",0) }
-                    val adapter = fileNames?.let { MyAdapter(it,R.drawable.photo_file, this@FileUpgrade,0) }
+                    val adapter = fileNames?.let { MyAdapter(it,R.drawable.photo_file, this@FileUpgrade,0,directoryPath = directoryPath, fileType = ".png") }
                     recyclerView.adapter = adapter
                     true
                 }
@@ -75,7 +75,7 @@ class FileUpgrade : AppCompatActivity() {
 //                    Toast.makeText(this, "Item 2 Clicked", Toast.LENGTH_SHORT).show()
                     fileType=".mp4"
                     val fileNames = directoryPath?.let { listFilesInDirectory(it,userInput,".mp4",0) }
-                    val adapter = fileNames?.let { MyAdapter(it,R.drawable.video_file, this@FileUpgrade,0) }
+                    val adapter = fileNames?.let { MyAdapter(it,R.drawable.video_file, this@FileUpgrade,0,directoryPath = directoryPath, fileType = ".mp4") }
                     recyclerView.adapter = adapter
                     true
                 }
@@ -85,7 +85,7 @@ class FileUpgrade : AppCompatActivity() {
 //                    Toast.makeText(this, "Item 3 Clicked", Toast.LENGTH_SHORT).show()
                     fileType=".mp3"
                     val fileNames = directoryPath?.let { listFilesInDirectory(it,userInput,".mp3",0) }
-                    val adapter = fileNames?.let { MyAdapter(it,R.drawable.music_file, this@FileUpgrade,0) }
+                    val adapter = fileNames?.let { MyAdapter(it,R.drawable.music_file, this@FileUpgrade,0,directoryPath = directoryPath, fileType = ".mp3") }
                     recyclerView.adapter = adapter
                     true
                 }
@@ -95,7 +95,7 @@ class FileUpgrade : AppCompatActivity() {
 //                    Toast.makeText(this, "Item 4 Clicked", Toast.LENGTH_SHORT).show()
                     fileType=".txt"
                     val fileNames = directoryPath?.let { listFilesInDirectory(it,userInput,".txt",0) }
-                    val adapter = fileNames?.let { MyAdapter(it,R.drawable.txt_file, this@FileUpgrade,0) }
+                    val adapter = fileNames?.let { MyAdapter(it,R.drawable.txt_file, this@FileUpgrade,0,directoryPath = directoryPath, fileType = ".txt") }
                     recyclerView.adapter = adapter
                     true
                 }
@@ -105,7 +105,7 @@ class FileUpgrade : AppCompatActivity() {
 //                    Toast.makeText(this, "Item 5 Clicked", Toast.LENGTH_SHORT).show()
                     fileType=""
                     val fileNames = directoryPath?.let { listFilesInDirectory(it,userInput,"",0) }
-                    val adapter = fileNames?.let { MyAdapter(it,R.drawable.file_file, this@FileUpgrade,0) }
+                    val adapter = fileNames?.let { MyAdapter(it,R.drawable.file_file, this@FileUpgrade,0,directoryPath = directoryPath, fileType = "") }
                     recyclerView.adapter = adapter
                     true
                 }

@@ -88,6 +88,7 @@ class MainActivity : AppCompatActivity() {
         takePictureLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { isTaken ->
             if (isTaken) {
                 Toast.makeText(this, "Photo has been taken and saved", Toast.LENGTH_SHORT).show()
+
                 val inputFile  = File(getExternalFilesDir(null), FileName)
 
                 val outputFile=File(getExternalFilesDir(null),"AES_Encrypted_$FileName")

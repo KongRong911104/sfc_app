@@ -52,7 +52,7 @@ class ReadFile : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 userInput = s.toString()
                 val fileNames = directoryPath?.let { listFilesInDirectory(it, userInput, fileType) }
-                val adapter = fileNames?.let { MyAdapter(it, R.drawable.photo_file, this@ReadFile) }
+                val adapter = fileNames?.let { MyAdapter(it, R.drawable.photo_file, this@ReadFile,directoryPath = directoryPath, fileType = fileType) }
                 recyclerView.adapter = adapter
             }
 
@@ -61,42 +61,42 @@ class ReadFile : AppCompatActivity() {
             }
         })
         val fileNames = directoryPath?.let { listFilesInDirectory(it, userInput, ".png") }
-        val adapter = fileNames?.let { MyAdapter(it, R.drawable.photo_file, this@ReadFile) }
+        val adapter = fileNames?.let { MyAdapter(it, R.drawable.photo_file, this@ReadFile,directoryPath = directoryPath, fileType = ".png") }
         recyclerView.adapter = adapter
         bottomNavigationView.setOnNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.navigation_fragment_image_button -> {
                     fileType = ".png"
                     val fileNames = directoryPath?.let { listFilesInDirectory(it, userInput, ".png") }
-                    val adapter = fileNames?.let { MyAdapter(it, R.drawable.photo_file, this@ReadFile) }
+                    val adapter = fileNames?.let { MyAdapter(it, R.drawable.photo_file, this@ReadFile,directoryPath = directoryPath, fileType = ".png") }
                     recyclerView.adapter = adapter
                     true
                 }
                 R.id.navigation_video_button -> {
                     fileType = ".mp4"
                     val fileNames = directoryPath?.let { listFilesInDirectory(it, userInput, ".mp4") }
-                    val adapter = fileNames?.let { MyAdapter(it, R.drawable.video_file, this@ReadFile) }
+                    val adapter = fileNames?.let { MyAdapter(it, R.drawable.video_file, this@ReadFile,directoryPath = directoryPath, fileType = ".mp4") }
                     recyclerView.adapter = adapter
                     true
                 }
                 R.id.navigation_audio_button -> {
                     fileType = ".mp3"
                     val fileNames = directoryPath?.let { listFilesInDirectory(it, userInput, ".mp3") }
-                    val adapter = fileNames?.let { MyAdapter(it, R.drawable.music_file, this@ReadFile) }
+                    val adapter = fileNames?.let { MyAdapter(it, R.drawable.music_file, this@ReadFile,directoryPath = directoryPath, fileType = ".mp3") }
                     recyclerView.adapter = adapter
                     true
                 }
                 R.id.navigation_text_file_button -> {
                     fileType = ".txt"
                     val fileNames = directoryPath?.let { listFilesInDirectory(it, userInput, ".txt") }
-                    val adapter = fileNames?.let { MyAdapter(it, R.drawable.txt_file, this@ReadFile) }
+                    val adapter = fileNames?.let { MyAdapter(it, R.drawable.txt_file, this@ReadFile,directoryPath = directoryPath, fileType = ".txt") }
                     recyclerView.adapter = adapter
                     true
                 }
                 R.id.navigation_file_button -> {
                     fileType = ""
                     val fileNames = directoryPath?.let { listFilesInDirectory(it, userInput, "") }
-                    val adapter = fileNames?.let { MyAdapter(it, R.drawable.file_file, this@ReadFile) }
+                    val adapter = fileNames?.let { MyAdapter(it, R.drawable.file_file, this@ReadFile,directoryPath = directoryPath, fileType = "") }
                     recyclerView.adapter = adapter
                     true
                 }

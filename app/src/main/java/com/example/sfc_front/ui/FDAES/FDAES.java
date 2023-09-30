@@ -176,8 +176,10 @@ public class FDAES {
         }
     }
     public void FileEncryption_CBC(File filePath,File EncFile){
+
         try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(filePath.toPath()))) {
             try (OutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(EncFile.toPath()))) {
+
                 int[] IV = this.K_CK.clone();
                 byte[] buffer = new byte[inputStream.available()];
                 int[] tmp = new int[16];

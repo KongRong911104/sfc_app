@@ -1,7 +1,7 @@
 package com.example.sfc_front
 
 import android.content.Intent
-import android.util.Log
+import android.os.Environment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -56,10 +56,12 @@ fun listFilesInDirectory(
 }
 
 class MyAdapter(
-    private val data: List<String>,
+    private var data: List<String>,
     private val iconResourceId: Int,
     private val context: AppCompatActivity,
-    private val open: Int = 1
+    private val open: Int = 1 ,
+    private val directoryPath: File,
+    private val fileType : String
 ) : RecyclerView.Adapter<MyAdapter.ViewHolder>() {
     val fdaes = FDAES("sixsquare1234567")
     val aes256 = AES256("sixsquare1234567")
@@ -80,6 +82,8 @@ class MyAdapter(
                         val outputFile = File(context.getExternalFilesDir(null), subString)
                         aes256.decryptFile(fileToOpen, outputFile)
                         openFile(outputFile, context)
+                        updateData(listFilesInDirectory(directoryPath,"",fileType,open))
+
                     }
 
                 }
@@ -97,6 +101,7 @@ class MyAdapter(
                             File(context.getExternalFilesDir(null), "FDAES_Encrypted_$subString")
                         fdaes.FileEncryption_CBC(outputFile, fdaesOutputFile)
                         outputFile.delete()
+                        updateData(listFilesInDirectory(directoryPath,"",fileType,open))
                         Toast.makeText(context, "加密完成", Toast.LENGTH_SHORT).show()
                     }
                 }
@@ -133,4 +138,48 @@ class MyAdapter(
             Toast.makeText(context, "無法開啟檔案", Toast.LENGTH_SHORT).show()
         }
     }
+    private fun updateData(newData: List<String>){
+        data = newData
+        notifyDataSetChanged()
+    }
+    fun listFilesInDirectory(
+        directoryPath: File,
+        input: String,
+        fileExtension: String,
+        open: Int = 1
+    ): List<String> {
+        val directory = directoryPath
+
+        // 检查目录是否存在
+        if (!directory.exists() || !directory.isDirectory) {
+            return emptyList()
+        }
+
+        // 使用 listFiles() 方法获取目录下的所有文件
+        val files = directory.listFiles()
+
+        // 如果没有文件，返回空列表
+        if (files == null || files.isEmpty()) {
+            return emptyList()
+        }
+
+        // 提取文件名并添加到列表中
+        val fileNames = mutableListOf<String>()
+        for (file in files) {
+            val userInput = file.name.contains(input, true)
+//        Log.e("nonono", userInput.toString())
+            if (file.isFile && userInput && file.name.endsWith(fileExtension) ) {
+                if (open == 1&& file.name.contains("Encrypted")) {
+                    fileNames.add(file.name)
+                }
+                else if(open==0 &&file.name.contains("AES_Encrypted")&&!file.name.contains("FDAES_Encrypted")){
+                    fileNames.add(file.name)
+                }
+            }
+
+        }
+
+        return fileNames
+    }
+
 }
