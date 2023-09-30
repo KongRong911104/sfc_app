@@ -88,7 +88,7 @@ class MainActivity : AppCompatActivity() {
             if (isTaken) {
                 Toast.makeText(this, "Photo has been taken and saved", Toast.LENGTH_SHORT).show()
                 val inputFile  = File(getExternalFilesDir(null), FileName)
-                val outputFile=File(getExternalFilesDir(null),"Encrypted_$FileName")
+                val outputFile=File(getExternalFilesDir(null),"AES_Encrypted_$FileName")
                 aes256.encryptFile(inputFile,outputFile)
                 inputFile.delete()
             } else {
@@ -170,7 +170,7 @@ class MainActivity : AppCompatActivity() {
 
         if (requestCode == REQUEST_VIDEO_CAPTURE && resultCode == Activity.RESULT_OK) {
             val inputFile  = File(getExternalFilesDir(null), FileName)
-            val outputFile=File(getExternalFilesDir(null),"Encrypted_$FileName")
+            val outputFile=File(getExternalFilesDir(null),"AES_Encrypted_$FileName")
             aes256.encryptFile(inputFile,outputFile)
             inputFile.delete()
         }

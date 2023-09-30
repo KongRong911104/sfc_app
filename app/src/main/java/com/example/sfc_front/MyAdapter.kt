@@ -14,7 +14,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.sfc_front.ui.AES.AES256
 import com.example.sfc_front.ui.FDAES.FDAES
 import java.io.File
-fun listFilesInDirectory(directoryPath: File,input:String, fileExtension: String): List<String> {
+
+fun listFilesInDirectory(
+    directoryPath: File,
+    input: String,
+    fileExtension: String,
+    open: Int = 1
+): List<String> {
     val directory = directoryPath
 
     // 检查目录是否存在
@@ -33,35 +39,65 @@ fun listFilesInDirectory(directoryPath: File,input:String, fileExtension: String
     // 提取文件名并添加到列表中
     val fileNames = mutableListOf<String>()
     for (file in files) {
-        var userInput=file.name.contains(input, true)
-        Log.e("nonono", userInput.toString())
-        if (file.isFile && userInput &&file.name.endsWith(fileExtension)) {
-            fileNames.add(file.name)
+        val userInput = file.name.contains(input, true)
+//        Log.e("nonono", userInput.toString())
+        if (file.isFile && userInput && file.name.endsWith(fileExtension) ) {
+            if (open == 1&& file.name.contains("Encrypted")) {
+                fileNames.add(file.name)
+            }
+            else if(open==0 &&file.name.contains("AES_Encrypted")&&!file.name.contains("FDAES_Encrypted")){
+                fileNames.add(file.name)
+            }
         }
+
     }
 
     return fileNames
 }
 
-class MyAdapter(private val data: List<String>, private val iconResourceId: Int, private val context: AppCompatActivity,private val open:Int = 1) : RecyclerView.Adapter<MyAdapter.ViewHolder>() {
+class MyAdapter(
+    private val data: List<String>,
+    private val iconResourceId: Int,
+    private val context: AppCompatActivity,
+    private val open: Int = 1
+) : RecyclerView.Adapter<MyAdapter.ViewHolder>() {
     val fdaes = FDAES("sixsquare1234567")
     val aes256 = AES256("sixsquare1234567")
+
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val fileName: TextView = itemView.findViewById(R.id.file_name) // 通过ID找到文本视图
         val icon: ImageView = itemView.findViewById(R.id.view_icon) // 通过ID找到图标视图
 
         init {
-            if (open==1){
+            if (open == 1) {
                 // 在这里初始化 icon，如果需要的话
                 itemView.setOnClickListener {
                     val position = adapterPosition
                     if (position != RecyclerView.NO_POSITION) {
                         val string = data[position]
                         val fileToOpen = File(context.getExternalFilesDir(null), string)
-                        val subString:String = string.subSequence(10,string.length) as String
-                        val outputFile = File(context.getExternalFilesDir(null),subString)
-                        aes256.decryptFile(fileToOpen,outputFile)
+                        val subString: String = string.subSequence(10, string.length) as String
+                        val outputFile = File(context.getExternalFilesDir(null), subString)
+                        aes256.decryptFile(fileToOpen, outputFile)
                         openFile(outputFile, context)
+                    }
+
+                }
+            } else if (open == 0) {
+                itemView.setOnClickListener {
+                    val position = adapterPosition
+                    if (position != RecyclerView.NO_POSITION) {
+                        val string = data[position]
+                        val fileToOpen = File(context.getExternalFilesDir(null), string)
+                        val subString: String = string.subSequence(14, string.length) as String
+                        val outputFile = File(context.getExternalFilesDir(null), subString)
+                        aes256.decryptFile(fileToOpen, outputFile)
+                        fileToOpen.delete()
+                        val fdaesOutputFile =
+                            File(context.getExternalFilesDir(null), "FDAES_Encrypted_$subString")
+                        fdaes.FileEncryption_CBC(outputFile, fdaesOutputFile)
+                        outputFile.delete()
+                        Toast.makeText(context, "加密完成", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
@@ -69,7 +105,8 @@ class MyAdapter(private val data: List<String>, private val iconResourceId: Int,
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_layout, parent, false)
+        val itemView =
+            LayoutInflater.from(parent.context).inflate(R.layout.item_layout, parent, false)
 
         return ViewHolder(itemView)
     }

@@ -61,7 +61,7 @@ class NoteActivity : ComponentActivity() {
                 //加密
                 val fdaes = FDAES("sixsquare1234567")
                 val aes256 = AES256("sixsquare1234567")
-                val outputFile=File(getExternalFilesDir(null),"Encrypted_$fileName.txt")
+                val outputFile=File(getExternalFilesDir(null),"AES_Encrypted_$fileName.txt")
                 aes256.encryptFile(file,outputFile)
                 file.delete()
                 //刪除原本檔案
