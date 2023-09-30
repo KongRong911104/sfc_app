@@ -99,4 +99,5 @@
             app:strokeColor="#676767" />
 
     </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

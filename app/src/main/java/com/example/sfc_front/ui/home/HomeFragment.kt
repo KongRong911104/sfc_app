@@ -60,10 +60,10 @@ class HomeFragment : Fragment() {
 
             protectFile()
         }
-        noteButton.setOnClickListener{
-            val intent = Intent(requireContext(), NoteActivity::class.java)
-            startActivity(intent)
-        }
+//        noteButton.setOnClickListener{
+//            val intent = Intent(requireContext(), NoteActivity::class.java)
+//            startActivity(intent)
+//        }
         progressObserver = Observer { progressInt ->
             ballView.text = "$progressInt%"
             progressBar.progress = progressInt

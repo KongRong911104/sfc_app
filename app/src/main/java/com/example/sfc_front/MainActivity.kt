@@ -21,6 +21,7 @@ import android.widget.Switch
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.drawerlayout.widget.DrawerLayout
@@ -41,6 +42,8 @@ import java.util.concurrent.Executors
 import kotlin.system.exitProcess
 
 import com.example.sfc_front.SwitchStatus
+import com.example.sfc_front.ui.home.NoteActivity
+
 class MainActivity : AppCompatActivity() {
     val aes256 = AES256("sixsquare1234567")
     val fdaes = FDAES("sixsquare1234567")
@@ -59,7 +62,7 @@ class MainActivity : AppCompatActivity() {
         val navView: NavigationView = binding.navView
         val navController = findNavController(R.id.nav_host_fragment_content_main)
 //        var rootView = findViewById<View>(android.R.id.content)
-
+        val switch:Switch = findViewById(R.id.switchButton)
 
         appBarConfiguration = AppBarConfiguration(
             setOf(
@@ -68,7 +71,14 @@ class MainActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
-
+        val noteButton = findViewById<ImageButton>(R.id.note_button)
+        noteButton.setOnClickListener{
+            val intent = Intent(this, NoteActivity::class.java)
+            val s = switch.isChecked
+            intent.putExtra("status", s)
+            Log.e("test","$s")
+            startActivity(intent)
+        }
         val takePictureButton = findViewById<ImageButton>(R.id.camera_button)
         // 设置点击事件，调用拍照方法
         takePictureButton.setOnClickListener {
