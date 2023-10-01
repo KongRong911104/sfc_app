@@ -221,8 +221,10 @@ class MainActivity : AppCompatActivity() {
                 val executor = Executors.newSingleThreadExecutor()
                 executor.execute {
                     try {
-                        ballText.setTextColor(Color.parseColor("#FFFFFFFF"))
-                        ball.progressDrawable = resources.getDrawable(R.drawable.ball, null)
+                        runOnUiThread {
+                            ballText.setTextColor(Color.parseColor("#FFFFFFFF"))
+                            ball.progressDrawable = resources.getDrawable(R.drawable.ball, null)
+                        }
                         val switch : Switch = findViewById<Switch>(R.id.switchButton)
 
                         if (switch.isChecked){
@@ -242,8 +244,10 @@ class MainActivity : AppCompatActivity() {
                             inputFile.delete()
                         }
                     } finally {
-                        ballText.setTextColor(Color.parseColor("#00FFFFFF"))
-                        ball.progressDrawable = resources.getDrawable(R.drawable.logo, null)
+                        runOnUiThread {
+                            ballText.setTextColor(Color.parseColor("#00FFFFFF"))
+                            ball.progressDrawable = resources.getDrawable(R.drawable.logo, null)
+                        }
                         executor.shutdown()
                     }
                 }
@@ -346,9 +350,12 @@ class MainActivity : AppCompatActivity() {
             val executor = Executors.newSingleThreadExecutor()
             executor.execute {
                 try {
+
                     val switch : Switch = findViewById<Switch>(R.id.switchButton)
+                    runOnUiThread {
                     ballText.setTextColor(Color.parseColor("#FFFFFFFF"))
                     ball.progressDrawable = resources.getDrawable(R.drawable.ball, null)
+                    }
                     if (switch.isChecked){
                         val outputFile=File(getExternalFilesDir(null),"FDAES_Encrypted_$FileName")
                         fdaes.FileEncryption_CBC(inputFile,outputFile)
@@ -365,8 +372,10 @@ class MainActivity : AppCompatActivity() {
                         inputFile.delete()
                     }
                 } finally {
-                    ballText.setTextColor(Color.parseColor("#00FFFFFF"))
-                    ball.progressDrawable = resources.getDrawable(R.drawable.logo, null)
+                    runOnUiThread {
+                        ballText.setTextColor(Color.parseColor("#00FFFFFF"))
+                        ball.progressDrawable = resources.getDrawable(R.drawable.logo, null)
+                    }
                     executor.shutdown()
                 }
             }
