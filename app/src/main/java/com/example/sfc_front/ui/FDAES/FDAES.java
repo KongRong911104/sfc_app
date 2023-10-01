@@ -77,113 +77,11 @@ public class FDAES {
         return library.IntToString(P);
     }
     //FileEncryption(input file,output file)
-    public void FileEncryption_ECB(String filePath,String EncFile) {
-        try (InputStream inputStream = new BufferedInputStream(new FileInputStream(filePath))) {
-            try (OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(EncFile))) {
-                byte[] buffer = new byte[inputStream.available()];
-                int[] tmp = new int[16];
-
-                int bytesRead;
-                while ((bytesRead = inputStream.read(buffer)) != -1) {
-                    int[] FileBlock = library.ByteTOInt(buffer);
-                    int group = bytesRead / 16;
-                    if (bytesRead % 16 != 0) {
-                        group += 1;
-                    }
-                    int[] output = new int[group*16];
-                    for (int i = 0; i < group; i++) {
-
-                        if (i != group - 1) {
-                            System.arraycopy(FileBlock, i * 16, tmp, 0, 16);
-                        } else {
-                            int lack = bytesRead % 16;
-                            if (lack != 0) {
-                                System.arraycopy(FileBlock, i * 16, tmp, 0, lack);
-                                int paddingLength = 16 - lack;
-                                for (int j = 0; j < paddingLength; j++) {
-                                    tmp[lack + j] = 4;
-                                }
-                            } else {
-                                System.arraycopy(FileBlock, i * 16, tmp, 0, 16);
-                            }
-                        }
-
-                        int[] enc = library.StringToInt(this.Encryption(library.IntToString(tmp)));
-                        System.arraycopy(enc, 0, output, i * 16, 16);
-                    }
-                    outputStream.write(library.IntTOByte(output));
-
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    //FileDecryption(input file,output file)
-    public void FileDecryption_ECB(String filePath,String DecFile)  {
-        try (InputStream inputStream = new BufferedInputStream(new FileInputStream(filePath))) {
-            try (OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(DecFile))) {
-                byte[] buffer = new byte[inputStream.available()];
-                int[] tmp = new int[16];
-                int bytesRead;
-                while ((bytesRead = inputStream.read(buffer)) != -1) {
-                    int[] FileBlock = library.ByteTOInt(buffer);
-                    if (bytesRead > 16) {
-                        int[] output = new int[bytesRead - 16];
-                        int group = bytesRead / 16;
-                        for (int i = 0; i < group; i++) {
-                            System.arraycopy(FileBlock, i * 16, tmp, 0, 16);
-                            int[] dec = library.StringToInt(this.Decryption(library.IntToString(tmp)));
-                            if (i == group - 1) {
-                                int end = 15;
-                                if (dec[15] == 4) {
-                                    for (int j = 14; j >= 0; j--) {
-                                        if (dec[j] != 4) {
-                                            end = j;
-                                            break;
-                                        }
-                                    }
-                                }
-                                int[] combined = new int[end + bytesRead - 15];
-                                System.arraycopy(output, 0, combined, 0, bytesRead - 16);
-                                System.arraycopy(dec, 0, combined, bytesRead - 16, end + 1);
-                                outputStream.write(library.IntTOByte(combined));
-                                break;
-                            }
-                            System.arraycopy(dec, 0, output, i * 16, 16);
-                        }
-                    } else {
-                        System.arraycopy(FileBlock, 0, tmp, 0, 16);
-                        int[] dec = library.StringToInt(this.Decryption(library.IntToString(tmp)));
-                        int[] ori;
-                        int end = 15;
-                        if (dec[15] == 4) {
-                            for (int j = 14; j >= 0; j--) {
-                                if (dec[j] != 4) {
-                                    end = j;
-                                    break;
-                                }
-                            }
-                        }
-                        ori = new int[end + 1];
-                        System.arraycopy(dec, 0, ori, 0, end + 1);
-                        outputStream.write(library.IntTOByte(ori));
-                    }
-                }
-
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
     public void FileEncryption_CBC(File filePath,File EncFile){
-
         try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(filePath.toPath()))) {
             try (OutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(EncFile.toPath()))) {
-
                 int[] IV = this.K_CK.clone();
-                byte[] buffer = new byte[65536];
-                int[] tmp = new int[16];
+                byte[] buffer = new byte[524288];
                 int[] enc = IV;
                 int bytesRead;
                 long fileSize = filePath.length();
@@ -199,7 +97,7 @@ public class FDAES {
                     }
                     int[] output = new int[group*16];
                     for (int i = 0; i < group; i++) {
-
+                        int[] tmp = new int[16];
                         if (i != group - 1) {
                             System.arraycopy(FileBlock, i * 16, tmp, 0, 16);
                         } else {
@@ -208,7 +106,7 @@ public class FDAES {
                                 System.arraycopy(FileBlock, i * 16, tmp, 0, lack);
                                 int paddingLength = 16 - lack;
                                 for (int j = 0; j < paddingLength; j++) {
-                                    tmp[lack + j] = 4;
+                                    tmp[lack + j] = paddingLength;
                                 }
                             } else {
                                 System.arraycopy(FileBlock, i * 16, tmp, 0, 16);
@@ -219,8 +117,6 @@ public class FDAES {
                         System.arraycopy(enc, 0, output, i * 16, 16);
                     }
                     outputStream.write(library.IntTOByte(output));
-                    output=null;
-                    System.gc();
                 }
             }
         } catch (IOException e) {
@@ -230,12 +126,15 @@ public class FDAES {
     public void FileDecryption_CBC(File filePath,File DecFile)  {
         try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(filePath.toPath()))) {
             try (OutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(DecFile.toPath()))) {
+                long totalSize =  filePath.length();
+                long curSize = 0;
                 int[] IV = this.K_CK.clone();
-                byte[] buffer = new byte[65536];
-                int[] tmp = new int[16];
+                byte[] buffer = new byte[524288];
                 int[] dec;
                 int bytesRead;
+                int[] tmp = new int[16];
                 while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    curSize+=bytesRead;
                     int[] FileBlock = library.ByteTOInt(buffer);
                     if (bytesRead > 16) {
                         int[] output = new int[bytesRead - 16];
@@ -247,12 +146,21 @@ public class FDAES {
                             IV = tmp.clone();
                             if (i == group - 1) {
                                 int end = 15;
-                                if (dec[15] == 4) {
+                                //有問題換成bytesRead!=524288
+                                if(curSize==totalSize) {
+                                    int last = dec[15];
+                                    int num = 1;
                                     for (int j = 14; j >= 0; j--) {
-                                        if (dec[j] != 4) {
+                                        if (dec[j] != last) {
                                             end = j;
                                             break;
                                         }
+                                        num++;
+                                    }
+                                    if (num < last) {
+                                        end = 15;
+                                    } else if (num > last) {
+                                        end = 15 - last;
                                     }
                                 }
                                 int[] combined = new int[end + bytesRead - 15];
@@ -263,31 +171,37 @@ public class FDAES {
                             }
                             System.arraycopy(dec, 0, output, i * 16, 16);
                         }
-                        output=null;
-                        System.gc();
                     } else {
-                        System.arraycopy(FileBlock, 0, tmp, 0, FileBlock.length);
+                        System.arraycopy(FileBlock, 0, tmp, 0, 16);
                         dec = library.StringToInt(this.Decryption(library.IntToString(tmp)));
                         dec = library.XOR(dec,IV);
                         IV = tmp.clone();
                         int[] ori;
                         int end = 15;
-                        if (dec[15] == 4) {
-                            for (int j = 14; j >= 0; j--) {
-                                if (dec[j] != 4) {
-                                    end = j;
-                                    break;
-                                }
+                        int last = dec[15];
+                        int num = 1;
+                        for (int j = 14; j >= 0; j--) {
+                            if (dec[j] != last) {
+                                end = j;
+                                break;
                             }
+                            num++;
+                        }
+                        if(num<last){
+                            end=15;
+                        }else if(num>last){
+                            end=15-last;
                         }
                         ori = new int[end + 1];
                         System.arraycopy(dec, 0, ori, 0, end + 1);
                         outputStream.write(library.IntTOByte(ori));
                     }
                 }
+
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
+
 }

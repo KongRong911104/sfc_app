@@ -85,6 +85,7 @@ class MyAdapter(
                     if (position != RecyclerView.NO_POSITION) {
                         val FileName = data[position]
                         val fileToOpen = File(context.getExternalFilesDir(null), FileName)
+
                         if (FileName.contains("FDAES_Encrypted")) {
                             val subString: String =
                                 FileName.subSequence(16, FileName.length) as String
