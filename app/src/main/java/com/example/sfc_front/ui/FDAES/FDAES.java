@@ -1,6 +1,7 @@
 package com.example.sfc_front.ui.FDAES;
 import android.net.Uri;
 
+import com.example.sfc_front.ui.home.HomeViewModel;
 import com.example.sfc_front.ui.library.library;
 
 import java.io.*;
@@ -185,7 +186,12 @@ public class FDAES {
                 int[] tmp = new int[16];
                 int[] enc = IV;
                 int bytesRead;
+                long fileSize = filePath.length();
+                long ii = 0;
+                HomeViewModel.currentProgress =0;
                 while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    ii+=bytesRead;
+                    HomeViewModel.currentProgress = (int) (ii*100/fileSize);
                     int[] FileBlock = library.ByteTOInt(buffer);
                     int group = bytesRead / 16;
                     if (bytesRead % 16 != 0) {
