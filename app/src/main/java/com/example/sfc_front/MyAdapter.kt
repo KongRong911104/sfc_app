@@ -23,7 +23,14 @@ fun listFilesInDirectory(
     open: Int = 1
 ): List<String> {
     val directory = directoryPath
+    var fileExtension2 : String
 
+    if (fileExtension == ".png") {
+
+        fileExtension2 = ".jpg"
+    } else {
+        fileExtension2 = fileExtension
+    }
     // 检查目录是否存在
     if (!directory.exists() || !directory.isDirectory) {
         return emptyList()
@@ -42,11 +49,10 @@ fun listFilesInDirectory(
     for (file in files) {
         val userInput = file.name.contains(input, true)
 //        Log.e("nonono", userInput.toString())
-        if (file.isFile && userInput && file.name.endsWith(fileExtension) ) {
-            if (open == 1&& file.name.contains("Encrypted")) {
+        if (file.isFile && userInput && (file.name.endsWith(fileExtension) || file.name.endsWith(fileExtension2))) {
+            if (open == 1 && file.name.contains("Encrypted")) {
                 fileNames.add(file.name)
-            }
-            else if(open==0 &&file.name.contains("AES_Encrypted")&&!file.name.contains("FDAES_Encrypted")){
+            } else if (open == 0 && file.name.contains("AES_Encrypted") && !file.name.contains("FDAES_Encrypted")) {
                 fileNames.add(file.name)
             }
         }
@@ -60,9 +66,9 @@ class MyAdapter(
     private var data: List<String>,
     private val iconResourceId: Int,
     private val context: AppCompatActivity,
-    private val open: Int = 1 ,
+    private val open: Int = 1,
     private val directoryPath: File,
-    private val fileType : String
+    private val fileType: String
 ) : RecyclerView.Adapter<MyAdapter.ViewHolder>() {
     val fdaes = FDAES("sixsquare1234567")
     val aes256 = AES256("sixsquare1234567")
@@ -79,20 +85,26 @@ class MyAdapter(
                     if (position != RecyclerView.NO_POSITION) {
                         val FileName = data[position]
                         val fileToOpen = File(context.getExternalFilesDir(null), FileName)
+<<<<<<< HEAD
                         if(FileName.contains("FDAES_Encrypted")){
                             val subString: String = FileName.subSequence(16, FileName.length) as String
                             Log.e("name",FileName)
+=======
+                        if (FileName.contains("FDAES_Encrypted")) {
+                            val subString: String =
+                                FileName.subSequence(16, FileName.length) as String
+>>>>>>> fba8d033e19d84a90741845ebf9b6c1e590ddde3
                             val outputFile = File(context.getExternalFilesDir(null), subString)
                             fdaes.FileDecryption_CBC(fileToOpen, outputFile)
                             openFile(outputFile, context)
-                            updateData(listFilesInDirectory(directoryPath,"",fileType,open))
-                        }
-                        else if(FileName.contains("AES_Encrypted")){
-                            val subString: String = FileName.subSequence(14, FileName.length) as String
+                            updateData(listFilesInDirectory(directoryPath, "", fileType, open))
+                        } else if (FileName.contains("AES_Encrypted")) {
+                            val subString: String =
+                                FileName.subSequence(14, FileName.length) as String
                             val outputFile = File(context.getExternalFilesDir(null), subString)
                             aes256.decryptFile(fileToOpen, outputFile)
                             openFile(outputFile, context)
-                            updateData(listFilesInDirectory(directoryPath,"",fileType,open))
+                            updateData(listFilesInDirectory(directoryPath, "", fileType, open))
                         }
 
 
@@ -113,7 +125,7 @@ class MyAdapter(
                             File(context.getExternalFilesDir(null), "FDAES_Encrypted_$subString")
                         fdaes.FileEncryption_CBC(outputFile, fdaesOutputFile)
                         outputFile.delete()
-                        updateData(listFilesInDirectory(directoryPath,"",fileType,open))
+                        updateData(listFilesInDirectory(directoryPath, "", fileType, open))
                         Toast.makeText(context, "加密完成", Toast.LENGTH_SHORT).show()
                     }
                 }
@@ -150,17 +162,28 @@ class MyAdapter(
             Toast.makeText(context, "無法開啟檔案", Toast.LENGTH_SHORT).show()
         }
     }
-    private fun updateData(newData: List<String>){
+
+    private fun updateData(newData: List<String>) {
         data = newData
         notifyDataSetChanged()
     }
+
     fun listFilesInDirectory(
         directoryPath: File,
         input: String,
         fileExtension: String,
         open: Int = 1
     ): List<String> {
+
         val directory = directoryPath
+        var fileExtension2 : String
+
+        if (fileExtension == ".png") {
+
+            fileExtension2 = ".jpg"
+        } else {
+            fileExtension2 = fileExtension
+        }
 
         // 检查目录是否存在
         if (!directory.exists() || !directory.isDirectory) {
@@ -180,11 +203,13 @@ class MyAdapter(
         for (file in files) {
             val userInput = file.name.contains(input, true)
 //        Log.e("nonono", userInput.toString())
-            if (file.isFile && userInput && file.name.endsWith(fileExtension) ) {
-                if (open == 1&& file.name.contains("Encrypted")) {
+            if (file.isFile && userInput && (file.name.endsWith(fileExtension) || file.name.endsWith(
+                    fileExtension2
+                ))
+            ) {
+                if (open == 1 && file.name.contains("Encrypted")) {
                     fileNames.add(file.name)
-                }
-                else if(open==0 &&file.name.contains("AES_Encrypted")&&!file.name.contains("FDAES_Encrypted")){
+                } else if (open == 0 && (file.name.endsWith(fileExtension) || file.name.endsWith(fileExtension2)) && !file.name.contains("FDAES_Encrypted")) {
                     fileNames.add(file.name)
                 }
             }
