@@ -114,19 +114,20 @@ class MainActivity : AppCompatActivity() {
                         ) {
                             super.onAuthenticationSucceeded(result)
                             runOnUiThread {
-                                Toast.makeText(
-                                    applicationContext,
-                                    "Authentication succeeded!", Toast.LENGTH_SHORT
-                                ).show()
+//                                Toast.makeText(
+//                                    applicationContext,
+//                                    "Authentication succeeded!", Toast.LENGTH_SHORT
+//                                ).show()
                                 showInputDialog(
                                     this@MainActivity,
-                                    "請輸入密碼",
-                                    "确定",
-                                    "取消",
+                                    "Please Enter Your Password",
+                                    "Confirm",
+                                    "Cancel",
                                     { userInput ->
                                         // 用户点击确定按钮后的处理逻辑，userInput 包含用户输入的文本
                                         // 在这里添加你的代码
-                                        Toast.makeText(this@MainActivity, "$userInput", Toast.LENGTH_SHORT).show()
+//                                        Toast.makeText(this@MainActivity, "$userInput", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(this@MainActivity, "Authentication succeeded!", Toast.LENGTH_SHORT).show()
 
                                     },
                                     {

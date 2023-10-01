@@ -83,6 +83,7 @@ class SignUp: AppCompatActivity() {
             val password = passwordEditText.text.toString()
             val retypePassword = retypePasswordEditText.text.toString()
             val phone = phoneEditText.text.toString()
+            var s : String = ""
                 if (id.isNotEmpty()&& product_key.isNotEmpty()&& name.isNotEmpty() && gender_text.isNotEmpty() && password.isNotEmpty() && retypePassword.isNotEmpty() && phone.isNotEmpty()) {
                     if (password == retypePassword) {
                         val client = OkHttpClient()
@@ -136,6 +137,7 @@ class SignUp: AppCompatActivity() {
                                         }
                                     }
                                 }
+
                             }
                         })
                     } else {
