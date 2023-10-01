@@ -181,7 +181,7 @@ public class FDAES {
             try (OutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(EncFile.toPath()))) {
 
                 int[] IV = this.K_CK.clone();
-                byte[] buffer = new byte[inputStream.available()];
+                byte[] buffer = new byte[65536];
                 int[] tmp = new int[16];
                 int[] enc = IV;
                 int bytesRead;
@@ -213,7 +213,8 @@ public class FDAES {
                         System.arraycopy(enc, 0, output, i * 16, 16);
                     }
                     outputStream.write(library.IntTOByte(output));
-
+                    output=null;
+                    System.gc();
                 }
             }
         } catch (IOException e) {
@@ -224,7 +225,7 @@ public class FDAES {
         try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(filePath.toPath()))) {
             try (OutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(DecFile.toPath()))) {
                 int[] IV = this.K_CK.clone();
-                byte[] buffer = new byte[inputStream.available()];
+                byte[] buffer = new byte[65536];
                 int[] tmp = new int[16];
                 int[] dec;
                 int bytesRead;
@@ -256,8 +257,10 @@ public class FDAES {
                             }
                             System.arraycopy(dec, 0, output, i * 16, 16);
                         }
+                        output=null;
+                        System.gc();
                     } else {
-                        System.arraycopy(FileBlock, 0, tmp, 0, 16);
+                        System.arraycopy(FileBlock, 0, tmp, 0, FileBlock.length);
                         dec = library.StringToInt(this.Decryption(library.IntToString(tmp)));
                         dec = library.XOR(dec,IV);
                         IV = tmp.clone();
@@ -276,7 +279,6 @@ public class FDAES {
                         outputStream.write(library.IntTOByte(ori));
                     }
                 }
-
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
