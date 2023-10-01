@@ -14,8 +14,8 @@ import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-//import okhttp3.*
-//import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import org.json.JSONObject
 import java.io.IOException
 
@@ -83,47 +83,47 @@ class SignUp: AppCompatActivity() {
             val phone = phoneEditText.text.toString()
                 if (id.isNotEmpty()&& product_key.isNotEmpty()&& name.isNotEmpty() && gender_text.isNotEmpty() && password.isNotEmpty() && retypePassword.isNotEmpty() && phone.isNotEmpty()) {
                     if (password == retypePassword) {
-//                        val client = OkHttpClient()
-//                        val json = JSONObject()
-//                        json.put("id", id)
-//                        json.put("prodution_key", product_key)
-//                        json.put("name", name)
-//                        json.put("gender", gender_text)
-//                        json.put("phone_number", phone)
-//                        json.put("password", password)
-//                        val requestBody = RequestBody.create("application/json".toMediaTypeOrNull(), json.toString())
-//                        val request = Request.Builder()
-//                            .url("http://subject.explosion.nmg.cs.thu.edu.tw/init")
-//                            .post(requestBody)
-//                            .build()
-//
-//                        // 发起请求
-//                        client.newCall(request).enqueue(object : Callback {
-//                            override fun onFailure(call: Call, e: IOException) {
-//                                // 请求失败处理
-//
-//
-//                            }
-//
-//                            override fun onResponse(call: Call, response: Response) {
-//                                // 请求成功处理
-//                                if (response.isSuccessful) {
-//                                    haveAccount=1
-//                                }else{
-//
-//                                }
-//                                response.body?.string()?.let { it1 -> Log.e("MyTag", it1) };
-//                            }
-//                        })
-//                        if (haveAccount==0){
-//                            val message = "can't found this account!"
-//                            val duration = Toast.LENGTH_SHORT // 或 Toast.LENGTH_LONG，指定消息的显示时长
-//                            Toast.makeText(this, message, duration).show()
-//
-//                        }else{
-//                        val intent = Intent(this, Login::class.java)
-//                        startActivity(intent)
-//                        }
+                        val client = OkHttpClient()
+                        val json = JSONObject()
+                        json.put("id", id)
+                        json.put("production_key", product_key)
+                        json.put("name", name)
+                        json.put("gender", gender_text)
+                        json.put("phone_number", phone)
+                        json.put("password", password)
+                        val requestBody = RequestBody.create("application/json".toMediaTypeOrNull(), json.toString())
+                        val request = Request.Builder()
+                            .url("http://subject.explosion.nmg.cs.thu.edu.tw/init")
+                            .post(requestBody)
+                            .build()
+
+                        // 发起请求
+                        client.newCall(request).enqueue(object : Callback {
+                            override fun onFailure(call: Call, e: IOException) {
+                                // 请求失败处理
+
+
+                            }
+
+                            override fun onResponse(call: Call, response: Response) {
+                                // 请求成功处理
+                                if (response.isSuccessful) {
+                                    haveAccount=1
+                                }else{
+
+                                }
+                                response.body?.string()?.let { it1 -> Log.e("MyTag", it1) };
+                            }
+                        })
+                        if (haveAccount==0){
+                            val message = "can't found this account!"
+                            val duration = Toast.LENGTH_SHORT // 或 Toast.LENGTH_LONG，指定消息的显示时长
+                            Toast.makeText(this, message, duration).show()
+
+                        }else{
+                        val intent = Intent(this, Login::class.java)
+                        startActivity(intent)
+                        }
                         val intent = Intent(this, Login::class.java)
                         startActivity(intent)
                     } else {

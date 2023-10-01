@@ -40,7 +40,7 @@ class NoteActivity : ComponentActivity() {
         val content = findViewById<EditText>(R.id.contentEditText).text
 //        val switch:Switch = findViewById(R.id.switchButton)
         val status = intent.getBooleanExtra("status",false)
-        Log.e("test1","$status")
+
         when{
             ContextCompat.checkSelfPermission(this,android.Manifest.permission.WRITE_EXTERNAL_STORAGE
             ) == PackageManager.PERMISSION_GRANTED &&
@@ -55,10 +55,9 @@ class NoteActivity : ComponentActivity() {
 //                ))
             }
         }
+
         sendButton.setOnClickListener{
-
-            createANote(fileName,content,status)
-
+            createANote(fileName, content, status)
         }
         cancelButton.setOnClickListener{
             finish()
@@ -81,48 +80,51 @@ class NoteActivity : ComponentActivity() {
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     private fun createANote(fileName:Editable, content:Editable, status:Boolean) {
         try {
+
 //            val switch:Switch = findViewById(R.id.switchButton)
 //            val s = switch.isChecked
-            Toast.makeText(this,fileName, Toast.LENGTH_SHORT).show()
-            val file = File(getExternalFilesDir(null), "$fileName.txt")
+                Toast.makeText(this, fileName, Toast.LENGTH_SHORT).show()
+                val file = File(getExternalFilesDir(null), "$fileName.txt")
 //            val dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
 //                val file = File(dir,"$fileName.txt")
-            val fileWriter = FileWriter(file, true)
-            fileWriter.write(content.toString())
-            fileWriter.close()
-            //加密
-            val fdaes = FDAES("sixsquare1234567")
-            val aes256 = AES256("sixsquare1234567")
-            val executor = Executors.newSingleThreadExecutor()
-            executor.execute {
-                try {
-                    if (status){
-                        val outputFile=File(getExternalFilesDir(null),"FDAES_Encrypted_$fileName.txt")
-                        fdaes.FileEncryption_CBC(file,outputFile)
-                        Log.e("test2","FDAES")
+                val fileWriter = FileWriter(file, true)
+                fileWriter.write(content.toString())
+                fileWriter.close()
+                //加密
+                val fdaes = FDAES("sixsquare1234567")
+                val aes256 = AES256("sixsquare1234567")
+                val executor = Executors.newSingleThreadExecutor()
+                executor.execute {
+                    try {
+                        if (status) {
+                            val outputFile =
+                                File(getExternalFilesDir(null), "FDAES_Encrypted_$fileName.txt")
+                            fdaes.FileEncryption_CBC(file, outputFile)
+                            Log.e("test2", "FDAES")
 
-                    }
-                    else{
-                        val outputFile=File(getExternalFilesDir(null),"AES_Encrypted_$fileName.txt")
-                        // 在線程池中執行加密操作
-                        aes256.encryptFile(file, outputFile)
-                        Log.e("test3","AES")
-                    }
+                        } else {
+                            val outputFile =
+                                File(getExternalFilesDir(null), "AES_Encrypted_$fileName.txt")
+                            // 在線程池中執行加密操作
+                            aes256.encryptFile(file, outputFile)
+                            Log.e("test3", "AES")
+                        }
 
 
-                    // 刪除inputFile
-                    if (file.exists()) {
-                        file.delete()
+                        // 刪除inputFile
+                        if (file.exists()) {
+                            file.delete()
+                        }
+                    } finally {
+                        executor.shutdown()
                     }
-                } finally {
-                    executor.shutdown()
                 }
+                //刪除原本檔案
+            } catch (e: IOException) {
+                e.printStackTrace()
             }
-            //刪除原本檔案
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-        finish()
+            finish()
+
     }
 //    public fun requestPremission()
 //    {
