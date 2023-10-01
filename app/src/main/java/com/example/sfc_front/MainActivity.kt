@@ -53,6 +53,8 @@ import java.util.concurrent.Executor
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
+import android.graphics.Color
+import android.widget.ProgressBar
 
 class MainActivity : AppCompatActivity() {
     val aes256 = AES256("sixsquare1234567")
@@ -70,6 +72,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        val ball = findViewById<ProgressBar>(R.id.progressBar)
+        val ballText = findViewById<TextView>(R.id.ball_text)
         setSupportActionBar(binding.appBarMain.toolbar)
         val drawerLayout: DrawerLayout = binding.drawerLayout
         val navView: NavigationView = binding.navView
@@ -217,6 +221,8 @@ class MainActivity : AppCompatActivity() {
                 val executor = Executors.newSingleThreadExecutor()
                 executor.execute {
                     try {
+                        ballText.setTextColor(Color.parseColor("#FFFFFFFF"))
+                        ball.progressDrawable = resources.getDrawable(R.drawable.ball, null)
                         val switch : Switch = findViewById<Switch>(R.id.switchButton)
 
                         if (switch.isChecked){
@@ -236,6 +242,8 @@ class MainActivity : AppCompatActivity() {
                             inputFile.delete()
                         }
                     } finally {
+                        ballText.setTextColor(Color.parseColor("#00FFFFFF"))
+                        ball.progressDrawable = resources.getDrawable(R.drawable.logo, null)
                         executor.shutdown()
                     }
                 }
@@ -330,7 +338,8 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
+        val ball = findViewById<ProgressBar>(R.id.progressBar)
+        val ballText = findViewById<TextView>(R.id.ball_text)
         if (requestCode == REQUEST_VIDEO_CAPTURE && resultCode == Activity.RESULT_OK) {
             val inputFile  = File(getExternalFilesDir(null), FileName)
 
@@ -338,7 +347,8 @@ class MainActivity : AppCompatActivity() {
             executor.execute {
                 try {
                     val switch : Switch = findViewById<Switch>(R.id.switchButton)
-
+                    ballText.setTextColor(Color.parseColor("#FFFFFFFF"))
+                    ball.progressDrawable = resources.getDrawable(R.drawable.ball, null)
                     if (switch.isChecked){
                         val outputFile=File(getExternalFilesDir(null),"FDAES_Encrypted_$FileName")
                         fdaes.FileEncryption_CBC(inputFile,outputFile)
@@ -355,6 +365,8 @@ class MainActivity : AppCompatActivity() {
                         inputFile.delete()
                     }
                 } finally {
+                    ballText.setTextColor(Color.parseColor("#00FFFFFF"))
+                    ball.progressDrawable = resources.getDrawable(R.drawable.logo, null)
                     executor.shutdown()
                 }
             }
@@ -381,7 +393,6 @@ class MainActivity : AppCompatActivity() {
 
                         // 获取目标文件路径
                         val outputFile = File(this.getExternalFilesDir(null), "AES_Encrypted_$FileName")
-
                         // 执行加密操作
                         aes256.encryptFile(tempFile, outputFile)
 
