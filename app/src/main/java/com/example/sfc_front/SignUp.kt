@@ -73,7 +73,7 @@ class SignUp: AppCompatActivity() {
         val retypePasswordEditText = findViewById<EditText>(R.id.retype_password)
         val phoneEditText = findViewById<EditText>(R.id.phone)
         val button = findViewById<Button>(R.id.button)
-        var haveAccount=0;
+
         val gender_text: String = genderSpinner.getSelectedItem().toString()
         button.setOnClickListener {
             val id = idText.text.toString()
@@ -98,8 +98,9 @@ class SignUp: AppCompatActivity() {
                             .url("http://subject.explosion.nmg.cs.thu.edu.tw/init")
                             .post(requestBody)
                             .build()
-
+                        var haveAccount=0;
                         // 发起请求
+                        var status: String
                         client.newCall(request).enqueue(object : Callback {
                             override fun onFailure(call: Call, e: IOException) {
                                 // 请求失败处理
@@ -108,25 +109,35 @@ class SignUp: AppCompatActivity() {
 
                             override fun onResponse(call: Call, response: Response) {
                                 // 请求成功处理
+                                val responseBody = response.body?.string()
                                 if (response.isSuccessful) {
-                                    haveAccount=1
-                                }else{
+                                    val jsonResponse = JSONObject(responseBody)
 
+                                    // 从JSON对象中获取"status"字段
+                                    status = jsonResponse.getString("status")
+                                    if (status=="1"){
+                                        val intent = Intent(this@SignUp, Login::class.java)
+                                        startActivity(intent)
+
+                                    }
+                                    else if(status=="2"){
+                                        runOnUiThread {
+                                            val message = "this account has benn used!"
+                                            val duration =
+                                                Toast.LENGTH_SHORT // 或 Toast.LENGTH_LONG，指定消息的显示时长
+                                            Toast.makeText(this@SignUp, message, duration).show()
+                                        }
+                                    }else if(status=="0"){
+
+                                        runOnUiThread {
+                                            val message = "Can't found this account!"
+                                            val duration = Toast.LENGTH_SHORT
+                                            Toast.makeText(this@SignUp, message, duration).show()
+                                        }
+                                    }
                                 }
-                                response.body?.string()?.let { it1 -> Log.e("MyTag", it1) };
                             }
                         })
-                        if (haveAccount==0){
-                            val message = "can't found this account!"
-                            val duration = Toast.LENGTH_SHORT // 或 Toast.LENGTH_LONG，指定消息的显示时长
-                            Toast.makeText(this, message, duration).show()
-
-                        }else{
-                        val intent = Intent(this, Login::class.java)
-                        startActivity(intent)
-                        }
-                        val intent = Intent(this, Login::class.java)
-                        startActivity(intent)
                     } else {
                         val message = "password mismatch"
                         val duration = Toast.LENGTH_SHORT // 或 Toast.LENGTH_LONG，指定消息的显示时长
