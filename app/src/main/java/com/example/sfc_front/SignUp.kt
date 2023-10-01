@@ -1,5 +1,6 @@
 package com.example.sfc_front
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
@@ -20,6 +21,7 @@ import org.json.JSONObject
 import java.io.IOException
 
 class SignUp: AppCompatActivity() {
+    @SuppressLint("SuspiciousIndentation")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.sign_up) // 替换为您的布局文件
@@ -101,7 +103,6 @@ class SignUp: AppCompatActivity() {
                         client.newCall(request).enqueue(object : Callback {
                             override fun onFailure(call: Call, e: IOException) {
                                 // 请求失败处理
-
 
                             }
 
