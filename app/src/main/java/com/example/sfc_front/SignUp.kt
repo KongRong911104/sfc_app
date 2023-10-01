@@ -83,6 +83,7 @@ class SignUp: AppCompatActivity() {
             val password = passwordEditText.text.toString()
             val retypePassword = retypePasswordEditText.text.toString()
             val phone = phoneEditText.text.toString()
+            var s : String = ""
                 if (id.isNotEmpty()&& product_key.isNotEmpty()&& name.isNotEmpty() && gender_text.isNotEmpty() && password.isNotEmpty() && retypePassword.isNotEmpty() && phone.isNotEmpty()) {
                     if (password == retypePassword) {
                         val client = OkHttpClient()
@@ -113,13 +114,16 @@ class SignUp: AppCompatActivity() {
                                 }else{
 
                                 }
+                                s = response.body.toString()
                                 response.body?.string()?.let { it1 -> Log.e("MyTag", it1) };
                             }
                         })
                         if (haveAccount==0){
                             val message = "can't found this account!"
+                            Log.e("test","$s")
                             val duration = Toast.LENGTH_SHORT // 或 Toast.LENGTH_LONG，指定消息的显示时长
                             Toast.makeText(this, message, duration).show()
+
 
                         }else{
                         val intent = Intent(this, Login::class.java)
