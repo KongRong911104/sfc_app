@@ -9,4 +9,6 @@
     <color name="white">#FFFFFFFF</color>
     <color name="nav_bar_checked">#FF31A4B4</color>
     <color name="no">#00454545</color>
+    <color name="dialog_button_positive_color">#FF018786</color>
+    <color name="dialog_button_negative_color">#FF018786</color>
 </resources>

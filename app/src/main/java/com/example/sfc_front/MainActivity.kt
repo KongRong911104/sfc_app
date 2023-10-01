@@ -21,6 +21,8 @@ import android.widget.ImageButton
 import android.widget.Switch
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.biometric.BiometricManager
+import androidx.biometric.BiometricPrompt
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
@@ -41,14 +43,23 @@ import java.util.Date
 import java.util.Locale
 import java.util.concurrent.Executors
 import kotlin.system.exitProcess
+import android.widget.EditText
 
 import com.example.sfc_front.SwitchStatus
 import com.example.sfc_front.ui.home.HomeFragment
 import com.example.sfc_front.ui.home.NoteActivity
+import java.util.concurrent.Executor
+
+import android.app.AlertDialog
+import android.content.Context
+import android.content.DialogInterface
 
 class MainActivity : AppCompatActivity() {
     val aes256 = AES256("sixsquare1234567")
     val fdaes = FDAES("sixsquare1234567")
+    private lateinit var biometricPrompt: BiometricPrompt
+    private lateinit var promptInfo: BiometricPrompt.PromptInfo
+    private var failAuthentication = 0
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
@@ -65,12 +76,98 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
 //        var rootView = findViewById<View>(android.R.id.content)
         val switch:Switch = findViewById(R.id.switchButton)
-
         appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.nav_home
             ), drawerLayout
         )
+        switch.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked){
+//                Toast.makeText(this, "on", Toast.LENGTH_SHORT).show()
+                val executor: Executor = Executors.newSingleThreadExecutor()
+
+                // 創建生物識別驗證對話框
+                biometricPrompt = BiometricPrompt(this, executor,
+                    object : BiometricPrompt.AuthenticationCallback() {
+                        override fun onAuthenticationError(
+                            errorCode: Int,
+                            errString: CharSequence
+                        ) {
+                            super.onAuthenticationError(errorCode, errString)
+                            runOnUiThread {
+
+                                Toast.makeText(
+                                    applicationContext,
+                                    "Authentication error:  $errString", Toast.LENGTH_SHORT
+                                ).show()
+                                moveTaskToBack(true);
+                                exitProcess(-1)
+                            }
+                        }
+
+                        override fun onAuthenticationSucceeded(
+                            result: BiometricPrompt.AuthenticationResult
+                        ) {
+                            super.onAuthenticationSucceeded(result)
+                            runOnUiThread {
+                                Toast.makeText(
+                                    applicationContext,
+                                    "Authentication succeeded!", Toast.LENGTH_SHORT
+                                ).show()
+                                showInputDialog(
+                                    this@MainActivity,
+                                    "請輸入密碼",
+                                    "确定",
+                                    "取消",
+                                    { userInput ->
+                                        // 用户点击确定按钮后的处理逻辑，userInput 包含用户输入的文本
+                                        // 在这里添加你的代码
+                                        Toast.makeText(this@MainActivity, "$userInput", Toast.LENGTH_SHORT).show()
+
+                                    },
+                                    {
+                                        // 用户点击取消按钮后的处理逻辑
+                                    }
+                                )
+
+
+                            }
+                        }
+
+                        override fun onAuthenticationFailed() {
+                            super.onAuthenticationFailed()
+                            runOnUiThread {
+
+                                Toast.makeText(
+                                    applicationContext, "Authentication failed",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                failAuthentication += 1
+                                if (failAuthentication == 3){
+                                    moveTaskToBack(true);
+                                    exitProcess(-1)
+                                }
+                            }
+                        }
+                    })
+                promptInfo = BiometricPrompt.PromptInfo.Builder()
+                    .setTitle("Confirm Using Your Fingerprint")
+                    .setSubtitle("You can use your fingerprint to confirm making payments through this app.")
+                    .setAllowedAuthenticators(
+                        BiometricManager.Authenticators.BIOMETRIC_WEAK
+                    )
+                    .setNegativeButtonText("Exit")
+
+                    .build()
+
+                // 開始生物識別驗證
+                biometricPrompt.authenticate(promptInfo)
+
+            }
+            else{
+//                Toast.makeText(this, "off", Toast.LENGTH_SHORT).show()
+            }
+        }
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
         val noteButton = findViewById<ImageButton>(R.id.note_button)
@@ -316,6 +413,46 @@ class MainActivity : AppCompatActivity() {
         }
 
         return fileName
+    }
+    fun showInputDialog(context: Context, title: String, positiveButtonText: String, negativeButtonText: String, onPositiveClick: (String) -> Unit, onNegativeClick: () -> Unit) {
+        val alertDialogBuilder = AlertDialog.Builder(context)
+        val inputEditText = EditText(context)
+
+        // 设置对话框标题
+        alertDialogBuilder.setTitle(title)
+
+        // 设置文本输入框
+        alertDialogBuilder.setView(inputEditText)
+
+        // 添加确定按钮
+        alertDialogBuilder.setPositiveButton(positiveButtonText) { dialog, which ->
+            val userInput = inputEditText.text.toString()
+
+            onPositiveClick(userInput)
+            dialog.dismiss()
+        }
+
+
+        // 添加取消按钮
+        alertDialogBuilder.setNegativeButton(negativeButtonText) { dialog, which ->
+            onNegativeClick()
+            dialog.dismiss()
+        }
+
+        // 创建并显示对话框
+        val alertDialog = alertDialogBuilder.create()
+
+        // 设置按钮的颜色
+        alertDialog.setOnShowListener { dialog ->
+            val positiveButton = (dialog as AlertDialog).getButton(DialogInterface.BUTTON_POSITIVE)
+            val negativeButton = dialog.getButton(DialogInterface.BUTTON_NEGATIVE)
+
+            positiveButton.setTextColor(context.resources.getColor(R.color.dialog_button_positive_color))
+            negativeButton.setTextColor(context.resources.getColor(R.color.dialog_button_negative_color))
+        }
+
+
+        alertDialog.show()
     }
     companion object {
         private const val REQUEST_CAMERA_PERMISSION = 101
