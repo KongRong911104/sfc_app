@@ -10,6 +10,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.provider.OpenableColumns
 import android.util.Log
 import android.view.Menu
 import android.view.View
@@ -42,6 +43,7 @@ import java.util.concurrent.Executors
 import kotlin.system.exitProcess
 
 import com.example.sfc_front.SwitchStatus
+import com.example.sfc_front.ui.home.HomeFragment
 import com.example.sfc_front.ui.home.NoteActivity
 
 class MainActivity : AppCompatActivity() {
@@ -102,6 +104,11 @@ class MainActivity : AppCompatActivity() {
         goBack.setOnClickListener {
             moveTaskToBack(true);
             exitProcess(-1)
+        }
+        val fileProtectButton : ImageButton = findViewById(R.id.file_protection_button)
+        fileProtectButton.setOnClickListener{
+
+            protectFile()
         }
         // 注册一个用于接收拍照结果的ActivityResultLauncher
         takePictureLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { isTaken ->
@@ -209,6 +216,20 @@ class MainActivity : AppCompatActivity() {
         // 启动录制视频
         startActivityForResult(takeVideoIntent, REQUEST_VIDEO_CAPTURE)
     }
+
+    private fun protectFile() {
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "*/*"
+
+            // Optionally, specify a URI for the file that should appear in the
+            // system file picker when it loads.
+//            putExtra(DocumentsContract.EXTRA_INITIAL_URI, pickerInitialUri)
+
+        }
+
+        startActivityForResult(intent, 2)
+    }
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -241,6 +262,60 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+        else if (requestCode == HomeFragment.PICK_PDF_FILE && resultCode == Activity.RESULT_OK) {
+            // 处理选择的文件，您可以使用选定的文件进行进一步操作
+            val selectedFileUri = data?.data
+            val FileName = selectedFileUri?.let { getFileNameFromUri(it) }
+            if (selectedFileUri != null) {
+                try {
+                    val contentResolver = this.contentResolver
+                    val inputStream = contentResolver.openInputStream(selectedFileUri)
+
+                    if (inputStream != null) {
+                        // 创建临时文件
+                        val tempFile = createTempFile("temp_", ".tmp")
+
+                        // 将输入流写入临时文件
+                        inputStream.use { input ->
+                            tempFile.outputStream().use { output ->
+                                input.copyTo(output)
+                            }
+                        }
+
+                        // 获取目标文件路径
+                        val outputFile = File(this.getExternalFilesDir(null), "AES_Encrypted_$FileName")
+
+                        // 执行加密操作
+                        aes256.encryptFile(tempFile, outputFile)
+
+                        // 删除临时文件
+                        tempFile.delete()
+
+                        // 关闭输入流
+                        inputStream.close()
+                    }
+                } catch (e: Exception) {
+                    Log.e("Error", "Error while processing file: ${e.message}")
+                }
+            }
+        }
+    }
+    @SuppressLint("Range")
+    fun getFileNameFromUri(uri: Uri): String? {
+        var fileName: String? = null
+
+        // 从 Uri 中提取文件名
+        val cursor = this.contentResolver.query(uri, null, null, null, null)
+        cursor?.use {
+            if (it.moveToFirst()) {
+                val displayName = it.getString(it.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+                if (!displayName.isNullOrEmpty()) {
+                    fileName = displayName
+                }
+            }
+        }
+
+        return fileName
     }
     companion object {
         private const val REQUEST_CAMERA_PERMISSION = 101
