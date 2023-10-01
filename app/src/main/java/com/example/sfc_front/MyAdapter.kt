@@ -2,6 +2,7 @@ package com.example.sfc_front
 
 import android.content.Intent
 import android.os.Environment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -80,6 +81,7 @@ class MyAdapter(
                         val fileToOpen = File(context.getExternalFilesDir(null), FileName)
                         if(FileName.contains("FDAES_Encrypted")){
                             val subString: String = FileName.subSequence(16, FileName.length) as String
+                            Log.e("name",FileName)
                             val outputFile = File(context.getExternalFilesDir(null), subString)
                             fdaes.FileDecryption_CBC(fileToOpen, outputFile)
                             openFile(outputFile, context)
