@@ -80,18 +80,19 @@
         tools:ignore="MissingConstraints">
 
         <ImageButton
+            android:id="@+id/note_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/note_selector"
+            tools:ignore="MissingConstraints" />
+
+        <ImageButton
+            android:layout_marginStart="3dp"
             android:id="@+id/file_upgrade_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/file_upgrade_selector"
             tools:ignore="MissingConstraints" />
-
-        <ImageButton
-            android:id="@+id/read_file_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="3dp"
-            android:background="@drawable/read_file_selector" />
 
     </LinearLayout>
 
@@ -106,19 +107,19 @@
         app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
         tools:ignore="MissingConstraints">
 
-        <ImageButton
-            android:id="@+id/note_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/note_selector"
-            tools:ignore="MissingConstraints" />
+
 
         <ImageButton
             android:id="@+id/file_protection_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="3dp"
             android:background="@drawable/file_protection_selector" />
+        <ImageButton
+            android:id="@+id/read_file_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="3dp"
+            android:background="@drawable/read_file_selector" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

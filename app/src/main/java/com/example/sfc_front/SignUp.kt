@@ -105,7 +105,11 @@ class SignUp: AppCompatActivity() {
                         client.newCall(request).enqueue(object : Callback {
                             override fun onFailure(call: Call, e: IOException) {
                                 // 请求失败处理
-
+                                runOnUiThread {
+                                    val message = "Please check your wifi!"
+                                    val duration = Toast.LENGTH_SHORT
+                                    Toast.makeText(this@SignUp, message, duration).show()
+                                }
                             }
 
                             override fun onResponse(call: Call, response: Response) {
@@ -116,6 +120,7 @@ class SignUp: AppCompatActivity() {
 
                                     // 从JSON对象中获取"status"字段
                                     status = jsonResponse.getString("status")
+                                    Log.e("kkkkkkk",status)
                                     if (status=="1"){
                                         val intent = Intent(this@SignUp, Login::class.java)
                                         startActivity(intent)
