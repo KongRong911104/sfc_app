@@ -104,11 +104,16 @@ class SignUp: AppCompatActivity() {
                         var status: String
                         client.newCall(request).enqueue(object : Callback {
                             override fun onFailure(call: Call, e: IOException) {
-                                // 请求失败处理
+                                // 检查异常类型和消息
+                                val errorMessage = when {
+                                    e.message?.contains("Unable to resolve host") == true -> "Please ensure your internet connection."
+                                    else -> "Server is broken."
+                                }
+
+                                // 在主线程中显示Toast消息
                                 runOnUiThread {
-                                    val message = "Please check your wifi!"
                                     val duration = Toast.LENGTH_SHORT
-                                    Toast.makeText(this@SignUp, message, duration).show()
+                                    Toast.makeText(this@SignUp, errorMessage, duration).show()
                                 }
                             }
 

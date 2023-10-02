@@ -220,6 +220,7 @@ class MainActivity : AppCompatActivity() {
                 val inputFile  = File(getExternalFilesDir(null), FileName)
 
                 val executor = Executors.newSingleThreadExecutor()
+
                 executor.execute {
                     try {
                         runOnUiThread {
@@ -352,10 +353,10 @@ class MainActivity : AppCompatActivity() {
                 try {
 
 //                    val switch : Switch = findViewById<Switch>(R.id.switchButton)
-//                    runOnUiThread {
-//                    ballText.setTextColor(Color.parseColor("#FFFFFFFF"))
-//                    ball.progressDrawable = resources.getDrawable(R.drawable.ball, null)
-//                    }
+                    runOnUiThread {
+                    ballText.setTextColor(Color.parseColor("#FFFFFFFF"))
+                    ball.progressDrawable = resources.getDrawable(R.drawable.ball, null)
+                    }
 //                    if (switch.isChecked){
 //                        val outputFile=File(getExternalFilesDir(null),"FDAES_Encrypted_$FileName")
 //                        fdaes.FileEncryption_CBC(inputFile,outputFile)
