@@ -71,6 +71,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var takePictureLauncher: ActivityResultLauncher<Uri>
     private var FileName =""
+    private val FILE_VIEW_REQUEST_CODE = 123
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -586,9 +587,12 @@ class MainActivity : AppCompatActivity() {
                 } catch (e: Exception) {
                     Log.e("Error", "Error while processing file: ${e.message}")
                 }
+
             }
         }
+
     }
+
     @SuppressLint("Range")
     fun getFileNameFromUri(uri: Uri): String? {
         var fileName: String? = null
