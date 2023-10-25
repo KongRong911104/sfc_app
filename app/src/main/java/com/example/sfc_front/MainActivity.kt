@@ -54,6 +54,7 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Color
+import android.text.InputType
 import android.widget.ProgressBar
 
 class MainActivity : AppCompatActivity() {
@@ -214,7 +215,7 @@ class MainActivity : AppCompatActivity() {
                                     "Authentication error:  $errString", Toast.LENGTH_SHORT
                                 ).show()
                                 moveTaskToBack(true);
-                                exitProcess(-1)
+//                                exitProcess(-1)
                             }
                         }
 
@@ -260,7 +261,7 @@ class MainActivity : AppCompatActivity() {
                                 failAuthentication += 1
                                 if (failAuthentication == 3){
                                     moveTaskToBack(true);
-                                    exitProcess(-1)
+//                                    exitProcess(-1)
                                 }
                             }
                         }
@@ -525,6 +526,7 @@ class MainActivity : AppCompatActivity() {
     fun showInputDialog(context: Context, title: String, positiveButtonText: String, negativeButtonText: String, onPositiveClick: (String) -> Unit, onNegativeClick: () -> Unit) {
         val alertDialogBuilder = AlertDialog.Builder(context)
         val inputEditText = EditText(context)
+        inputEditText.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
 
         // 设置对话框标题
         alertDialogBuilder.setTitle(title)
