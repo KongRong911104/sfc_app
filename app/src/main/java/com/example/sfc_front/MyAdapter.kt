@@ -83,7 +83,7 @@ class MyAdapter(
 ) : RecyclerView.Adapter<MyAdapter.ViewHolder>() {
     val fdaes = FDAES("sixsquare1234567")
     val aes256 = AES256("sixsquare1234567")
-
+    var newFileName :String = ""
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val fileName: TextView = itemView.findViewById(R.id.file_name) // 通过ID找到文本视图
         val icon: ImageView = itemView.findViewById(R.id.view_icon) // 通过ID找到图标视图
@@ -158,10 +158,10 @@ class MyAdapter(
                 }
             } else if (open == 0) {
                 itemView.setOnClickListener {
-                    var newF :String = "131314141"
+
                     showOptionsDialog(context, onRenameClick = { newName ->
                         // 在这里处理重命名操作，使用 newName 变量
-                        newF = newName
+                        newFileName = newName
 
                     })
                     CompletableFuture.runAsync {
@@ -171,7 +171,7 @@ class MyAdapter(
                             val fileToOpen = File(context.getExternalFilesDir(null), string)
 //                        val subString: String = string.subSequence(14, string.length) as String
                             val extension = fileToOpen.extension
-                            val newFileName = "$newF.$extension"
+                            val newFileName = "$newFileName.$extension"
                             val outputFile =
                                 File(context.getExternalFilesDir(null), newFileName)
                             aes256.decryptFile(fileToOpen, outputFile)
@@ -193,6 +193,8 @@ class MyAdapter(
                         it.printStackTrace();
                         return@exceptionally null;
                     }
+                    updateData(listFilesInDirectory(directoryPath, "", fileType, open))
+
 
                 }
             }
