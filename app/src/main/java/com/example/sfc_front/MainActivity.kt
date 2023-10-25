@@ -362,13 +362,12 @@ class MainActivity : AppCompatActivity() {
                     }
                 })
             promptInfo = BiometricPrompt.PromptInfo.Builder()
-                .setTitle("Confirm Using Your Fingerprint")
-                .setSubtitle("You can use your fingerprint to confirm making payments through this app.")
+                .setTitle("Confirm Using Your Face")
+                .setSubtitle("You can use your face to confirm making payments through this app.")
                 .setAllowedAuthenticators(
                     BiometricManager.Authenticators.BIOMETRIC_WEAK
                 )
                 .setNegativeButtonText("Exit")
-
                 .build()
 
             // 開始生物識別驗證
