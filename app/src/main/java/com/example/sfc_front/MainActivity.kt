@@ -85,10 +85,119 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_home
             ), drawerLayout
         )
+
         switch.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked){
-//                Toast.makeText(this, "on", Toast.LENGTH_SHORT).show()
-                val executor: Executor = Executors.newSingleThreadExecutor()
+                Toast.makeText(this, "Cloud Backup in Progress.", Toast.LENGTH_SHORT).show()
+//                val executor: Executor = Executors.newSingleThreadExecutor()
+//
+//                // 創建生物識別驗證對話框
+//                biometricPrompt = BiometricPrompt(this, executor,
+//                    object : BiometricPrompt.AuthenticationCallback() {
+//                        override fun onAuthenticationError(
+//                            errorCode: Int,
+//                            errString: CharSequence
+//                        ) {
+//                            super.onAuthenticationError(errorCode, errString)
+//                            runOnUiThread {
+//
+//                                Toast.makeText(
+//                                    applicationContext,
+//                                    "Authentication error:  $errString", Toast.LENGTH_SHORT
+//                                ).show()
+//                                moveTaskToBack(true);
+//                                exitProcess(-1)
+//                            }
+//                        }
+//
+//                        override fun onAuthenticationSucceeded(
+//                            result: BiometricPrompt.AuthenticationResult
+//                        ) {
+//                            super.onAuthenticationSucceeded(result)
+//                            runOnUiThread {
+////                                Toast.makeText(
+////                                    applicationContext,
+////                                    "Authentication succeeded!", Toast.LENGTH_SHORT
+////                                ).show()
+//                                showInputDialog(
+//                                    this@MainActivity,
+//                                    "Please Enter Your Password",
+//                                    "Confirm",
+//                                    "Cancel",
+//                                    { userInput ->
+//                                        // 用户点击确定按钮后的处理逻辑，userInput 包含用户输入的文本
+//                                        // 在这里添加你的代码
+////                                        Toast.makeText(this@MainActivity, "$userInput", Toast.LENGTH_SHORT).show()
+//                                        Toast.makeText(this@MainActivity, "Authentication succeeded!", Toast.LENGTH_SHORT).show()
+//
+//                                    },
+//                                    {
+//                                        // 用户点击取消按钮后的处理逻辑
+//                                    }
+//                                )
+//
+//
+//                            }
+//                        }
+//
+//                        override fun onAuthenticationFailed() {
+//                            super.onAuthenticationFailed()
+//                            runOnUiThread {
+//
+//                                Toast.makeText(
+//                                    applicationContext, "Authentication failed",
+//                                    Toast.LENGTH_SHORT
+//                                ).show()
+//                                failAuthentication += 1
+//                                if (failAuthentication == 3){
+//                                    moveTaskToBack(true);
+//                                    exitProcess(-1)
+//                                }
+//                            }
+//                        }
+//                    })
+//                promptInfo = BiometricPrompt.PromptInfo.Builder()
+//                    .setTitle("Confirm Using Your Fingerprint")
+//                    .setSubtitle("You can use your fingerprint to confirm making payments through this app.")
+//                    .setAllowedAuthenticators(
+//                        BiometricManager.Authenticators.BIOMETRIC_WEAK
+//                    )
+//                    .setNegativeButtonText("Exit")
+//
+//                    .build()
+//
+//                // 開始生物識別驗證
+//                biometricPrompt.authenticate(promptInfo)
+
+            }
+            else{
+                Toast.makeText(this, "Cloud Backup has been turned off", Toast.LENGTH_SHORT).show()
+            }
+        }
+        setupActionBarWithNavController(navController, appBarConfiguration)
+        navView.setupWithNavController(navController)
+        val noteButton = findViewById<ImageButton>(R.id.note_button)
+        noteButton.setOnClickListener{
+            val intent = Intent(this, NoteActivity::class.java)
+            val s = switch.isChecked
+            intent.putExtra("status", s)
+            Log.e("test","$s")
+            startActivity(intent)
+        }
+        val takePictureButton = findViewById<ImageButton>(R.id.camera_button)
+        // 设置点击事件，调用拍照方法
+        takePictureButton.setOnClickListener {
+            takeAPhoto()
+        }
+        val takeVideoButton = findViewById<ImageButton>(R.id.video_button)
+        takeVideoButton.setOnClickListener {
+            takeAVideo()
+        }
+        val readFileButton = findViewById<ImageButton>(R.id.read_file_button)
+        readFileButton.setOnClickListener {
+
+            val intent = Intent(this, ReadFile::class.java)
+            val executor: Executor = Executors.newSingleThreadExecutor()
 
                 // 創建生物識別驗證對話框
                 biometricPrompt = BiometricPrompt(this, executor,
@@ -128,6 +237,7 @@ class MainActivity : AppCompatActivity() {
                                         // 在这里添加你的代码
 //                                        Toast.makeText(this@MainActivity, "$userInput", Toast.LENGTH_SHORT).show()
                                         Toast.makeText(this@MainActivity, "Authentication succeeded!", Toast.LENGTH_SHORT).show()
+                                        startActivity(intent)
 
                                     },
                                     {
@@ -168,34 +278,11 @@ class MainActivity : AppCompatActivity() {
                 // 開始生物識別驗證
                 biometricPrompt.authenticate(promptInfo)
 
-            }
-            else{
-//                Toast.makeText(this, "off", Toast.LENGTH_SHORT).show()
-            }
-        }
-        setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
-        val noteButton = findViewById<ImageButton>(R.id.note_button)
-        noteButton.setOnClickListener{
-            val intent = Intent(this, NoteActivity::class.java)
-            val s = switch.isChecked
-            intent.putExtra("status", s)
-            Log.e("test","$s")
-            startActivity(intent)
-        }
-        val takePictureButton = findViewById<ImageButton>(R.id.camera_button)
-        // 设置点击事件，调用拍照方法
-        takePictureButton.setOnClickListener {
-            takeAPhoto()
-        }
-        val takeVideoButton = findViewById<ImageButton>(R.id.video_button)
-        takeVideoButton.setOnClickListener {
-            takeAVideo()
-        }
-        val readFileButton = findViewById<ImageButton>(R.id.read_file_button)
-        readFileButton.setOnClickListener {
-            val intent = Intent(this, ReadFile::class.java)
-            startActivity(intent)
+
+
+
+//            val intent = Intent(this, ReadFile::class.java)
+//            startActivity(intent)
         }
         val fileUpgradeButton = findViewById<ImageButton>(R.id.file_upgrade_button)
         fileUpgradeButton.setOnClickListener {
@@ -220,24 +307,24 @@ class MainActivity : AppCompatActivity() {
                 val inputFile  = File(getExternalFilesDir(null), FileName)
 
                 val executor = Executors.newSingleThreadExecutor()
+
                 executor.execute {
                     try {
                         runOnUiThread {
                             ballText.setTextColor(Color.parseColor("#FFFFFFFF"))
                             ball.progressDrawable = resources.getDrawable(R.drawable.ball, null)
                         }
-                        val switch : Switch = findViewById<Switch>(R.id.switchButton)
+//                        val switch : Switch = findViewById<Switch>(R.id.switchButton)
 
-                        if (switch.isChecked){
-                            val outputFile=File(getExternalFilesDir(null),"FDAES_Encrypted_$FileName")
-                            fdaes.FileEncryption_CBC(inputFile,outputFile)
-
-                        }
-                        else{
-                            val outputFile=File(getExternalFilesDir(null),"AES_Encrypted_$FileName")
+//                        if (switch.isChecked){
+//                            val outputFile=File(getExternalFilesDir(null),"FDAES_Encrypted_$FileName")
+//                            fdaes.FileEncryption_CBC(inputFile,outputFile)
+//                        }
+//                        else{
+                        val outputFile=File(getExternalFilesDir(null),"AES_Encrypted_$FileName")
                             // 在線程池中執行加密操作
-                            aes256.encryptFile(inputFile, outputFile)
-                        }
+                        aes256.encryptFile(inputFile, outputFile)
+//                        }
 
 
                         // 刪除inputFile
@@ -352,20 +439,20 @@ class MainActivity : AppCompatActivity() {
             executor.execute {
                 try {
 
-                    val switch : Switch = findViewById<Switch>(R.id.switchButton)
+//                    val switch : Switch = findViewById<Switch>(R.id.switchButton)
                     runOnUiThread {
                     ballText.setTextColor(Color.parseColor("#FFFFFFFF"))
                     ball.progressDrawable = resources.getDrawable(R.drawable.ball, null)
                     }
-                    if (switch.isChecked){
-                        val outputFile=File(getExternalFilesDir(null),"FDAES_Encrypted_$FileName")
-                        fdaes.FileEncryption_CBC(inputFile,outputFile)
-                    }
-                    else{
-                        val outputFile=File(getExternalFilesDir(null),"AES_Encrypted_$FileName")
+//                    if (switch.isChecked){
+//                        val outputFile=File(getExternalFilesDir(null),"FDAES_Encrypted_$FileName")
+//                        fdaes.FileEncryption_CBC(inputFile,outputFile)
+//                    }
+//                    else{
+                    val outputFile=File(getExternalFilesDir(null),"AES_Encrypted_$FileName")
                         // 在線程池中執行加密操作
-                        aes256.encryptFile(inputFile, outputFile)
-                    }
+                    aes256.encryptFile(inputFile, outputFile)
+//                    }
 
 
                     // 刪除inputFile
@@ -475,6 +562,7 @@ class MainActivity : AppCompatActivity() {
 
         alertDialog.show()
     }
+
     companion object {
         private const val REQUEST_CAMERA_PERMISSION = 101
         private const val REQUEST_VIDEO_PERMISSION = 102

@@ -96,19 +96,19 @@ class NoteActivity : ComponentActivity() {
                 val executor = Executors.newSingleThreadExecutor()
                 executor.execute {
                     try {
-                        if (status) {
-                            val outputFile =
-                                File(getExternalFilesDir(null), "FDAES_Encrypted_$fileName.txt")
-                            fdaes.FileEncryption_CBC(file, outputFile)
-                            Log.e("test2", "FDAES")
-
-                        } else {
-                            val outputFile =
+//                        if (status) {
+//                            val outputFile =
+//                                File(getExternalFilesDir(null), "FDAES_Encrypted_$fileName.txt")
+//                            fdaes.FileEncryption_CBC(file, outputFile)
+//                            Log.e("test2", "FDAES")
+//
+//                        } else {
+                        val outputFile =
                                 File(getExternalFilesDir(null), "AES_Encrypted_$fileName.txt")
                             // 在線程池中執行加密操作
-                            aes256.encryptFile(file, outputFile)
-                            Log.e("test3", "AES")
-                        }
+                        aes256.encryptFile(file, outputFile)
+//                        Log.e("test3", "AES")
+//                        }
 
 
                         // 刪除inputFile

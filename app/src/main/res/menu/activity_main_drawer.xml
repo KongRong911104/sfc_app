@@ -12,6 +12,20 @@
             android:title="@string/menu_home"
             android:textAppearance="@style/read_file"
             />
+        <item
+            android:background="#FFFFFFFF"
+            android:id="@+id/nav_PW"
+            android:icon="@drawable/forgot_pw"
+            android:title="@string/menu_PW"
+            android:textAppearance="@style/read_file"
+            />
+        <item
+            android:background="#FFFFFFFF"
+            android:id="@+id/nav_help"
+            android:icon="@drawable/help"
+            android:title="@string/menu_help"
+            android:textAppearance="@style/read_file"
+            />
 
 
     </group>

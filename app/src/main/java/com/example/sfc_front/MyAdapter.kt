@@ -87,6 +87,7 @@ class MyAdapter(
                         val fileToOpen = File(context.getExternalFilesDir(null), FileName)
 
                         if (FileName.contains("FDAES_Encrypted")) {
+
                             val subString: String =
                                 FileName.subSequence(16, FileName.length) as String
                             val outputFile = File(context.getExternalFilesDir(null), subString)
@@ -204,7 +205,11 @@ class MyAdapter(
             ) {
                 if (open == 1 && file.name.contains("Encrypted")) {
                     fileNames.add(file.name)
-                } else if (open == 0 && (file.name.endsWith(fileExtension) || file.name.endsWith(fileExtension2)) && !file.name.contains("FDAES_Encrypted")) {
+                } else if (open == 0 && (file.name.endsWith(fileExtension) || file.name.endsWith(fileExtension2)) && file.name.contains("AES_Encrypted") && !file.name.contains("FDAES_Encrypted")) {
+//                    Log.e("test0","$open")
+//                    Log.e("test1","${file.name.endsWith(fileExtension)}")
+//                    Log.e("test2","${file.name.endsWith(fileExtension2)}")
+//                    Log.e("test3","${file.name.contains("AES_Encrypted")}")
                     fileNames.add(file.name)
                 }
             }

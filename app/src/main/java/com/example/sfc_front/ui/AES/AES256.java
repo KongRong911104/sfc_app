@@ -24,7 +24,6 @@ public class AES256 {
     public void encryptFile(File inputFile, File outputFile) throws Exception {
         SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey.getBytes(), AES_ALGORITHM);
         Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
-
         // 生成隨機初始化向量
         SecureRandom random = new SecureRandom();
         byte[] ivBytes = new byte[16];

@@ -104,8 +104,17 @@ class SignUp: AppCompatActivity() {
                         var status: String
                         client.newCall(request).enqueue(object : Callback {
                             override fun onFailure(call: Call, e: IOException) {
-                                // 请求失败处理
+                                // 检查异常类型和消息
+                                val errorMessage = when {
+                                    e.message?.contains("Unable to resolve host") == true -> "Please ensure your internet connection."
+                                    else -> "Server is broken."
+                                }
 
+                                // 在主线程中显示Toast消息
+                                runOnUiThread {
+                                    val duration = Toast.LENGTH_SHORT
+                                    Toast.makeText(this@SignUp, errorMessage, duration).show()
+                                }
                             }
 
                             override fun onResponse(call: Call, response: Response) {
@@ -116,6 +125,7 @@ class SignUp: AppCompatActivity() {
 
                                     // 从JSON对象中获取"status"字段
                                     status = jsonResponse.getString("status")
+                                    Log.e("kkkkkkk",status)
                                     if (status=="1"){
                                         val intent = Intent(this@SignUp, Login::class.java)
                                         startActivity(intent)
