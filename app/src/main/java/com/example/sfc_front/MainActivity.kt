@@ -37,13 +37,13 @@ import com.example.sfc_front.databinding.ActivityMainBinding
 import com.example.sfc_front.ui.FDAES.FDAES
 import com.google.android.material.navigation.NavigationView
 import java.io.File
-import java.io.FileInputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.concurrent.Executors
 import kotlin.system.exitProcess
 import android.widget.EditText
+import com.example.sfc_front.ui.library.library
 
 import com.example.sfc_front.SwitchStatus
 import com.example.sfc_front.ui.home.HomeFragment
@@ -55,6 +55,8 @@ import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Color
 import android.widget.ProgressBar
+import com.example.sfc_front.ui.library.JsonFileManager
+
 
 class MainActivity : AppCompatActivity() {
     val aes256 = AES256("sixsquare1234567")
@@ -227,24 +229,49 @@ class MainActivity : AppCompatActivity() {
 //                                    applicationContext,
 //                                    "Authentication succeeded!", Toast.LENGTH_SHORT
 //                                ).show()
-                                showInputDialog(
-                                    this@MainActivity,
-                                    "Please Enter Your Password",
-                                    "Confirm",
-                                    "Cancel",
-                                    { userInput ->
-                                        // 用户点击确定按钮后的处理逻辑，userInput 包含用户输入的文本
-                                        // 在这里添加你的代码
+                                val time = JsonFileManager.readJsonFile(this@MainActivity).getInt("IncorrectPasswordAttempts")
+                                if(time<3) {
+                                    showInputDialog(
+                                        this@MainActivity,
+                                        "Please Enter Your Password",
+                                        "Confirm",
+                                        "Cancel",
+                                        { userInput ->
+                                            // 用户点击确定按钮后的处理逻辑，userInput 包含用户输入的文本
+                                            // 在这里添加你的代码
+                                            if (userInput == "sixsquare1234567") {
+                                                JsonFileManager.updateJsonKey(this@MainActivity,"IncorrectPasswordAttempts","0")
+                                                Toast.makeText(
+                                                    this@MainActivity,
+                                                    "Authentication succeeded!",
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
+                                                startActivity(intent)
+                                            }
 //                                        Toast.makeText(this@MainActivity, "$userInput", Toast.LENGTH_SHORT).show()
-                                        Toast.makeText(this@MainActivity, "Authentication succeeded!", Toast.LENGTH_SHORT).show()
-                                        startActivity(intent)
+                                            else {
+                                                Toast.makeText(
+                                                    this@MainActivity,
+                                                    "Authentication failed!",
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
+                                                JsonFileManager.updateJsonKey(this@MainActivity,"IncorrectPasswordAttempts",(time+1).toString())
+                                            }
 
-                                    },
-                                    {
-                                        // 用户点击取消按钮后的处理逻辑
-                                    }
-                                )
 
+                                        },
+                                        {
+                                            // 用户点击取消按钮后的处理逻辑
+                                        }
+                                    )
+                                }
+                                else{
+                                    Toast.makeText(
+                                        this@MainActivity,
+                                        "your phone has been locked",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
 
                             }
                         }

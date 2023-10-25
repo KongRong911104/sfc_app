@@ -19,10 +19,18 @@ import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import org.json.JSONObject
 import java.io.IOException
+import com.example.sfc_front.ui.library.JsonFileManager
 
 class SignUp: AppCompatActivity() {
     @SuppressLint("SuspiciousIndentation")
     override fun onCreate(savedInstanceState: Bundle?) {
+        if(JsonFileManager.readJsonFile(this)!=null){
+            val intent = Intent(this@SignUp, Login::class.java)
+            startActivity(intent)
+        }
+        else{
+            JsonFileManager.createJsonFile(this);
+        }
         super.onCreate(savedInstanceState)
         setContentView(R.layout.sign_up) // 替换为您的布局文件
 
@@ -96,7 +104,7 @@ class SignUp: AppCompatActivity() {
                         json.put("password", password)
                         val requestBody = RequestBody.create("application/json".toMediaTypeOrNull(), json.toString())
                         val request = Request.Builder()
-                            .url("http://subject.explosion.nmg.cs.thu.edu.tw/init")
+                            .url("https://subject.explosion.nmg.cs.thu.edu.tw/init")
                             .post(requestBody)
                             .build()
                         var haveAccount=0;
