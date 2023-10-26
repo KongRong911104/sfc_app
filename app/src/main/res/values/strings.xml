@@ -24,7 +24,7 @@
     <string name="ball_text">0%</string>
     <string name="title_activity_note">NoteActivity</string>
     <string name="gender_prompt">Choose your gender</string>
-    <string name="pw_hint">Please enter your ID \nand Product Key,\nand retrieve your password via email.</string>
+    <string name="pw_hint">Input your \n ID,Product key.</string>
     <string-array name="gender_options">
         <item>Male</item>
         <item>Female</item>
