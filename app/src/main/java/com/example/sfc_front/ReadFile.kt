@@ -79,7 +79,7 @@ class ReadFile : AppCompatActivity() {
                 val files = directoryPath.listFiles() // 获取目录下的所有文件
 
                 for (file in files) {
-                    if (file.isFile && !file.name.startsWith("AES")) {
+                    if (file.isFile && (!file.name.contains("AES")&&!file.name.contains(".save"))) {
                         // 如果文件是不以 "AES" 开头的，就删除它
                         file.delete()
                     }

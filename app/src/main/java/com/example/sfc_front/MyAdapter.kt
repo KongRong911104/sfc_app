@@ -64,11 +64,12 @@ fun listFilesInDirectory(
                 fileExtension2
             ))
         ) {
-//            if (open == 1 && file.name.contains("Encrypted")) {
-//                fileNames.add(file.name)
-//            } else if (open == 0 && file.name.contains("AES_Encrypted") && !file.name.contains("FDAES_Encrypted")) {
+            if (open == 0 && file.name.contains("AES_Encrypted") && !file.name.contains("FDAES_Encrypted")){
                 fileNames.add(file.name)
-//            }
+            }
+            else if(open==1){
+                fileNames.add(file.name)
+            }
         }
 
     }
@@ -122,6 +123,9 @@ class MyAdapter(
                             aes256.decryptFile(fileToOpen, outputFile)
                             openFile(outputFile, context)
                             updateData(listFilesInDirectory(directoryPath, "", fileType, open))
+                        }
+                        else{
+                            openFile(fileToOpen, context)
                         }
 
 
@@ -363,6 +367,29 @@ class MyAdapter(
                 "Save" -> {
                     // 处理保存操作
                     // 在这里执行保存的逻辑
+                    val fileToOpen = File(context.getExternalFilesDir(null), fileName)
+                    val oldFileName = fileToOpen.nameWithoutExtension
+                    val extension = fileToOpen.extension
+                    if (oldFileName.contains("FDAES_Encrypted")) {
+                        val subString: String =
+                            oldFileName.subSequence(16, oldFileName.length) as String
+                        val outputFile = File(context.getExternalFilesDir(null),
+                            "$subString.save.$extension"
+                        )
+                        fdaes.FileDecryption_CBC(fileToOpen, outputFile)
+                        updateData(listFilesInDirectory(directoryPath, "", fileType, open))
+
+                    } else if (oldFileName.contains("AES_Encrypted")) {
+                        val subString: String =
+                            oldFileName.subSequence(14, oldFileName.length) as String
+                        val outputFile = File(context.getExternalFilesDir(null),
+                            "$subString.save.$extension"
+                        )
+                        aes256.decryptFile(fileToOpen, outputFile)
+                        updateData(listFilesInDirectory(directoryPath, "", fileType, open))
+                    } else {
+                        Toast.makeText(context, "already in plain text.", Toast.LENGTH_SHORT).show()
+                    }
 
                     true
                 }
