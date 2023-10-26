@@ -96,7 +96,7 @@ class SignUp: AppCompatActivity() {
                         json.put("password", password)
                         val requestBody = RequestBody.create("application/json".toMediaTypeOrNull(), json.toString())
                         val request = Request.Builder()
-                            .url("http://subject.explosion.nmg.cs.thu.edu.tw/init")
+                            .url("https://subject.explosion.nmg.cs.thu.edu.tw/init")
                             .post(requestBody)
                             .build()
                         var haveAccount=0;
