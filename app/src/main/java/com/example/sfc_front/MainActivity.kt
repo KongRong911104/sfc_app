@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
         val switch:Switch = findViewById(R.id.switchButton)
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.nav_home,R.id.nav_slideshow
+                R.id.nav_home,R.id.nav_slideshow,R.id.nav_gallery
             ), drawerLayout
         )
         viewModel = ViewModelProvider(this)[HomeViewModel::class.java] // 替換成你的 ViewModel 類別
