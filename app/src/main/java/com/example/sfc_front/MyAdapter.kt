@@ -64,7 +64,6 @@ fun listFilesInDirectory(
                 fileNames.add(file.name)
             } else if (open == 0 && file.name.contains("AES_Encrypted") && !file.name.contains("FDAES_Encrypted")) {
                 fileNames.add(file.name)
-
             }
         }
 
@@ -84,6 +83,12 @@ class MyAdapter(
     val fdaes = FDAES("sixsquare1234567")
     val aes256 = AES256("sixsquare1234567")
     var newFileName :String = ""
+    val OPEN_FILE_REQUEST_CODE = 123
+    private var fileOpenCallback: FileOpenCallback? = null
+
+    interface FileOpenCallback {
+        fun onFileOpenCompleted(file: File)
+    }
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val fileName: TextView = itemView.findViewById(R.id.file_name) // 通过ID找到文本视图
         val icon: ImageView = itemView.findViewById(R.id.view_icon) // 通过ID找到图标视图
@@ -226,7 +231,10 @@ class MyAdapter(
         intent.setDataAndType(uri, mime)
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         try {
+//            context.startActivityForResult(intent, OPEN_FILE_REQUEST_CODE)
             context.startActivity(intent)
+            fileOpenCallback?.onFileOpenCompleted(file)
+
         } catch (e: Exception) {
             Toast.makeText(context, "無法開啟檔案", Toast.LENGTH_SHORT).show()
         }
@@ -291,7 +299,9 @@ class MyAdapter(
 
         return fileNames
     }
-
+    fun setFileOpenCallback(callback: FileOpenCallback) {
+        fileOpenCallback = callback
+    }
     private fun showContextMenu(view: View, fileName: String) {
         val popupMenu = PopupMenu(context, view)
         val menu = popupMenu.menu
