@@ -25,7 +25,7 @@ class GalleryFragment : Fragment() {
 
         // 设置布局文件的内容
         slideshowViewModel.setLayoutContent(R.layout.help)
-        return rootgit 
+        return root
     }
 
 }
