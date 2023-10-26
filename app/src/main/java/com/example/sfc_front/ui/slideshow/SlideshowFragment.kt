@@ -56,19 +56,6 @@ class SlideshowFragment : Fragment() {
         }
         return root
     }
-//    pwButton.setOnClickListener {
-//        val idText = idEditText.text.toString()
-//        val productKeyText = productKeyEditText.text.toString()
-//
-//        if (idText.isEmpty() || productKeyText.isEmpty()) {
-//            // 如果任一输入字段为空，显示 "Value can't be null" 的 Toast 消息
-//            Toast.makeText(requireContext(), "Value can't be null", Toast.LENGTH_SHORT).show()
-//        } else {
-//            // 如果都不为空，显示 "Retrieve your password via email" 的 Toast 消息
-//            Toast.makeText(requireContext(), "Retrieve your password via email", Toast.LENGTH_SHORT).show()
-//            // 在这里添加发送密码到邮箱的逻辑
-//        }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

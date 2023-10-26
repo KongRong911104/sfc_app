@@ -94,86 +94,6 @@ class MainActivity : AppCompatActivity() {
         switch.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked){
                 Toast.makeText(this, "Cloud Backup in Progress.", Toast.LENGTH_SHORT).show()
-//                val executor: Executor = Executors.newSingleThreadExecutor()
-//
-//                // 創建生物識別驗證對話框
-//                biometricPrompt = BiometricPrompt(this, executor,
-//                    object : BiometricPrompt.AuthenticationCallback() {
-//                        override fun onAuthenticationError(
-//                            errorCode: Int,
-//                            errString: CharSequence
-//                        ) {
-//                            super.onAuthenticationError(errorCode, errString)
-//                            runOnUiThread {
-//
-//                                Toast.makeText(
-//                                    applicationContext,
-//                                    "Authentication error:  $errString", Toast.LENGTH_SHORT
-//                                ).show()
-//                                moveTaskToBack(true);
-//                                exitProcess(-1)
-//                            }
-//                        }
-//
-//                        override fun onAuthenticationSucceeded(
-//                            result: BiometricPrompt.AuthenticationResult
-//                        ) {
-//                            super.onAuthenticationSucceeded(result)
-//                            runOnUiThread {
-////                                Toast.makeText(
-////                                    applicationContext,
-////                                    "Authentication succeeded!", Toast.LENGTH_SHORT
-////                                ).show()
-//                                showInputDialog(
-//                                    this@MainActivity,
-//                                    "Please Enter Your Password",
-//                                    "Confirm",
-//                                    "Cancel",
-//                                    { userInput ->
-//                                        // 用户点击确定按钮后的处理逻辑，userInput 包含用户输入的文本
-//                                        // 在这里添加你的代码
-////                                        Toast.makeText(this@MainActivity, "$userInput", Toast.LENGTH_SHORT).show()
-//                                        Toast.makeText(this@MainActivity, "Authentication succeeded!", Toast.LENGTH_SHORT).show()
-//
-//                                    },
-//                                    {
-//                                        // 用户点击取消按钮后的处理逻辑
-//                                    }
-//                                )
-//
-//
-//                            }
-//                        }
-//
-//                        override fun onAuthenticationFailed() {
-//                            super.onAuthenticationFailed()
-//                            runOnUiThread {
-//
-//                                Toast.makeText(
-//                                    applicationContext, "Authentication failed",
-//                                    Toast.LENGTH_SHORT
-//                                ).show()
-//                                failAuthentication += 1
-//                                if (failAuthentication == 3){
-//                                    moveTaskToBack(true);
-//                                    exitProcess(-1)
-//                                }
-//                            }
-//                        }
-//                    })
-//                promptInfo = BiometricPrompt.PromptInfo.Builder()
-//                    .setTitle("Confirm Using Your Fingerprint")
-//                    .setSubtitle("You can use your fingerprint to confirm making payments through this app.")
-//                    .setAllowedAuthenticators(
-//                        BiometricManager.Authenticators.BIOMETRIC_WEAK
-//                    )
-//                    .setNegativeButtonText("Exit")
-//
-//                    .build()
-//
-//                // 開始生物識別驗證
-//                biometricPrompt.authenticate(promptInfo)
-
             }
             else{
                 Toast.makeText(this, "Cloud Backup has been turned off", Toast.LENGTH_SHORT).show()
@@ -181,23 +101,23 @@ class MainActivity : AppCompatActivity() {
         }
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
-        val noteButton = findViewById<ImageButton>(R.id.note_button)
-        noteButton.setOnClickListener{
-            val intent = Intent(this, NoteActivity::class.java)
-            val s = switch.isChecked
-            intent.putExtra("status", s)
-            Log.e("test","$s")
-            startActivity(intent)
-        }
-        val takePictureButton = findViewById<ImageButton>(R.id.camera_button)
-        // 设置点击事件，调用拍照方法
-        takePictureButton.setOnClickListener {
-            takeAPhoto()
-        }
-        val takeVideoButton = findViewById<ImageButton>(R.id.video_button)
-        takeVideoButton.setOnClickListener {
-            takeAVideo()
-        }
+//        val noteButton = findViewById<ImageButton>(R.id.note_button)
+//        noteButton.setOnClickListener{
+//            val intent = Intent(this, NoteActivity::class.java)
+//            val s = switch.isChecked
+//            intent.putExtra("status", s)
+//            Log.e("test","$s")
+//            startActivity(intent)
+//        }
+//        val takePictureButton = findViewById<ImageButton>(R.id.camera_button)
+//        // 设置点击事件，调用拍照方法
+//        takePictureButton.setOnClickListener {
+//            takeAPhoto()
+//        }
+//        val takeVideoButton = findViewById<ImageButton>(R.id.video_button)
+//        takeVideoButton.setOnClickListener {
+//            takeAVideo()
+//        }
         val readFileButton = findViewById<ImageButton>(R.id.read_file_button)
         readFileButton.setOnClickListener {
 
@@ -385,49 +305,49 @@ class MainActivity : AppCompatActivity() {
             protectFile()
         }
         // 注册一个用于接收拍照结果的ActivityResultLauncher
-        takePictureLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { isTaken ->
-            if (isTaken) {
-                Toast.makeText(this, "Photo has been taken and saved", Toast.LENGTH_SHORT).show()
-
-                val inputFile  = File(getExternalFilesDir(null), FileName)
-
-                val executor = Executors.newSingleThreadExecutor()
-
-                executor.execute {
-                    try {
-                        runOnUiThread {
-                            ballText.setTextColor(Color.parseColor("#FFFFFFFF"))
-                            ball.progressDrawable = resources.getDrawable(R.drawable.ball, null)
-                        }
-//                        val switch : Switch = findViewById<Switch>(R.id.switchButton)
-
-//                        if (switch.isChecked){
-//                            val outputFile=File(getExternalFilesDir(null),"FDAES_Encrypted_$FileName")
-//                            fdaes.FileEncryption_CBC(inputFile,outputFile)
+//        takePictureLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { isTaken ->
+//            if (isTaken) {
+//                Toast.makeText(this, "Photo has been taken and saved", Toast.LENGTH_SHORT).show()
+//
+//                val inputFile  = File(getExternalFilesDir(null), FileName)
+//
+//                val executor = Executors.newSingleThreadExecutor()
+//
+//                executor.execute {
+//                    try {
+//                        runOnUiThread {
+//                            ballText.setTextColor(Color.parseColor("#FFFFFFFF"))
+//                            ball.progressDrawable = resources.getDrawable(R.drawable.ball, null)
 //                        }
-//                        else{
-                        val outputFile=File(getExternalFilesDir(null),"AES_Encrypted_$FileName")
-                            // 在線程池中執行加密操作
-                        aes256.encryptFile(inputFile, outputFile)
+////                        val switch : Switch = findViewById<Switch>(R.id.switchButton)
+//
+////                        if (switch.isChecked){
+////                            val outputFile=File(getExternalFilesDir(null),"FDAES_Encrypted_$FileName")
+////                            fdaes.FileEncryption_CBC(inputFile,outputFile)
+////                        }
+////                        else{
+//                        val outputFile=File(getExternalFilesDir(null),"AES_Encrypted_$FileName")
+//                            // 在線程池中執行加密操作
+//                        aes256.encryptFile(inputFile, outputFile)
+////                        }
+//
+//
+//                        // 刪除inputFile
+//                        if (inputFile.exists()) {
+//                            inputFile.delete()
 //                        }
-
-
-                        // 刪除inputFile
-                        if (inputFile.exists()) {
-                            inputFile.delete()
-                        }
-                    } finally {
-                        runOnUiThread {
-                            ballText.setTextColor(Color.parseColor("#00FFFFFF"))
-                            ball.progressDrawable = resources.getDrawable(R.drawable.logo, null)
-                        }
-                        executor.shutdown()
-                    }
-                }
-            } else {
-                Toast.makeText(this, "Unable to take a photo", Toast.LENGTH_SHORT).show()
-            }
-        }
+//                    } finally {
+//                        runOnUiThread {
+//                            ballText.setTextColor(Color.parseColor("#00FFFFFF"))
+//                            ball.progressDrawable = resources.getDrawable(R.drawable.logo, null)
+//                        }
+//                        executor.shutdown()
+//                    }
+//                }
+//            } else {
+//                Toast.makeText(this, "Unable to take a photo", Toast.LENGTH_SHORT).show()
+//            }
+//        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -440,64 +360,64 @@ class MainActivity : AppCompatActivity() {
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
-    private fun takeAPhoto() {
-        // 检查相机权限
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), REQUEST_CAMERA_PERMISSION)
-            return
-        }
-
-        // 创建保存照片的目录
-        val photoDirectory = File(getExternalFilesDir(null), "")
-        // 创建文件名
-        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-        val photoFileName = "IMG_$timeStamp.png"
-        //等關閉後執行加密用
-        FileName = photoFileName
-        // 创建文件
-        val photoFile = File(photoDirectory, photoFileName)
-
-        val photoUri = FileProvider.getUriForFile(this, "com.example.sfc_front.fileprovider", photoFile)
-
-
-        // 启动拍照 Intent
-        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
-        // 启动拍照
-        takePictureLauncher.launch(photoUri)
-
-    }
-    private fun takeAVideo() {
-        // 检查相机和录制视频的权限
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
-            ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO), REQUEST_VIDEO_PERMISSION)
-            return
-        }
-
-        // 创建保存视频的目录
-        val videoDirectory = File(getExternalFilesDir(null), "")
-        if (!videoDirectory.exists()) {
-            videoDirectory.mkdirs()
-        }
-
-        // 创建文件名
-        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-        val videoFileName = "VID_$timeStamp.mp4"
-        //等關閉後執行加密用
-        FileName = videoFileName
-        // 创建文件
-        val videoFile = File(videoDirectory, videoFileName)
-
-        val videoUri = FileProvider.getUriForFile(this, "com.example.sfc_front.fileprovider", videoFile)
-
-        // 启动视频录制 Intent
-        val takeVideoIntent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
-        takeVideoIntent.putExtra(MediaStore.EXTRA_OUTPUT, videoUri)
-
-        // 启动录制视频
-        startActivityForResult(takeVideoIntent, REQUEST_VIDEO_CAPTURE)
-    }
+//    private fun takeAPhoto() {
+//        // 检查相机权限
+//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+//            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), REQUEST_CAMERA_PERMISSION)
+//            return
+//        }
+//
+//        // 创建保存照片的目录
+//        val photoDirectory = File(getExternalFilesDir(null), "")
+//        // 创建文件名
+//        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+//        val photoFileName = "IMG_$timeStamp.png"
+//        //等關閉後執行加密用
+//        FileName = photoFileName
+//        // 创建文件
+//        val photoFile = File(photoDirectory, photoFileName)
+//
+//        val photoUri = FileProvider.getUriForFile(this, "com.example.sfc_front.fileprovider", photoFile)
+//
+//
+//        // 启动拍照 Intent
+//        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+//        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
+//        // 启动拍照
+//        takePictureLauncher.launch(photoUri)
+//
+//    }
+//    private fun takeAVideo() {
+//        // 检查相机和录制视频的权限
+//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
+//            ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+//            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO), REQUEST_VIDEO_PERMISSION)
+//            return
+//        }
+//
+//        // 创建保存视频的目录
+//        val videoDirectory = File(getExternalFilesDir(null), "")
+//        if (!videoDirectory.exists()) {
+//            videoDirectory.mkdirs()
+//        }
+//
+//        // 创建文件名
+//        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+//        val videoFileName = "VID_$timeStamp.mp4"
+//        //等關閉後執行加密用
+//        FileName = videoFileName
+//        // 创建文件
+//        val videoFile = File(videoDirectory, videoFileName)
+//
+//        val videoUri = FileProvider.getUriForFile(this, "com.example.sfc_front.fileprovider", videoFile)
+//
+//        // 启动视频录制 Intent
+//        val takeVideoIntent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
+//        takeVideoIntent.putExtra(MediaStore.EXTRA_OUTPUT, videoUri)
+//
+//        // 启动录制视频
+//        startActivityForResult(takeVideoIntent, REQUEST_VIDEO_CAPTURE)
+//    }
 
     private fun protectFile() {
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
@@ -653,8 +573,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
-        private const val REQUEST_CAMERA_PERMISSION = 101
-        private const val REQUEST_VIDEO_PERMISSION = 102
-        private const val REQUEST_VIDEO_CAPTURE = 103
+        const val REQUEST_CAMERA_PERMISSION = 101
+        const val REQUEST_VIDEO_PERMISSION = 102
+        const val REQUEST_VIDEO_CAPTURE = 103
     }
 }
