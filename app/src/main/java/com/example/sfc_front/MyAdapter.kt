@@ -1,5 +1,7 @@
 package com.example.sfc_front
 
+import android.app.Activity
+import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -14,6 +16,8 @@ import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
@@ -60,11 +64,11 @@ fun listFilesInDirectory(
                 fileExtension2
             ))
         ) {
-            if (open == 1 && file.name.contains("Encrypted")) {
+//            if (open == 1 && file.name.contains("Encrypted")) {
+//                fileNames.add(file.name)
+//            } else if (open == 0 && file.name.contains("AES_Encrypted") && !file.name.contains("FDAES_Encrypted")) {
                 fileNames.add(file.name)
-            } else if (open == 0 && file.name.contains("AES_Encrypted") && !file.name.contains("FDAES_Encrypted")) {
-                fileNames.add(file.name)
-            }
+//            }
         }
 
     }
@@ -78,14 +82,15 @@ class MyAdapter(
     private val context: AppCompatActivity,
     private val open: Int = 1,
     private val directoryPath: File,
-    private val fileType: String
+    private val fileType: String,
+    private var resultLauncher: ActivityResultLauncher<Intent>
 ) : RecyclerView.Adapter<MyAdapter.ViewHolder>() {
     val fdaes = FDAES("sixsquare1234567")
     val aes256 = AES256("sixsquare1234567")
     var newFileName :String = ""
     val OPEN_FILE_REQUEST_CODE = 123
     private var fileOpenCallback: FileOpenCallback? = null
-
+//    val RESULT_OK = 777
     interface FileOpenCallback {
         fun onFileOpenCompleted(file: File)
     }
@@ -121,6 +126,7 @@ class MyAdapter(
 
 
                     }
+
 
                 }
                 itemView.setOnLongClickListener {
@@ -231,9 +237,16 @@ class MyAdapter(
         intent.setDataAndType(uri, mime)
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         try {
+            val name = file.name
+            intent.putExtra("key",name.toString())
+            Log.e("test","$name")
 //            context.startActivityForResult(intent, OPEN_FILE_REQUEST_CODE)
-            context.startActivity(intent)
-            fileOpenCallback?.onFileOpenCompleted(file)
+//            context.setResult(RESULT_OK,intent)
+//            context.finish()
+            resultLauncher.launch(intent)
+
+//            context.startActivity(intent)
+//            fileOpenCallback?.onFileOpenCompleted(file)
 
         } catch (e: Exception) {
             Toast.makeText(context, "無法開啟檔案", Toast.LENGTH_SHORT).show()
@@ -281,18 +294,18 @@ class MyAdapter(
                     fileExtension2
                 ))
             ) {
-                if (open == 1 && file.name.contains("Encrypted")) {
-                    fileNames.add(file.name)
-                } else if (open == 0 && (file.name.endsWith(fileExtension) || file.name.endsWith(
-                        fileExtension2
-                    )) && file.name.contains("AES_Encrypted") && !file.name.contains("FDAES_Encrypted")
-                ) {
+//                if (open == 1 && file.name.contains("Encrypted")) {
+//                    fileNames.add(file.name)
+//                } else if (open == 0 && (file.name.endsWith(fileExtension) || file.name.endsWith(
+//                        fileExtension2
+//                    )) && file.name.contains("AES_Encrypted") && !file.name.contains("FDAES_Encrypted")
+//                ) {
 //                    Log.e("test0","$open")
 //                    Log.e("test1","${file.name.endsWith(fileExtension)}")
 //                    Log.e("test2","${file.name.endsWith(fileExtension2)}")
 //                    Log.e("test3","${file.name.contains("AES_Encrypted")}")
                     fileNames.add(file.name)
-                }
+//                }
             }
 
         }
