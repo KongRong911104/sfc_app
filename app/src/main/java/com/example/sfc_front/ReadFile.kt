@@ -4,12 +4,14 @@ import android.os.Bundle
 import android.os.StrictMode
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.widget.EditText
 import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import java.io.File
 
 
 class ReadFile : AppCompatActivity() {
@@ -69,6 +71,17 @@ class ReadFile : AppCompatActivity() {
                     fileType = ".png"
                     val fileNames = directoryPath?.let { listFilesInDirectory(it, userInput, ".png") }
                     val adapter = fileNames?.let { MyAdapter(it, R.drawable.photo_file, this@ReadFile,directoryPath = directoryPath, fileType = ".png") }
+                    if (adapter != null) {
+                        adapter.setFileOpenCallback(object : MyAdapter.FileOpenCallback {
+                            override fun onFileOpenCompleted(file: File) {
+                                // 在这里执行文件打开操作完成后的逻辑
+                                // 例如，刷新数据或执行其他操作
+                                Log.e("test","delete file")
+                                file.delete()
+                            }
+
+                        })
+                    }
                     recyclerView.adapter = adapter
                     true
                 }
@@ -102,6 +115,7 @@ class ReadFile : AppCompatActivity() {
                 }
                 else -> false
             }
+
         }
     }
 }

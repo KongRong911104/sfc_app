@@ -71,7 +71,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var takePictureLauncher: ActivityResultLauncher<Uri>
     private var FileName =""
-    private val FILE_VIEW_REQUEST_CODE = 123
+    private val OPEN_FILE_REQUEST_CODE = 123
+
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -588,6 +589,16 @@ class MainActivity : AppCompatActivity() {
                     Log.e("Error", "Error while processing file: ${e.message}")
                 }
 
+            }
+        }
+        if (requestCode == OPEN_FILE_REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                // 用户完成了文件操作
+                // 在这里执行你的操作，例如文件已被编辑或保存
+                Log.e("test","watch file end")
+            } else {
+                // 用户取消了文件操作或出现错误
+                Log.e("test","watch file fail")
             }
         }
 
