@@ -19,10 +19,18 @@ import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import org.json.JSONObject
 import java.io.IOException
+import com.example.sfc_front.ui.library.JsonFileManager
 
 class SignUp: AppCompatActivity() {
     @SuppressLint("SuspiciousIndentation")
     override fun onCreate(savedInstanceState: Bundle?) {
+        if(JsonFileManager.readJsonFile(this)!=null){
+            val intent = Intent(this@SignUp, Login::class.java)
+            startActivity(intent)
+        }
+        else{
+            JsonFileManager.createJsonFile(this);
+        }
         super.onCreate(savedInstanceState)
         setContentView(R.layout.sign_up) // 替换为您的布局文件
 

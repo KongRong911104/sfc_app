@@ -37,13 +37,13 @@ import com.example.sfc_front.databinding.ActivityMainBinding
 import com.example.sfc_front.ui.FDAES.FDAES
 import com.google.android.material.navigation.NavigationView
 import java.io.File
-import java.io.FileInputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.concurrent.Executors
 import kotlin.system.exitProcess
 import android.widget.EditText
+import com.example.sfc_front.ui.library.library
 
 import com.example.sfc_front.SwitchStatus
 import com.example.sfc_front.ui.home.HomeFragment
@@ -56,9 +56,14 @@ import android.content.DialogInterface
 import android.graphics.Color
 import android.text.InputType
 import android.widget.ProgressBar
-//import kotlinx.coroutines.scheduling.DefaultScheduler.executor
 
+//import kotlinx.coroutines.scheduling.DefaultScheduler.executor
+//
 //import kotlinx.coroutines.scheduling.DefaultIoScheduler.executor
+
+import com.example.sfc_front.ui.library.JsonFileManager
+
+
 
 class MainActivity : AppCompatActivity() {
     val aes256 = AES256("sixsquare1234567")
@@ -71,7 +76,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var takePictureLauncher: ActivityResultLauncher<Uri>
     private var FileName =""
-    private val FILE_VIEW_REQUEST_CODE = 123
+    private val OPEN_FILE_REQUEST_CODE = 123
+    private val password = ""
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -118,192 +124,261 @@ class MainActivity : AppCompatActivity() {
 //        takeVideoButton.setOnClickListener {
 //            takeAVideo()
 //        }
-        val readFileButton = findViewById<ImageButton>(R.id.read_file_button)
-        readFileButton.setOnClickListener {
-
-            val intent = Intent(this, ReadFile::class.java)
-            val executor: Executor = Executors.newSingleThreadExecutor()
-
-                // 創建生物識別驗證對話框
-                biometricPrompt = BiometricPrompt(this, executor,
-                    object : BiometricPrompt.AuthenticationCallback() {
-                        override fun onAuthenticationError(
-                            errorCode: Int,
-                            errString: CharSequence
-                        ) {
-                            super.onAuthenticationError(errorCode, errString)
-                            runOnUiThread {
-
-                                Toast.makeText(
-                                    applicationContext,
-                                    "Authentication error:  $errString", Toast.LENGTH_SHORT
-                                ).show()
-//                                moveTaskToBack(true);
-//                                exitProcess(-1)
-                            }
-                        }
-
-                        override fun onAuthenticationSucceeded(
-                            result: BiometricPrompt.AuthenticationResult
-                        ) {
-                            super.onAuthenticationSucceeded(result)
-                            runOnUiThread {
-//                                Toast.makeText(
-//                                    applicationContext,
-//                                    "Authentication succeeded!", Toast.LENGTH_SHORT
-//                                ).show()
-                                showInputDialog(
-                                    this@MainActivity,
-                                    "Please Enter Your Password",
-                                    "Confirm",
-                                    "Cancel",
-                                    { userInput ->
-                                        // 用户点击确定按钮后的处理逻辑，userInput 包含用户输入的文本
-                                        // 在这里添加你的代码
-//                                        Toast.makeText(this@MainActivity, "$userInput", Toast.LENGTH_SHORT).show()
-                                        Toast.makeText(this@MainActivity, "Authentication succeeded!", Toast.LENGTH_SHORT).show()
-                                        startActivity(intent)
-
-                                    },
-                                    {
-                                        // 用户点击取消按钮后的处理逻辑
-                                    }
-                                )
-
-
-                            }
-                        }
-
-                        override fun onAuthenticationFailed() {
-                            super.onAuthenticationFailed()
-                            runOnUiThread {
-
-                                Toast.makeText(
-                                    applicationContext, "Authentication failed",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                                failAuthentication += 1
-                                if (failAuthentication == 3){
-//                                    moveTaskToBack(true);
-//                                    exitProcess(-1)
-                                }
-                            }
-                        }
-                    })
-                promptInfo = BiometricPrompt.PromptInfo.Builder()
-                    .setTitle("Confirm Using Your Fingerprint")
-                    .setSubtitle("You can use your fingerprint to confirm making payments through this app.")
-                    .setAllowedAuthenticators(
-                        BiometricManager.Authenticators.BIOMETRIC_WEAK or BiometricManager.Authenticators.BIOMETRIC_STRONG
-                    )
-                    .setNegativeButtonText("Exit")
-
-                    .build()
-
-                // 開始生物識別驗證
-                biometricPrompt.authenticate(promptInfo)
-
-
-
-
+//        val readFileButton = findViewById<ImageButton>(R.id.read_file_button)
+//        readFileButton.setOnClickListener {
+//
 //            val intent = Intent(this, ReadFile::class.java)
-//            startActivity(intent)
-        }
-        val fileUpgradeButton = findViewById<ImageButton>(R.id.file_upgrade_button)
-        fileUpgradeButton.setOnClickListener {
-
-            val executor: Executor = Executors.newSingleThreadExecutor()
-            val intent = Intent(this, FileUpgrade::class.java)
-
-
-            // 創建生物識別驗證對話框
-            biometricPrompt = BiometricPrompt(this, executor,
-                object : BiometricPrompt.AuthenticationCallback() {
-                    override fun onAuthenticationError(
-                        errorCode: Int,
-                        errString: CharSequence
-                    ) {
-                        super.onAuthenticationError(errorCode, errString)
-                        runOnUiThread {
-
-                            Toast.makeText(
-                                applicationContext,
-                                "Authentication error:  $errString", Toast.LENGTH_SHORT
-                            ).show()
-//                                moveTaskToBack(true);
-//                                exitProcess(-1)
-                        }
-                    }
-
-                    override fun onAuthenticationSucceeded(
-                        result: BiometricPrompt.AuthenticationResult
-                    ) {
-                        super.onAuthenticationSucceeded(result)
-                        runOnUiThread {
+//            val executor: Executor = Executors.newSingleThreadExecutor()
+//
+//                // 創建生物識別驗證對話框
+//                biometricPrompt = BiometricPrompt(this, executor,
+//                    object : BiometricPrompt.AuthenticationCallback() {
+//                        override fun onAuthenticationError(
+//                            errorCode: Int,
+//                            errString: CharSequence
+//                        ) {
+//                            super.onAuthenticationError(errorCode, errString)
+//                            runOnUiThread {
+//
 //                                Toast.makeText(
 //                                    applicationContext,
-//                                    "Authentication succeeded!", Toast.LENGTH_SHORT
+//                                    "Authentication error:  $errString", Toast.LENGTH_SHORT
 //                                ).show()
-                            showInputDialog(
-                                this@MainActivity,
-                                "Please Enter Your Password",
-                                "Confirm",
-                                "Cancel",
-                                { userInput ->
-                                    // 用户点击确定按钮后的处理逻辑，userInput 包含用户输入的文本
-                                    // 在这里添加你的代码
-//                                        Toast.makeText(this@MainActivity, "$userInput", Toast.LENGTH_SHORT).show()
-                                    Toast.makeText(this@MainActivity, "Authentication succeeded!", Toast.LENGTH_SHORT).show()
-                                    startActivity(intent)
-
-                                },
-                                {
-                                    // 用户点击取消按钮后的处理逻辑
-                                }
-                            )
-
-
-                        }
-                    }
-
-                    override fun onAuthenticationFailed() {
-                        super.onAuthenticationFailed()
-                        runOnUiThread {
-
-                            Toast.makeText(
-                                applicationContext, "Authentication failed",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            failAuthentication += 1
-                            if (failAuthentication == 3){
-//                                    moveTaskToBack(true);
-//                                    exitProcess(-1)
-                            }
-                        }
-                    }
-                })
-            promptInfo = BiometricPrompt.PromptInfo.Builder()
-                .setTitle("Confirm Using Your Face")
-                .setSubtitle("You can use your face to confirm making payments through this app.")
-                .setAllowedAuthenticators(
-                    BiometricManager.Authenticators.BIOMETRIC_WEAK
-                )
-                .setNegativeButtonText("Exit")
-                .build()
-
-            // 開始生物識別驗證
-            biometricPrompt.authenticate(promptInfo)
-        }
+////                                moveTaskToBack(true);
+////                                exitProcess(-1)
+//                            }
+//                        }
+//                        override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+//                            super.onAuthenticationSucceeded(result)
+//                            runOnUiThread {
+//                                val maxAttempts = 3 // 最大尝试次数
+//                                var time = JsonFileManager.readJsonFile(this@MainActivity).getInt("IncorrectPasswordAttempts")
+//
+//                                if (time < maxAttempts) {
+//                                    showInputDialog(
+//                                        this@MainActivity,
+//                                        "Please Enter Your Password",
+//                                        "Confirm",
+//                                        "Cancel",
+//                                        { userInput ->
+//                                            if (userInput == password) {
+//                                                JsonFileManager.updateJsonKey(this@MainActivity, "IncorrectPasswordAttempts", "0")
+//                                                Toast.makeText(this@MainActivity, "Authentication succeeded!", Toast.LENGTH_SHORT).show()
+//                                                startActivity(intent)
+//                                            } else {
+//                                                Toast.makeText(this@MainActivity, "Authentication failed!", Toast.LENGTH_SHORT).show()
+//                                                JsonFileManager.updateJsonKey(this@MainActivity, "IncorrectPasswordAttempts", (time + 1).toString())
+//                                                time = JsonFileManager.readJsonFile(this@MainActivity).getInt("IncorrectPasswordAttempts")
+//                                                // 如果尝试次数未达到最大次数，再次显示密码输入对话框
+//                                                if (time < maxAttempts) {
+//                                                    onAuthenticationSucceeded(result)
+//                                                } else {
+//                                                    Toast.makeText(this@MainActivity, "Exceeded maximum attempts. Your phone has been locked.", Toast.LENGTH_SHORT).show()
+//                                                }
+//                                            }
+//                                        },
+//                                        {
+//                                            // 用户点击取消按钮后的处理逻辑
+//                                        }
+//                                    )
+//                                } else {
+//                                    Toast.makeText(this@MainActivity, "Your phone has been locked.", Toast.LENGTH_SHORT).show()
+//                                }
+//                            }
+//                        }
+//
+////                        override fun onAuthenticationSucceeded(
+////                            result: BiometricPrompt.AuthenticationResult
+////                        ) {
+////                            super.onAuthenticationSucceeded(result)
+////                            runOnUiThread {
+//////                                Toast.makeText(
+//////                                    applicationContext,
+//////                                    "Authentication succeeded!", Toast.LENGTH_SHORT
+//////                                ).show()
+////                                val time = JsonFileManager.readJsonFile(this@MainActivity).getInt("IncorrectPasswordAttempts")
+////                                if(time<3) {
+////                                    showInputDialog(
+////                                        this@MainActivity,
+////                                        "Please Enter Your Password",
+////                                        "Confirm",
+////                                        "Cancel",
+////                                        { userInput ->
+////                                            // 用户点击确定按钮后的处理逻辑，userInput 包含用户输入的文本
+////                                            // 在这里添加你的代码
+////                                            if (userInput == password) {
+////                                                JsonFileManager.updateJsonKey(this@MainActivity,"IncorrectPasswordAttempts","0")
+////                                                Toast.makeText(
+////                                                    this@MainActivity,
+////                                                    "Authentication succeeded!",
+////                                                    Toast.LENGTH_SHORT
+////                                                ).show()
+////                                                startActivity(intent)
+////                                            }
+//////                                        Toast.makeText(this@MainActivity, "$userInput", Toast.LENGTH_SHORT).show()
+////                                            else {
+////                                                Toast.makeText(
+////                                                    this@MainActivity,
+////                                                    "Authentication failed!",
+////                                                    Toast.LENGTH_SHORT
+////                                                ).show()
+////                                                JsonFileManager.updateJsonKey(this@MainActivity,"IncorrectPasswordAttempts",(time+1).toString())
+////                                            }
+////                                        },
+////                                        {
+////                                            // 用户点击取消按钮后的处理逻辑
+////                                        }
+////                                    )
+////                                }
+////                                else{
+////                                    Toast.makeText(
+////                                        this@MainActivity,
+////                                        "your phone has been locked",
+////                                        Toast.LENGTH_SHORT
+////                                    ).show()
+////                                }
+////
+////                            }
+////                        }
+//
+//                        override fun onAuthenticationFailed() {
+//                            super.onAuthenticationFailed()
+//                            runOnUiThread {
+//
+//                                Toast.makeText(
+//                                    applicationContext, "Authentication failed",
+//                                    Toast.LENGTH_SHORT
+//                                ).show()
+//                                failAuthentication += 1
+//                                if (failAuthentication == 3){
+////                                    moveTaskToBack(true);
+////                                    exitProcess(-1)
+//                                }
+//                            }
+//                        }
+//                    })
+//                promptInfo = BiometricPrompt.PromptInfo.Builder()
+//                    .setTitle("Confirm Using Your Fingerprint")
+//                    .setSubtitle("You can use your fingerprint to confirm making payments through this app.")
+//                    .setAllowedAuthenticators(
+//                        BiometricManager.Authenticators.BIOMETRIC_WEAK or BiometricManager.Authenticators.BIOMETRIC_STRONG
+//                    )
+//                    .setNegativeButtonText("Exit")
+//
+//                    .build()
+//
+//                // 開始生物識別驗證
+//                biometricPrompt.authenticate(promptInfo)
+//
+//
+//
+//
+////            val intent = Intent(this, ReadFile::class.java)
+////            startActivity(intent)
+//        }
+//        val fileUpgradeButton = findViewById<ImageButton>(R.id.file_upgrade_button)
+//        fileUpgradeButton.setOnClickListener {
+//
+//            val executor: Executor = Executors.newSingleThreadExecutor()
+//            val intent = Intent(this, FileUpgrade::class.java)
+//
+//
+//            // 創建生物識別驗證對話框
+//            biometricPrompt = BiometricPrompt(this, executor,
+//                object : BiometricPrompt.AuthenticationCallback() {
+//                    override fun onAuthenticationError(
+//                        errorCode: Int,
+//                        errString: CharSequence
+//                    ) {
+//                        super.onAuthenticationError(errorCode, errString)
+//                        runOnUiThread {
+//
+//                            Toast.makeText(
+//                                applicationContext,
+//                                "Authentication error:  $errString", Toast.LENGTH_SHORT
+//                            ).show()
+////                                moveTaskToBack(true);
+////                                exitProcess(-1)
+//                        }
+//                    }
+//
+//                    override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+//                        super.onAuthenticationSucceeded(result)
+//                        runOnUiThread {
+//                            val maxAttempts = 3 // 最大尝试次数
+//                            var time = JsonFileManager.readJsonFile(this@MainActivity).getInt("IncorrectPasswordAttempts")
+//
+//                            if (time < maxAttempts) {
+//                                showInputDialog(
+//                                    this@MainActivity,
+//                                    "Please Enter Your Password",
+//                                    "Confirm",
+//                                    "Cancel",
+//                                    { userInput ->
+//                                        if (userInput == password) {
+//                                            JsonFileManager.updateJsonKey(this@MainActivity, "IncorrectPasswordAttempts", "0")
+//                                            Toast.makeText(this@MainActivity, "Authentication succeeded!", Toast.LENGTH_SHORT).show()
+//                                            startActivity(intent)
+//                                        } else {
+//                                            Toast.makeText(this@MainActivity, "Authentication failed!", Toast.LENGTH_SHORT).show()
+//                                            JsonFileManager.updateJsonKey(this@MainActivity, "IncorrectPasswordAttempts", (time + 1).toString())
+//                                            time = JsonFileManager.readJsonFile(this@MainActivity).getInt("IncorrectPasswordAttempts")
+//                                            // 如果尝试次数未达到最大次数，再次显示密码输入对话框
+//                                            if (time < maxAttempts) {
+//                                                onAuthenticationSucceeded(result)
+//                                            } else {
+//                                                Toast.makeText(this@MainActivity, "Exceeded maximum attempts. Your phone has been locked.", Toast.LENGTH_SHORT).show()
+//                                            }
+//                                        }
+//                                    },
+//                                    {
+//                                        // 用户点击取消按钮后的处理逻辑
+//                                    }
+//                                )
+//                            } else {
+//                                Toast.makeText(this@MainActivity, "Your phone has been locked.", Toast.LENGTH_SHORT).show()
+//                            }
+//                        }
+//                    }
+//
+//                    override fun onAuthenticationFailed() {
+//                        super.onAuthenticationFailed()
+//                        runOnUiThread {
+//
+//                            Toast.makeText(
+//                                applicationContext, "Authentication failed",
+//                                Toast.LENGTH_SHORT
+//                            ).show()
+//                            failAuthentication += 1
+//                            if (failAuthentication == 3){
+////                                    moveTaskToBack(true);
+////                                    exitProcess(-1)
+//                            }
+//                        }
+//                    }
+//                })
+//            promptInfo = BiometricPrompt.PromptInfo.Builder()
+//                .setTitle("Confirm Using Your Face")
+//                .setSubtitle("You can use your face to confirm making payments through this app.")
+//                .setAllowedAuthenticators(
+//                    BiometricManager.Authenticators.BIOMETRIC_WEAK
+//                )
+//                .setNegativeButtonText("Exit")
+//                .build()
+//
+//            // 開始生物識別驗證
+//            biometricPrompt.authenticate(promptInfo)
+//        }
         val goBack = findViewById<TextView>(R.id.logout)
         goBack.setOnClickListener {
             moveTaskToBack(true);
             exitProcess(-1)
         }
-        val fileProtectButton : ImageButton = findViewById(R.id.file_protection_button)
-        fileProtectButton.setOnClickListener{
-
-            protectFile()
-        }
+//        val fileProtectButton : ImageButton = findViewById(R.id.file_protection_button)
+//        fileProtectButton.setOnClickListener{
+//
+//            protectFile()
+//        }
         // 注册一个用于接收拍照结果的ActivityResultLauncher
 //        takePictureLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { isTaken ->
 //            if (isTaken) {
@@ -419,19 +494,19 @@ class MainActivity : AppCompatActivity() {
 //        startActivityForResult(takeVideoIntent, REQUEST_VIDEO_CAPTURE)
 //    }
 
-    private fun protectFile() {
-        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-            addCategory(Intent.CATEGORY_OPENABLE)
-            type = "*/*"
-
-            // Optionally, specify a URI for the file that should appear in the
-            // system file picker when it loads.
-//            putExtra(DocumentsContract.EXTRA_INITIAL_URI, pickerInitialUri)
-
-        }
-
-        startActivityForResult(intent, 2)
-    }
+//    private fun protectFile() {
+//        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+//            addCategory(Intent.CATEGORY_OPENABLE)
+//            type = "*/*"
+//
+//            // Optionally, specify a URI for the file that should appear in the
+//            // system file picker when it loads.
+////            putExtra(DocumentsContract.EXTRA_INITIAL_URI, pickerInitialUri)
+//
+//        }
+//
+//        startActivityForResult(intent, 2)
+//    }
 //    @SuppressLint("UseSwitchCompatOrMaterialCode")
 //    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
 //        super.onActivityResult(requestCode, resultCode, data)
@@ -530,6 +605,7 @@ class MainActivity : AppCompatActivity() {
 //
 //        return fileName
 //    }
+
     fun showInputDialog(context: Context, title: String, positiveButtonText: String, negativeButtonText: String, onPositiveClick: (String) -> Unit, onNegativeClick: () -> Unit) {
         val alertDialogBuilder = AlertDialog.Builder(context)
         val inputEditText = EditText(context)

@@ -53,6 +53,7 @@ android {
 }
 
 dependencies {
+    implementation("com.fasterxml.jackson.core", "jackson-databind", "2.12.7.1")
     implementation("androidx.camera:camera-core:1.2.2")
     implementation("androidx.camera:camera-camera2:1.2.2")
     implementation("androidx.camera:camera-lifecycle:1.2.2")

@@ -54,7 +54,9 @@ import android.content.DialogInterface
 import android.text.InputType
 import android.widget.EditText
 import androidx.biometric.BiometricManager
+import com.example.sfc_front.FileUpgrade
 import com.example.sfc_front.ReadFile
+import com.example.sfc_front.ui.library.JsonFileManager
 import java.util.concurrent.Executor
 
 
@@ -65,7 +67,7 @@ class HomeFragment : Fragment() {
     private val binding get() = _binding!!
     val aes256 = AES256("sixsquare1234567")
     val fdaes = FDAES("sixsquare1234567")
-
+    private val password = ""
     private lateinit var takePictureLauncher: ActivityResultLauncher<Uri>
     private lateinit var biometricPrompt: BiometricPrompt
     private lateinit var promptInfo: BiometricPrompt.PromptInfo
@@ -278,6 +280,99 @@ class HomeFragment : Fragment() {
 //            val intent = Intent(this, ReadFile::class.java)
 //            startActivity(intent)
         }
+        val fileUpgradeButton = root.findViewById<ImageButton>(R.id.file_upgrade_button)
+        fileUpgradeButton.setOnClickListener {
+
+            val executor: Executor = Executors.newSingleThreadExecutor()
+            val intent = Intent(getActivity(), FileUpgrade::class.java)
+
+
+            // 創建生物識別驗證對話框
+            biometricPrompt = BiometricPrompt(this, executor,
+                object : BiometricPrompt.AuthenticationCallback() {
+                    override fun onAuthenticationError(
+                        errorCode: Int,
+                        errString: CharSequence
+                    ) {
+                        super.onAuthenticationError(errorCode, errString)
+                        requireActivity().runOnUiThread {
+
+                            Toast.makeText(
+                                requireContext(),
+                                "Authentication error:  $errString", Toast.LENGTH_SHORT
+                            ).show()
+//                                moveTaskToBack(true);
+//                                exitProcess(-1)
+                        }
+                    }
+
+                    override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                        super.onAuthenticationSucceeded(result)
+                        requireActivity().runOnUiThread {
+                            val maxAttempts = 3 // 最大尝试次数
+                            var time = JsonFileManager.readJsonFile(requireContext()).getInt("IncorrectPasswordAttempts")
+
+                            if (time < maxAttempts) {
+                                showInputDialog(
+                                    requireContext(),
+                                    "Please Enter Your Password",
+                                    "Confirm",
+                                    "Cancel",
+                                    { userInput ->
+                                        if (userInput == password) {
+                                            JsonFileManager.updateJsonKey(requireContext(), "IncorrectPasswordAttempts", "0")
+                                            Toast.makeText(requireContext(), "Authentication succeeded!", Toast.LENGTH_SHORT).show()
+                                            startActivity(intent)
+                                        } else {
+                                            Toast.makeText(requireContext(), "Authentication failed!", Toast.LENGTH_SHORT).show()
+                                            JsonFileManager.updateJsonKey(requireContext(), "IncorrectPasswordAttempts", (time + 1).toString())
+                                            time = JsonFileManager.readJsonFile(requireContext()).getInt("IncorrectPasswordAttempts")
+                                            // 如果尝试次数未达到最大次数，再次显示密码输入对话框
+                                            if (time < maxAttempts) {
+                                                onAuthenticationSucceeded(result)
+                                            } else {
+                                                Toast.makeText(requireContext(), "Exceeded maximum attempts. Your phone has been locked.", Toast.LENGTH_SHORT).show()
+                                            }
+                                        }
+                                    },
+                                    {
+                                        // 用户点击取消按钮后的处理逻辑
+                                    }
+                                )
+                            } else {
+                                Toast.makeText(requireContext(), "Your phone has been locked.", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+
+                    override fun onAuthenticationFailed() {
+                        super.onAuthenticationFailed()
+                        requireActivity().runOnUiThread {
+
+                            Toast.makeText(
+                                requireContext(), "Authentication failed",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            failAuthentication += 1
+                            if (failAuthentication == 3){
+//                                    moveTaskToBack(true);
+//                                    exitProcess(-1)
+                            }
+                        }
+                    }
+                })
+            promptInfo = BiometricPrompt.PromptInfo.Builder()
+                .setTitle("Confirm Using Your Face")
+                .setSubtitle("You can use your face to confirm making payments through this app.")
+                .setAllowedAuthenticators(
+                    BiometricManager.Authenticators.BIOMETRIC_WEAK
+                )
+                .setNegativeButtonText("Exit")
+                .build()
+
+            // 開始生物識別驗證
+            biometricPrompt.authenticate(promptInfo)
+        }
         takePictureLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { isTaken ->
             if (isTaken) {
                 Toast.makeText(getActivity(), "Photo has been taken and saved", Toast.LENGTH_SHORT).show()
@@ -321,6 +416,12 @@ class HomeFragment : Fragment() {
                 Toast.makeText(getActivity(), "Unable to take a photo", Toast.LENGTH_SHORT).show()
             }
         }
+        val fileProtectButton : ImageButton = root.findViewById(R.id.file_protection_button)
+        fileProtectButton.setOnClickListener{
+
+            protectFile()
+        }
+
         return root
     }
 
@@ -332,7 +433,14 @@ class HomeFragment : Fragment() {
     }
 
 
+    private fun protectFile() {
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "*/*"
+        }
 
+        startActivityForResult(intent, 2)
+    }
     private fun takeAPhoto() {
         // 检查相机权限
         if (getActivity()?.let {

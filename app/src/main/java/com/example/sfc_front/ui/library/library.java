@@ -1,6 +1,14 @@
 package com.example.sfc_front.ui.library;
 
+import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 
 public class library {
     //直接修改P就不會再需要一個記憶體
@@ -405,5 +413,32 @@ public class library {
             outcome[i] = Byte.toUnsignedInt(buffer[i]);
         }
         return outcome;
+    }
+    public static int getIncorrectPasswordAttempts(){
+        try {
+            String Filename = ".\\src\\main\\java\\com\\example\\sfc_front\\ui\\library\\data.json";
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode rootNode = objectMapper.readTree(new File(Filename));
+
+            return rootNode.get("IncorrectPasswordAttempts").asInt();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+    public static void writeData(String key,String value){
+        try {
+            String Filename = ".\\src\\main\\java\\com\\example\\sfc_front\\ui\\library\\data.json";
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode rootNode = objectMapper.readTree(new File(Filename));
+
+            // 修改JSON对象的属性
+            ((ObjectNode) rootNode).put(key, value);
+
+            // 将更新后的JSON写回文件
+            objectMapper.writeValue(new File(Filename), rootNode);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
