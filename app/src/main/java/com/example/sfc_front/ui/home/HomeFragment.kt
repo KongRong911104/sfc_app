@@ -52,6 +52,10 @@ import java.util.concurrent.Executors
 import android.app.AlertDialog
 import android.content.DialogInterface
 import android.text.InputType
+import android.widget.EditText
+import androidx.biometric.BiometricManager
+import com.example.sfc_front.ReadFile
+import java.util.concurrent.Executor
 
 
 class HomeFragment : Fragment() {
@@ -70,6 +74,85 @@ class HomeFragment : Fragment() {
     //    setSupportActionBar(binding.appBarMain.toolbar)
 //    val drawerLayout: DrawerLayout = binding.drawerLayout
 //    val navView: NavigationView = binding.navView
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        val activity = requireActivity()
+
+        val ball = activity.findViewById<ProgressBar>(R.id.progressBar)
+        val ballText = activity.findViewById<TextView>(R.id.ball_text)
+
+        if (requestCode == REQUEST_VIDEO_CAPTURE && resultCode == Activity.RESULT_OK) {
+            val inputFile = File(activity.getExternalFilesDir(null), FileName)
+
+            val executor = Executors.newSingleThreadExecutor()
+            executor.execute {
+                try {
+                    activity.runOnUiThread {
+                        ballText.setTextColor(Color.parseColor("#FFFFFFFF"))
+                        ball.progressDrawable = resources.getDrawable(R.drawable.ball, null)
+                    }
+
+                    val outputFile = File(activity.getExternalFilesDir(null), "AES_Encrypted_$FileName")
+                    aes256.encryptFile(inputFile, outputFile)
+
+                    if (inputFile.exists()) {
+                        inputFile.delete()
+                    }
+                } finally {
+                    activity.runOnUiThread {
+                        ballText.setTextColor(Color.parseColor("#00FFFFFF"))
+                        ball.progressDrawable = resources.getDrawable(R.drawable.logo, null)
+                    }
+                    executor.shutdown()
+                }
+            }
+        } else if (requestCode == HomeFragment.PICK_PDF_FILE && resultCode == Activity.RESULT_OK) {
+            val selectedFileUri = data?.data
+            val FileName = selectedFileUri?.let { getFileNameFromUri(it) }
+            if (selectedFileUri != null) {
+                try {
+                    val contentResolver = activity.contentResolver
+                    val inputStream = contentResolver.openInputStream(selectedFileUri)
+
+                    if (inputStream != null) {
+                        val tempFile = createTempFile("temp_", ".tmp")
+
+                        inputStream.use { input ->
+                            tempFile.outputStream().use { output ->
+                                input.copyTo(output)
+                            }
+                        }
+
+                        val outputFile = File(activity.getExternalFilesDir(null), "AES_Encrypted_$FileName")
+                        aes256.encryptFile(tempFile, outputFile)
+
+                        tempFile.delete()
+                        inputStream.close()
+                    }
+                } catch (e: Exception) {
+                    Log.e("Error", "Error while processing file: ${e.message}")
+                }
+            }
+        }
+    }
+
+    fun getFileNameFromUri(uri: Uri): String? {
+        var fileName: String? = null
+
+        val contentResolver = requireActivity().contentResolver
+        val cursor = contentResolver.query(uri, null, null, null, null)
+        cursor?.use {
+            if (it.moveToFirst()) {
+                val displayName = it.getString(it.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+                if (!displayName.isNullOrEmpty()) {
+                    fileName = displayName
+                }
+            }
+        }
+
+        return fileName
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -101,6 +184,99 @@ class HomeFragment : Fragment() {
         val takeVideoButton = root.findViewById<ImageButton>(R.id.video_button)
         takeVideoButton.setOnClickListener {
             takeAVideo()
+        }
+        val readFileButton = root.findViewById<ImageButton>(R.id.read_file_button)
+        readFileButton.setOnClickListener {
+
+            val intent = Intent(getActivity(), ReadFile::class.java)
+            val executor: Executor = Executors.newSingleThreadExecutor()
+
+            // 創建生物識別驗證對話框
+            biometricPrompt = BiometricPrompt(this, executor,
+                object : BiometricPrompt.AuthenticationCallback() {
+                    override fun onAuthenticationError(
+                        errorCode: Int,
+                        errString: CharSequence
+                    ) {
+                        super.onAuthenticationError(errorCode, errString)
+                        requireActivity().runOnUiThread {
+
+                            Toast.makeText(
+                                requireContext(),
+                                "Authentication error:  $errString", Toast.LENGTH_SHORT
+                            ).show()
+//                                moveTaskToBack(true);
+//                                exitProcess(-1)
+                        }
+                    }
+
+                    override fun onAuthenticationSucceeded(
+                        result: BiometricPrompt.AuthenticationResult
+                    ) {
+                        super.onAuthenticationSucceeded(result)
+                        requireActivity().runOnUiThread {
+//                                Toast.makeText(
+//                                    applicationContext,
+//                                    "Authentication succeeded!", Toast.LENGTH_SHORT
+//                                ).show()
+                            getActivity()?.let { it1 ->
+                                showInputDialog(
+                                    it1,
+                                    "Please Enter Your Password",
+                                    "Confirm",
+                                    "Cancel",
+                                    { userInput ->
+                                        // 用户点击确定按钮后的处理逻辑，userInput 包含用户输入的文本
+                                        // 在这里添加你的代码
+                        //                                        Toast.makeText(this@MainActivity, "$userInput", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(getActivity(), "Authentication succeeded!", Toast.LENGTH_SHORT).show()
+                                        startActivity(intent)
+
+                                    },
+                                    {
+                                        // 用户点击取消按钮后的处理逻辑
+                                    }
+                                )
+                            }
+
+
+                        }
+                    }
+
+                    override fun onAuthenticationFailed() {
+                        super.onAuthenticationFailed()
+                        requireActivity().runOnUiThread {
+
+                            Toast.makeText(
+                                requireContext(), "Authentication failed",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            failAuthentication += 1
+                            if (failAuthentication == 3){
+//                                    moveTaskToBack(true);
+//                                    exitProcess(-1)
+                            }
+                        }
+                    }
+                })
+            promptInfo = BiometricPrompt.PromptInfo.Builder()
+                .setTitle("Confirm Using Your Fingerprint")
+                .setSubtitle("You can use your fingerprint to confirm making payments through this app.")
+                .setAllowedAuthenticators(
+                    BiometricManager.Authenticators.BIOMETRIC_WEAK or BiometricManager.Authenticators.BIOMETRIC_STRONG
+                )
+                .setNegativeButtonText("Exit")
+
+                .build()
+
+            // 開始生物識別驗證
+            biometricPrompt.authenticate(promptInfo)
+
+
+
+
+//            val intent = Intent(this, ReadFile::class.java)
+//            startActivity(intent)
         }
         takePictureLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { isTaken ->
             if (isTaken) {
@@ -144,86 +320,6 @@ class HomeFragment : Fragment() {
             } else {
                 Toast.makeText(getActivity(), "Unable to take a photo", Toast.LENGTH_SHORT).show()
             }
-        }
-        @SuppressLint("UseSwitchCompatOrMaterialCode")
-        fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-            super.onActivityResult(requestCode, resultCode, data)
-            val ball = root.findViewById<ProgressBar>(R.id.progressBar)
-            val ballText = root.findViewById<TextView>(R.id.ball_text)
-            if (requestCode == MainActivity.REQUEST_VIDEO_CAPTURE && resultCode == Activity.RESULT_OK) {
-                val inputFile  = File(getExternalFilesDir(null), FileName)
-
-                val executor = Executors.newSingleThreadExecutor()
-                executor.execute {
-                    try {
-
-//                    val switch : Switch = findViewById<Switch>(R.id.switchButton)
-                        runOnUiThread {
-                            ballText.setTextColor(Color.parseColor("#FFFFFFFF"))
-                            ball.progressDrawable = resources.getDrawable(R.drawable.ball, null)
-                        }
-//                    if (switch.isChecked){
-//                        val outputFile=File(getExternalFilesDir(null),"FDAES_Encrypted_$FileName")
-//                        fdaes.FileEncryption_CBC(inputFile,outputFile)
-//                    }
-//                    else{
-                        val outputFile=File(getExternalFilesDir(null),"AES_Encrypted_$FileName")
-                        // 在線程池中執行加密操作
-                        aes256.encryptFile(inputFile, outputFile)
-//                    }
-
-
-                        // 刪除inputFile
-                        if (inputFile.exists()) {
-                            inputFile.delete()
-                        }
-                    } finally {
-                        runOnUiThread {
-                            ballText.setTextColor(Color.parseColor("#00FFFFFF"))
-                            ball.progressDrawable = resources.getDrawable(R.drawable.logo, null)
-                        }
-                        executor.shutdown()
-                    }
-                }
-            }
-            else if (requestCode == HomeFragment.PICK_PDF_FILE && resultCode == Activity.RESULT_OK) {
-                // 处理选择的文件，您可以使用选定的文件进行进一步操作
-                val selectedFileUri = data?.data
-                val FileName = selectedFileUri?.let { getFileNameFromUri(it) }
-                if (selectedFileUri != null) {
-                    try {
-                        val contentResolver = this.contentResolver
-                        val inputStream = contentResolver.openInputStream(selectedFileUri)
-
-                        if (inputStream != null) {
-                            // 创建临时文件
-                            val tempFile = createTempFile("temp_", ".tmp")
-
-                            // 将输入流写入临时文件
-                            inputStream.use { input ->
-                                tempFile.outputStream().use { output ->
-                                    input.copyTo(output)
-                                }
-                            }
-
-                            // 获取目标文件路径
-                            val outputFile = File(this.getExternalFilesDir(null), "AES_Encrypted_$FileName")
-                            // 执行加密操作
-                            aes256.encryptFile(tempFile, outputFile)
-
-                            // 删除临时文件
-                            tempFile.delete()
-
-                            // 关闭输入流
-                            inputStream.close()
-                        }
-                    } catch (e: Exception) {
-                        Log.e("Error", "Error while processing file: ${e.message}")
-                    }
-
-                }
-            }
-
         }
         return root
     }
@@ -308,6 +404,47 @@ class HomeFragment : Fragment() {
 
         // 启动录制视频
         startActivityForResult(takeVideoIntent, MainActivity.REQUEST_VIDEO_CAPTURE)
+    }
+    fun showInputDialog(context: Context, title: String, positiveButtonText: String, negativeButtonText: String, onPositiveClick: (String) -> Unit, onNegativeClick: () -> Unit) {
+        val alertDialogBuilder = AlertDialog.Builder(context)
+        val inputEditText = EditText(context)
+        inputEditText.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+
+        // 设置对话框标题
+        alertDialogBuilder.setTitle(title)
+
+        // 设置文本输入框
+        alertDialogBuilder.setView(inputEditText)
+
+        // 添加确定按钮
+        alertDialogBuilder.setPositiveButton(positiveButtonText) { dialog, which ->
+            val userInput = inputEditText.text.toString()
+
+            onPositiveClick(userInput)
+            dialog.dismiss()
+        }
+
+
+        // 添加取消按钮
+        alertDialogBuilder.setNegativeButton(negativeButtonText) { dialog, which ->
+            onNegativeClick()
+            dialog.dismiss()
+        }
+
+        // 创建并显示对话框
+        val alertDialog = alertDialogBuilder.create()
+
+        // 设置按钮的颜色
+        alertDialog.setOnShowListener { dialog ->
+            val positiveButton = (dialog as AlertDialog).getButton(DialogInterface.BUTTON_POSITIVE)
+            val negativeButton = dialog.getButton(DialogInterface.BUTTON_NEGATIVE)
+
+            positiveButton.setTextColor(context.resources.getColor(R.color.dialog_button_positive_color))
+            negativeButton.setTextColor(context.resources.getColor(R.color.dialog_button_negative_color))
+        }
+
+
+        alertDialog.show()
     }
 
     companion object {

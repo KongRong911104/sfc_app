@@ -432,104 +432,104 @@ class MainActivity : AppCompatActivity() {
 
         startActivityForResult(intent, 2)
     }
-    @SuppressLint("UseSwitchCompatOrMaterialCode")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        val ball = findViewById<ProgressBar>(R.id.progressBar)
-        val ballText = findViewById<TextView>(R.id.ball_text)
-        if (requestCode == REQUEST_VIDEO_CAPTURE && resultCode == Activity.RESULT_OK) {
-            val inputFile  = File(getExternalFilesDir(null), FileName)
-
-            val executor = Executors.newSingleThreadExecutor()
-            executor.execute {
-                try {
-
-//                    val switch : Switch = findViewById<Switch>(R.id.switchButton)
-                    runOnUiThread {
-                    ballText.setTextColor(Color.parseColor("#FFFFFFFF"))
-                    ball.progressDrawable = resources.getDrawable(R.drawable.ball, null)
-                    }
-//                    if (switch.isChecked){
-//                        val outputFile=File(getExternalFilesDir(null),"FDAES_Encrypted_$FileName")
-//                        fdaes.FileEncryption_CBC(inputFile,outputFile)
+//    @SuppressLint("UseSwitchCompatOrMaterialCode")
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+//        val ball = findViewById<ProgressBar>(R.id.progressBar)
+//        val ballText = findViewById<TextView>(R.id.ball_text)
+//        if (requestCode == REQUEST_VIDEO_CAPTURE && resultCode == Activity.RESULT_OK) {
+//            val inputFile  = File(getExternalFilesDir(null), FileName)
+//
+//            val executor = Executors.newSingleThreadExecutor()
+//            executor.execute {
+//                try {
+//
+////                    val switch : Switch = findViewById<Switch>(R.id.switchButton)
+//                    runOnUiThread {
+//                    ballText.setTextColor(Color.parseColor("#FFFFFFFF"))
+//                    ball.progressDrawable = resources.getDrawable(R.drawable.ball, null)
 //                    }
-//                    else{
-                    val outputFile=File(getExternalFilesDir(null),"AES_Encrypted_$FileName")
-                        // 在線程池中執行加密操作
-                    aes256.encryptFile(inputFile, outputFile)
+////                    if (switch.isChecked){
+////                        val outputFile=File(getExternalFilesDir(null),"FDAES_Encrypted_$FileName")
+////                        fdaes.FileEncryption_CBC(inputFile,outputFile)
+////                    }
+////                    else{
+//                    val outputFile=File(getExternalFilesDir(null),"AES_Encrypted_$FileName")
+//                        // 在線程池中執行加密操作
+//                    aes256.encryptFile(inputFile, outputFile)
+////                    }
+//
+//
+//                    // 刪除inputFile
+//                    if (inputFile.exists()) {
+//                        inputFile.delete()
 //                    }
-
-
-                    // 刪除inputFile
-                    if (inputFile.exists()) {
-                        inputFile.delete()
-                    }
-                } finally {
-                    runOnUiThread {
-                        ballText.setTextColor(Color.parseColor("#00FFFFFF"))
-                        ball.progressDrawable = resources.getDrawable(R.drawable.logo, null)
-                    }
-                    executor.shutdown()
-                }
-            }
-        }
-        else if (requestCode == HomeFragment.PICK_PDF_FILE && resultCode == Activity.RESULT_OK) {
-            // 处理选择的文件，您可以使用选定的文件进行进一步操作
-            val selectedFileUri = data?.data
-            val FileName = selectedFileUri?.let { getFileNameFromUri(it) }
-            if (selectedFileUri != null) {
-                try {
-                    val contentResolver = this.contentResolver
-                    val inputStream = contentResolver.openInputStream(selectedFileUri)
-
-                    if (inputStream != null) {
-                        // 创建临时文件
-                        val tempFile = createTempFile("temp_", ".tmp")
-
-                        // 将输入流写入临时文件
-                        inputStream.use { input ->
-                            tempFile.outputStream().use { output ->
-                                input.copyTo(output)
-                            }
-                        }
-
-                        // 获取目标文件路径
-                        val outputFile = File(this.getExternalFilesDir(null), "AES_Encrypted_$FileName")
-                        // 执行加密操作
-                        aes256.encryptFile(tempFile, outputFile)
-
-                        // 删除临时文件
-                        tempFile.delete()
-
-                        // 关闭输入流
-                        inputStream.close()
-                    }
-                } catch (e: Exception) {
-                    Log.e("Error", "Error while processing file: ${e.message}")
-                }
-
-            }
-        }
-
-    }
-
-    @SuppressLint("Range")
-    fun getFileNameFromUri(uri: Uri): String? {
-        var fileName: String? = null
-
-        // 从 Uri 中提取文件名
-        val cursor = this.contentResolver.query(uri, null, null, null, null)
-        cursor?.use {
-            if (it.moveToFirst()) {
-                val displayName = it.getString(it.getColumnIndex(OpenableColumns.DISPLAY_NAME))
-                if (!displayName.isNullOrEmpty()) {
-                    fileName = displayName
-                }
-            }
-        }
-
-        return fileName
-    }
+//                } finally {
+//                    runOnUiThread {
+//                        ballText.setTextColor(Color.parseColor("#00FFFFFF"))
+//                        ball.progressDrawable = resources.getDrawable(R.drawable.logo, null)
+//                    }
+//                    executor.shutdown()
+//                }
+//            }
+//        }
+//        else if (requestCode == HomeFragment.PICK_PDF_FILE && resultCode == Activity.RESULT_OK) {
+//            // 处理选择的文件，您可以使用选定的文件进行进一步操作
+//            val selectedFileUri = data?.data
+//            val FileName = selectedFileUri?.let { getFileNameFromUri(it) }
+//            if (selectedFileUri != null) {
+//                try {
+//                    val contentResolver = this.contentResolver
+//                    val inputStream = contentResolver.openInputStream(selectedFileUri)
+//
+//                    if (inputStream != null) {
+//                        // 创建临时文件
+//                        val tempFile = createTempFile("temp_", ".tmp")
+//
+//                        // 将输入流写入临时文件
+//                        inputStream.use { input ->
+//                            tempFile.outputStream().use { output ->
+//                                input.copyTo(output)
+//                            }
+//                        }
+//
+//                        // 获取目标文件路径
+//                        val outputFile = File(this.getExternalFilesDir(null), "AES_Encrypted_$FileName")
+//                        // 执行加密操作
+//                        aes256.encryptFile(tempFile, outputFile)
+//
+//                        // 删除临时文件
+//                        tempFile.delete()
+//
+//                        // 关闭输入流
+//                        inputStream.close()
+//                    }
+//                } catch (e: Exception) {
+//                    Log.e("Error", "Error while processing file: ${e.message}")
+//                }
+//
+//            }
+//        }
+//
+//    }
+//
+//    @SuppressLint("Range")
+//    fun getFileNameFromUri(uri: Uri): String? {
+//        var fileName: String? = null
+//
+//        // 从 Uri 中提取文件名
+//        val cursor = this.contentResolver.query(uri, null, null, null, null)
+//        cursor?.use {
+//            if (it.moveToFirst()) {
+//                val displayName = it.getString(it.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+//                if (!displayName.isNullOrEmpty()) {
+//                    fileName = displayName
+//                }
+//            }
+//        }
+//
+//        return fileName
+//    }
     fun showInputDialog(context: Context, title: String, positiveButtonText: String, negativeButtonText: String, onPositiveClick: (String) -> Unit, onNegativeClick: () -> Unit) {
         val alertDialogBuilder = AlertDialog.Builder(context)
         val inputEditText = EditText(context)
