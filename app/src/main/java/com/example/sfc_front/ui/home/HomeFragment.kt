@@ -212,36 +212,42 @@ class HomeFragment : Fragment() {
                         }
                     }
 
-                    override fun onAuthenticationSucceeded(
-                        result: BiometricPrompt.AuthenticationResult
-                    ) {
+                    override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                         super.onAuthenticationSucceeded(result)
                         requireActivity().runOnUiThread {
-//                                Toast.makeText(
-//                                    applicationContext,
-//                                    "Authentication succeeded!", Toast.LENGTH_SHORT
-//                                ).show()
-                            getActivity()?.let { it1 ->
+                            val maxAttempts = 3 // 最大尝试次数
+                            var time = JsonFileManager.readJsonFile(requireContext()).getInt("IncorrectPasswordAttempts")
+
+                            if (time < maxAttempts) {
                                 showInputDialog(
-                                    it1,
+                                    requireContext(),
                                     "Please Enter Your Password",
                                     "Confirm",
                                     "Cancel",
                                     { userInput ->
-                                        // 用户点击确定按钮后的处理逻辑，userInput 包含用户输入的文本
-                                        // 在这里添加你的代码
-                        //                                        Toast.makeText(this@MainActivity, "$userInput", Toast.LENGTH_SHORT).show()
-                                        Toast.makeText(getActivity(), "Authentication succeeded!", Toast.LENGTH_SHORT).show()
-                                        startActivity(intent)
-
+                                        if (userInput == password) {
+                                            JsonFileManager.updateJsonKey(requireContext(), "IncorrectPasswordAttempts", "0")
+                                            Toast.makeText(requireContext(), "Authentication succeeded!", Toast.LENGTH_SHORT).show()
+                                            startActivity(intent)
+                                        } else {
+                                            Toast.makeText(requireContext(), "Authentication failed!", Toast.LENGTH_SHORT).show()
+                                            JsonFileManager.updateJsonKey(requireContext(), "IncorrectPasswordAttempts", (time + 1).toString())
+                                            time = JsonFileManager.readJsonFile(requireContext()).getInt("IncorrectPasswordAttempts")
+                                            // 如果尝试次数未达到最大次数，再次显示密码输入对话框
+                                            if (time < maxAttempts) {
+                                                onAuthenticationSucceeded(result)
+                                            } else {
+                                                Toast.makeText(requireContext(), "Exceeded maximum attempts. Your phone has been locked.", Toast.LENGTH_SHORT).show()
+                                            }
+                                        }
                                     },
                                     {
                                         // 用户点击取消按钮后的处理逻辑
                                     }
                                 )
+                            } else {
+                                Toast.makeText(requireContext(), "Your phone has been locked.", Toast.LENGTH_SHORT).show()
                             }
-
-
                         }
                     }
 
