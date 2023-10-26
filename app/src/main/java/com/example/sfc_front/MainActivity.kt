@@ -93,7 +93,7 @@ class MainActivity : AppCompatActivity() {
         val switch:Switch = findViewById(R.id.switchButton)
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.nav_home
+                R.id.nav_home,R.id.nav_slideshow
             ), drawerLayout
         )
 

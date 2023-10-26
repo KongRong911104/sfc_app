@@ -14,7 +14,7 @@
             />
         <item
             android:background="#FFFFFFFF"
-            android:id="@+id/nav_PW"
+            android:id="@+id/nav_slideshow"
             android:icon="@drawable/forgot_pw"
             android:title="@string/menu_PW"
             android:textAppearance="@style/read_file"
