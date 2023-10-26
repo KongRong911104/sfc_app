@@ -9,6 +9,7 @@ import android.text.TextWatcher
 import android.util.Log
 import android.widget.EditText
 import android.widget.ImageButton
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -64,10 +65,35 @@ class ReadFile : AppCompatActivity() {
         val directoryPath = getExternalFilesDir(null) // 替换为你要读取的目录路径
         val searchFile = findViewById<EditText>(R.id.search_file)
         var userInput = ""
+        var resultLauncher = this.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            Log.e("test1","osjoidfjs")
+//            if (result.resultCode == Activity.RESULT_OK) {
+                // There are no request codes
+                val data: Intent? = result.data
+                val fileName = data?.getStringExtra("key")
+                Log.e("test","$fileName")
+            val directoryPath = getExternalFilesDir(null) // 替换为你的目标文件夹路径
+
+// 检查目录是否存在
+            if (directoryPath != null && directoryPath.exists() && directoryPath.isDirectory) {
+                val files = directoryPath.listFiles() // 获取目录下的所有文件
+
+                for (file in files) {
+                    if (file.isFile && !file.name.startsWith("AES")) {
+                        // 如果文件是不以 "AES" 开头的，就删除它
+                        file.delete()
+                    }
+                }
+            }
+//            val fileDelete = File(context.getExternalFilesDir(null),fileName)
+//            fileDelete.delete()
+//            }
+        }
         searchFile.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 // Not implemented
             }
+
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 userInput = s.toString()
@@ -78,7 +104,8 @@ class ReadFile : AppCompatActivity() {
                         R.drawable.photo_file,
                         this@ReadFile,
                         directoryPath = directoryPath,
-                        fileType = fileType
+                        fileType = fileType,
+                        resultLauncher = resultLauncher
                     )
                 }
                 recyclerView.adapter = adapter
@@ -88,6 +115,7 @@ class ReadFile : AppCompatActivity() {
                 // Not implemented
             }
         })
+
         val fileNames = directoryPath?.let { listFilesInDirectory(it, userInput, ".png") }
         val adapter = fileNames?.let {
             MyAdapter(
@@ -95,7 +123,9 @@ class ReadFile : AppCompatActivity() {
                 R.drawable.photo_file,
                 this@ReadFile,
                 directoryPath = directoryPath,
-                fileType = ".png"
+                fileType = ".png",
+                resultLauncher = resultLauncher
+
             )
         }
         recyclerView.adapter = adapter
@@ -111,7 +141,9 @@ class ReadFile : AppCompatActivity() {
                             R.drawable.photo_file,
                             this@ReadFile,
                             directoryPath = directoryPath,
-                            fileType = ".png"
+                            fileType = ".png",
+                            resultLauncher = resultLauncher
+
                         )
                     }
 
@@ -140,7 +172,9 @@ class ReadFile : AppCompatActivity() {
                             R.drawable.video_file,
                             this@ReadFile,
                             directoryPath = directoryPath,
-                            fileType = ".mp4"
+                            fileType = ".mp4",
+                            resultLauncher = resultLauncher
+
                         )
                     }
                     recyclerView.adapter = adapter
@@ -157,7 +191,9 @@ class ReadFile : AppCompatActivity() {
                             R.drawable.music_file,
                             this@ReadFile,
                             directoryPath = directoryPath,
-                            fileType = ".mp3"
+                            fileType = ".mp3",
+                            resultLauncher = resultLauncher
+
                         )
                     }
                     recyclerView.adapter = adapter
@@ -174,7 +210,9 @@ class ReadFile : AppCompatActivity() {
                             R.drawable.txt_file,
                             this@ReadFile,
                             directoryPath = directoryPath,
-                            fileType = ".txt"
+                            fileType = ".txt",
+                            resultLauncher = resultLauncher
+
                         )
                     }
                     recyclerView.adapter = adapter
@@ -190,7 +228,9 @@ class ReadFile : AppCompatActivity() {
                             R.drawable.file_file,
                             this@ReadFile,
                             directoryPath = directoryPath,
-                            fileType = ""
+                            fileType = "",
+                            resultLauncher = resultLauncher
+
                         )
                     }
                     recyclerView.adapter = adapter
@@ -201,18 +241,20 @@ class ReadFile : AppCompatActivity() {
             }
 
         }
+
+
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        val name = data?.getStringExtra("key")
-        Log.e("test1","$name")
-                CompletableFuture.runAsync {
-                    val context = this@ReadFile
-                    val fileName = data?.getStringExtra("key")
-                    val fileDelete = File(context.getExternalFilesDir(null), fileName)
-                    fileDelete.delete()
-                    Log.e("test1", "file name: $fileName")
-                }
-    }
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+//        val name = data?.getStringExtra("key")
+//        Log.e("test1","$name")
+//                CompletableFuture.runAsync {
+//                    val context = this@ReadFile
+//                    val fileName = data?.getStringExtra("key")
+//                    val fileDelete = File(context.getExternalFilesDir(null), fileName)
+//                    fileDelete.delete()
+//                    Log.e("test1", "file name: $fileName")
+//                }
+//    }
 }
