@@ -60,11 +60,11 @@ fun listFilesInDirectory(
                 fileExtension2
             ))
         ) {
-            if (open == 1 && file.name.contains("Encrypted")) {
+//            if (open == 1 && file.name.contains("Encrypted")) {
+//                fileNames.add(file.name)
+//            } else if (open == 0 && file.name.contains("AES_Encrypted") && !file.name.contains("FDAES_Encrypted")) {
                 fileNames.add(file.name)
-            } else if (open == 0 && file.name.contains("AES_Encrypted") && !file.name.contains("FDAES_Encrypted")) {
-                fileNames.add(file.name)
-            }
+//            }
         }
 
     }
@@ -231,9 +231,14 @@ class MyAdapter(
         intent.setDataAndType(uri, mime)
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         try {
-//            context.startActivityForResult(intent, OPEN_FILE_REQUEST_CODE)
-            context.startActivity(intent)
-            fileOpenCallback?.onFileOpenCompleted(file)
+            val name = file.name
+            intent.putExtra("key",name)
+
+            Log.e("test","$name")
+            context.startActivityForResult(intent, OPEN_FILE_REQUEST_CODE)
+
+//            context.startActivity(intent)
+//            fileOpenCallback?.onFileOpenCompleted(file)
 
         } catch (e: Exception) {
             Toast.makeText(context, "無法開啟檔案", Toast.LENGTH_SHORT).show()
@@ -281,18 +286,18 @@ class MyAdapter(
                     fileExtension2
                 ))
             ) {
-                if (open == 1 && file.name.contains("Encrypted")) {
-                    fileNames.add(file.name)
-                } else if (open == 0 && (file.name.endsWith(fileExtension) || file.name.endsWith(
-                        fileExtension2
-                    )) && file.name.contains("AES_Encrypted") && !file.name.contains("FDAES_Encrypted")
-                ) {
+//                if (open == 1 && file.name.contains("Encrypted")) {
+//                    fileNames.add(file.name)
+//                } else if (open == 0 && (file.name.endsWith(fileExtension) || file.name.endsWith(
+//                        fileExtension2
+//                    )) && file.name.contains("AES_Encrypted") && !file.name.contains("FDAES_Encrypted")
+//                ) {
 //                    Log.e("test0","$open")
 //                    Log.e("test1","${file.name.endsWith(fileExtension)}")
 //                    Log.e("test2","${file.name.endsWith(fileExtension2)}")
 //                    Log.e("test3","${file.name.contains("AES_Encrypted")}")
                     fileNames.add(file.name)
-                }
+//                }
             }
 
         }

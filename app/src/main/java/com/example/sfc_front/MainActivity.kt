@@ -57,13 +57,13 @@ import android.graphics.Color
 import android.text.InputType
 import android.widget.ProgressBar
 
-//import kotlinx.coroutines.scheduling.DefaultScheduler.executor
-//
-//import kotlinx.coroutines.scheduling.DefaultIoScheduler.executor
+
 
 import com.example.sfc_front.ui.library.JsonFileManager
 
-
+//import kotlinx.coroutines.scheduling.DefaultScheduler.executor
+//
+//import kotlinx.coroutines.scheduling.DefaultIoScheduler.executor
 
 class MainActivity : AppCompatActivity() {
     val aes256 = AES256("sixsquare1234567")
@@ -76,7 +76,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var takePictureLauncher: ActivityResultLauncher<Uri>
     private var FileName =""
-    private val OPEN_FILE_REQUEST_CODE = 123
+
     private val password = ""
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -665,16 +665,7 @@ class MainActivity : AppCompatActivity() {
 
             }
         }
-        if (requestCode == OPEN_FILE_REQUEST_CODE) {
-            if (resultCode == Activity.RESULT_OK) {
-                // 用户完成了文件操作
-                // 在这里执行你的操作，例如文件已被编辑或保存
-                Log.e("test","watch file end")
-            } else {
-                // 用户取消了文件操作或出现错误
-                Log.e("test","watch file fail")
-            }
-        }
+
 
     }
 
