@@ -219,62 +219,98 @@ class MainActivity : AppCompatActivity() {
                                 exitProcess(-1)
                             }
                         }
-
-                        override fun onAuthenticationSucceeded(
-                            result: BiometricPrompt.AuthenticationResult
-                        ) {
+                        override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                             super.onAuthenticationSucceeded(result)
                             runOnUiThread {
-//                                Toast.makeText(
-//                                    applicationContext,
-//                                    "Authentication succeeded!", Toast.LENGTH_SHORT
-//                                ).show()
-                                val time = JsonFileManager.readJsonFile(this@MainActivity).getInt("IncorrectPasswordAttempts")
-                                if(time<3) {
+                                val maxAttempts = 3 // 最大尝试次数
+                                var time = JsonFileManager.readJsonFile(this@MainActivity).getInt("IncorrectPasswordAttempts")
+
+                                if (time < maxAttempts) {
                                     showInputDialog(
                                         this@MainActivity,
                                         "Please Enter Your Password",
                                         "Confirm",
                                         "Cancel",
                                         { userInput ->
-                                            // 用户点击确定按钮后的处理逻辑，userInput 包含用户输入的文本
-                                            // 在这里添加你的代码
                                             if (userInput == "sixsquare1234567") {
-                                                JsonFileManager.updateJsonKey(this@MainActivity,"IncorrectPasswordAttempts","0")
-                                                Toast.makeText(
-                                                    this@MainActivity,
-                                                    "Authentication succeeded!",
-                                                    Toast.LENGTH_SHORT
-                                                ).show()
+                                                JsonFileManager.updateJsonKey(this@MainActivity, "IncorrectPasswordAttempts", "0")
+                                                Toast.makeText(this@MainActivity, "Authentication succeeded!", Toast.LENGTH_SHORT).show()
                                                 startActivity(intent)
+                                            } else {
+                                                Toast.makeText(this@MainActivity, "Authentication failed!", Toast.LENGTH_SHORT).show()
+                                                JsonFileManager.updateJsonKey(this@MainActivity, "IncorrectPasswordAttempts", (time + 1).toString())
+                                                time = JsonFileManager.readJsonFile(this@MainActivity).getInt("IncorrectPasswordAttempts")
+                                                // 如果尝试次数未达到最大次数，再次显示密码输入对话框
+                                                if (time < maxAttempts) {
+                                                    onAuthenticationSucceeded(result)
+                                                } else {
+                                                    Toast.makeText(this@MainActivity, "Exceeded maximum attempts. Your phone has been locked.", Toast.LENGTH_SHORT).show()
+                                                }
                                             }
-//                                        Toast.makeText(this@MainActivity, "$userInput", Toast.LENGTH_SHORT).show()
-                                            else {
-                                                Toast.makeText(
-                                                    this@MainActivity,
-                                                    "Authentication failed!",
-                                                    Toast.LENGTH_SHORT
-                                                ).show()
-                                                JsonFileManager.updateJsonKey(this@MainActivity,"IncorrectPasswordAttempts",(time+1).toString())
-                                            }
-
-
                                         },
                                         {
                                             // 用户点击取消按钮后的处理逻辑
                                         }
                                     )
+                                } else {
+                                    Toast.makeText(this@MainActivity, "Your phone has been locked.", Toast.LENGTH_SHORT).show()
                                 }
-                                else{
-                                    Toast.makeText(
-                                        this@MainActivity,
-                                        "your phone has been locked",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-
                             }
                         }
+
+//                        override fun onAuthenticationSucceeded(
+//                            result: BiometricPrompt.AuthenticationResult
+//                        ) {
+//                            super.onAuthenticationSucceeded(result)
+//                            runOnUiThread {
+////                                Toast.makeText(
+////                                    applicationContext,
+////                                    "Authentication succeeded!", Toast.LENGTH_SHORT
+////                                ).show()
+//                                val time = JsonFileManager.readJsonFile(this@MainActivity).getInt("IncorrectPasswordAttempts")
+//                                if(time<3) {
+//                                    showInputDialog(
+//                                        this@MainActivity,
+//                                        "Please Enter Your Password",
+//                                        "Confirm",
+//                                        "Cancel",
+//                                        { userInput ->
+//                                            // 用户点击确定按钮后的处理逻辑，userInput 包含用户输入的文本
+//                                            // 在这里添加你的代码
+//                                            if (userInput == "sixsquare1234567") {
+//                                                JsonFileManager.updateJsonKey(this@MainActivity,"IncorrectPasswordAttempts","0")
+//                                                Toast.makeText(
+//                                                    this@MainActivity,
+//                                                    "Authentication succeeded!",
+//                                                    Toast.LENGTH_SHORT
+//                                                ).show()
+//                                                startActivity(intent)
+//                                            }
+////                                        Toast.makeText(this@MainActivity, "$userInput", Toast.LENGTH_SHORT).show()
+//                                            else {
+//                                                Toast.makeText(
+//                                                    this@MainActivity,
+//                                                    "Authentication failed!",
+//                                                    Toast.LENGTH_SHORT
+//                                                ).show()
+//                                                JsonFileManager.updateJsonKey(this@MainActivity,"IncorrectPasswordAttempts",(time+1).toString())
+//                                            }
+//                                        },
+//                                        {
+//                                            // 用户点击取消按钮后的处理逻辑
+//                                        }
+//                                    )
+//                                }
+//                                else{
+//                                    Toast.makeText(
+//                                        this@MainActivity,
+//                                        "your phone has been locked",
+//                                        Toast.LENGTH_SHORT
+//                                    ).show()
+//                                }
+//
+//                            }
+//                        }
 
                         override fun onAuthenticationFailed() {
                             super.onAuthenticationFailed()
