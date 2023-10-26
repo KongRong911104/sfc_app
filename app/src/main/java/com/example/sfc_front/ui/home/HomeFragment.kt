@@ -1,66 +1,56 @@
 package com.example.sfc_front.ui.home
 
+
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Activity
-import android.net.Uri
+import android.app.AlertDialog
+import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
+import android.provider.MediaStore
+import android.provider.OpenableColumns
+import android.text.InputType
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.Preview
-import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.biometric.BiometricManager
+import androidx.biometric.BiometricPrompt
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import com.example.sfc_front.FileUpgrade
 import com.example.sfc_front.MainActivity
 import com.example.sfc_front.R
+import com.example.sfc_front.ReadFile
 import com.example.sfc_front.databinding.FragmentHomeBinding
 import com.example.sfc_front.ui.AES.AES256
 import com.example.sfc_front.ui.FDAES.FDAES
+import com.example.sfc_front.ui.library.JsonFileManager
 import java.io.File
-import android.content.Context
-import android.graphics.Color
-import android.provider.MediaStore
-import android.provider.OpenableColumns
-import android.widget.Switch
-import androidx.activity.result.ActivityResultLauncher
-import java.io.FileWriter
-import androidx.biometric.BiometricPrompt
-import androidx.core.app.ActivityCompat
-import androidx.core.content.FileProvider
-import androidx.drawerlayout.widget.DrawerLayout
-import androidx.fragment.app.FragmentActivity
-import com.google.android.material.navigation.NavigationView
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
 
-import android.app.AlertDialog
-import android.content.DialogInterface
-import android.text.InputType
-import android.widget.EditText
-import androidx.biometric.BiometricManager
-import com.example.sfc_front.FileUpgrade
-import com.example.sfc_front.ReadFile
-import com.example.sfc_front.ui.library.JsonFileManager
-import java.util.concurrent.Executor
-
-
 class HomeFragment : Fragment() {
+
     private val viewModel: HomeViewModel by viewModels()
     private var _binding: FragmentHomeBinding? = null
     private lateinit var progressObserver: Observer<Int>
@@ -73,20 +63,14 @@ class HomeFragment : Fragment() {
     private lateinit var promptInfo: BiometricPrompt.PromptInfo
     private var failAuthentication = 0
     private var FileName =""
-    //    setSupportActionBar(binding.appBarMain.toolbar)
-//    val drawerLayout: DrawerLayout = binding.drawerLayout
-//    val navView: NavigationView = binding.navView
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
         val activity = requireActivity()
-
         val ball = activity.findViewById<ProgressBar>(R.id.progressBar)
         val ballText = activity.findViewById<TextView>(R.id.ball_text)
 
         if (requestCode == REQUEST_VIDEO_CAPTURE && resultCode == Activity.RESULT_OK) {
             val inputFile = File(activity.getExternalFilesDir(null), FileName)
-
             val executor = Executors.newSingleThreadExecutor()
             executor.execute {
                 try {
@@ -94,10 +78,8 @@ class HomeFragment : Fragment() {
                         ballText.setTextColor(Color.parseColor("#FFFFFFFF"))
                         ball.progressDrawable = resources.getDrawable(R.drawable.ball, null)
                     }
-
                     val outputFile = File(activity.getExternalFilesDir(null), "AES_Encrypted_$FileName")
                     aes256.encryptFile(inputFile, outputFile)
-
                     if (inputFile.exists()) {
                         inputFile.delete()
                     }
@@ -162,16 +144,13 @@ class HomeFragment : Fragment() {
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
-
-        val ballView = root.findViewById<TextView>(R.id.ball_text)
-        val progressBar: ProgressBar = root.findViewById(R.id.progressBar)
         val ball = root.findViewById<ProgressBar>(R.id.progressBar)
         val ballText = root.findViewById<TextView>(R.id.ball_text)
         progressObserver = Observer { progressInt ->
-            ballView.text = "$progressInt%"
-            progressBar.progress = progressInt
+            ballText.text = "$progressInt%"
+            ball.progress = progressInt
         }
-        viewModel.progressInt.observe(viewLifecycleOwner, progressObserver)
+        viewModel.progressInt.observe(requireActivity(), progressObserver)
         viewModel.startTask()
         val noteButton = root.findViewById<ImageButton>(R.id.note_button)
         noteButton.setOnClickListener {
@@ -430,15 +409,15 @@ class HomeFragment : Fragment() {
 
         return root
     }
-
-
     override fun onDestroyView() {
         super.onDestroyView()
+
+        // 在 onDestroyView 中移除观察者，以避免内存泄漏
         viewModel.progressInt.removeObserver(progressObserver)
+
+        // 清理资源
         _binding = null
     }
-
-
     private fun protectFile() {
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
             addCategory(Intent.CATEGORY_OPENABLE)
