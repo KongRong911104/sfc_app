@@ -58,7 +58,7 @@ class HomeFragment : Fragment() {
     private val binding get() = _binding!!
     val aes256 = AES256("sixsquare1234567")
     //    val fdaes = FDAES("sixsquare1234567")
-    private val password = "1234"
+    private val password = ""
 
 
 

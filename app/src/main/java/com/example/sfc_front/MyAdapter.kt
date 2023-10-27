@@ -65,7 +65,7 @@ fun listFilesInDirectory(
         ) {
             if (open == 0 && file.name.contains(".pga") && !file.name.contains(".fpga")) {
                 fileNames.add(file.name)
-            } else if (open == 1) {
+            } else if (open == 1 && (file.name.contains(".pga") || file.name.contains(".fpga")||file.name.contains(".save"))) {
                 fileNames.add(file.name)
             }
         }
@@ -263,14 +263,13 @@ class MyAdapter(
         val fileNames = mutableListOf<String>()
         for (file in files) {
             val userInput = file.name.contains(input, true)
-            Toast.makeText(context,"$fileExtension.pga",Toast.LENGTH_SHORT).show()
 //        Log.e("nonono", userInput.toString())
             if (file.isFile && userInput && (file.name.endsWith(fileExtension) || file.name.endsWith(
                     fileExtension2)||file.name.endsWith("$fileExtension.pga")||file.name.endsWith("$fileExtension.fpga"))
             ) {
                 if (open == 0 && file.name.contains(".pga") && !file.name.contains(".fpga")) {
                     fileNames.add(file.name)
-                } else if (open == 1) {
+                } else if (open == 1 && (file.name.contains(".pga") || file.name.contains(".fpga")||file.name.contains(".save"))) {
                     fileNames.add(file.name)
                 }
             }
