@@ -33,9 +33,9 @@ class GalleryFragment : Fragment() {
         val textView = root.findViewById<TextView>(R.id.text_help)
         val text = textView.text.toString()
         val builder = SpannableStringBuilder(text)
-        val color1="#F28500"
+        val color1="#F9F6B1"
         val wordSize1=1.5f
-        val color2="#66FFE6"
+        val color2="#76FFFF"
         val wordSize2=1.5f
         // 设置不同部分的颜色
         setTextColorAndSize(builder, "立即加密系統:", color1,wordSize1) // 蓝色
