@@ -61,13 +61,11 @@ fun listFilesInDirectory(
         val userInput = file.name.contains(input, true)
 //        Log.e("nonono", userInput.toString())
         if (file.isFile && userInput && (file.name.endsWith(fileExtension) || file.name.endsWith(
-                fileExtension2
-            ))
+                fileExtension2)||file.name.endsWith("$fileExtension.pga")||file.name.endsWith("$fileExtension.fpga"))
         ) {
-            if (open == 0 && file.name.contains("AES_Encrypted") && !file.name.contains("FDAES_Encrypted")){
+            if (open == 0 && file.name.contains(".pga") && !file.name.contains(".fpga")) {
                 fileNames.add(file.name)
-            }
-            else if(open==1){
+            } else if (open == 1) {
                 fileNames.add(file.name)
             }
         }
@@ -88,13 +86,15 @@ class MyAdapter(
 ) : RecyclerView.Adapter<MyAdapter.ViewHolder>() {
     val fdaes = FDAES("sixsquare1234567")
     val aes256 = AES256("sixsquare1234567")
-    var newFileName :String = ""
+    var newFileName: String = ""
     val OPEN_FILE_REQUEST_CODE = 123
     private var fileOpenCallback: FileOpenCallback? = null
-//    val RESULT_OK = 777
+
+    //    val RESULT_OK = 777
     interface FileOpenCallback {
         fun onFileOpenCompleted(file: File)
     }
+
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val fileName: TextView = itemView.findViewById(R.id.file_name) // 通过ID找到文本视图
         val icon: ImageView = itemView.findViewById(R.id.view_icon) // 通过ID找到图标视图
@@ -108,23 +108,22 @@ class MyAdapter(
                         val FileName = data[position]
                         val fileToOpen = File(context.getExternalFilesDir(null), FileName)
 
-                        if (FileName.contains("FDAES_Encrypted")) {
+                        if (FileName.contains(".fpga")) {
 
                             val subString: String =
-                                FileName.subSequence(16, FileName.length) as String
+                                FileName.subSequence(0, FileName.length - 5) as String
                             val outputFile = File(context.getExternalFilesDir(null), subString)
                             fdaes.FileDecryption_CBC(fileToOpen, outputFile)
                             openFile(outputFile, context)
                             updateData(listFilesInDirectory(directoryPath, "", fileType, open))
-                        } else if (FileName.contains("AES_Encrypted")) {
+                        } else if (FileName.contains(".pga")) {
                             val subString: String =
-                                FileName.subSequence(14, FileName.length) as String
+                                FileName.subSequence(0, FileName.length - 4) as String
                             val outputFile = File(context.getExternalFilesDir(null), subString)
                             aes256.decryptFile(fileToOpen, outputFile)
                             openFile(outputFile, context)
                             updateData(listFilesInDirectory(directoryPath, "", fileType, open))
-                        }
-                        else{
+                        } else {
                             openFile(fileToOpen, context)
                         }
 
@@ -134,38 +133,7 @@ class MyAdapter(
 
                 }
                 itemView.setOnLongClickListener {
-//                    showOptionsDialog(
-//                        context,
-//                        "Please Enter Your Password",
-//                        "Confirm",
-//                        "Cancel",
-//                        { userInput ->
-//                            // 用户点击确定按钮后的处理逻辑，userInput 包含用户输入的文本
-//                            // 在这里添加你的代码
-////                                        Toast.makeText(this@MainActivity, "$userInput", Toast.LENGTH_SHORT).show()
-//                            Toast.makeText(context, "Authentication succeeded!", Toast.LENGTH_SHORT).show()
-//
-//                        },
-//                        {
-//                            // 用户点击取消按钮后的处理逻辑
-//                        }
-//
-//                    )
-//                    showOptionsDialog(
-//                        context,
-//                        onRenameClick = { newName ->
-//                            // 在这里处理重命名操作，使用 newName 变量
-//                            Toast.makeText(context, "Rename to $newName", Toast.LENGTH_SHORT).show()
-//                        },
-//                        onDeleteClick = {
-//                            // 在这里处理删除操作
-//                            Toast.makeText(context, "Delete", Toast.LENGTH_SHORT).show()
-//                        },
-//                        onSaveClick = { contentToSave ->
-//                            // 在这里处理保存操作，使用 contentToSave 变量
-//                            Toast.makeText(context, "Save: $contentToSave", Toast.LENGTH_SHORT).show()
-//                        }
-//                    )
+
                     val position = adapterPosition
                     val fileName = data[position]
                     showContextMenu(it, fileName)
@@ -177,43 +145,47 @@ class MyAdapter(
                     showOptionsDialog(context, onRenameClick = { newName ->
                         // 在这里处理重命名操作，使用 newName 变量
                         newFileName = newName
-
+                        continueWithRenamedFile(newFileName)
                     })
-                    CompletableFuture.runAsync {
-                        val position = adapterPosition
-                        if (position != RecyclerView.NO_POSITION) {
-                            val string = data[position]
-                            val fileToOpen = File(context.getExternalFilesDir(null), string)
-//                        val subString: String = string.subSequence(14, string.length) as String
-                            val extension = fileToOpen.extension
-                            val newFileName = "$newFileName.$extension"
-                            val outputFile =
-                                File(context.getExternalFilesDir(null), newFileName)
-                            aes256.decryptFile(fileToOpen, outputFile)
-                            fileToOpen.delete()
-                            val fdaesOutputFile = File(
-                                context.getExternalFilesDir(null),
-                                "FDAES_Encrypted_$newFileName"
-                            )
-                            fdaes.FileEncryption_CBC(outputFile, fdaesOutputFile)
-                            outputFile.delete()
-                            updateData(
-                                listFilesInDirectory(
-                                    directoryPath, "", fileType, open
-                                )
-                            )
-                            Toast.makeText(context, "加密完成", Toast.LENGTH_SHORT).show()
-                        }
-                    }.exceptionally {
-                        it.printStackTrace();
-                        return@exceptionally null;
-                    }
-                    updateData(listFilesInDirectory(directoryPath, "", fileType, open))
 
 
                 }
             }
 
+        }
+
+        private fun continueWithRenamedFile(oldFileName: String) {
+            CompletableFuture.runAsync {
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    val string = data[position]
+                    val fileToOpen = File(context.getExternalFilesDir(null), string)
+                    val name = fileToOpen.nameWithoutExtension
+
+                    // 使用字符串处理方法提取副檔名
+                    val lastDotIndex = name.lastIndexOf(".")
+                    val fileExtension = if (lastDotIndex >= 0) {
+                        name.substring(lastDotIndex + 1)
+                    } else {
+                        // 沒有找到副檔名的情況下的處理
+                        "無副檔名"
+                    }
+                    val newFileName = "$oldFileName.$fileExtension"
+                    val outputFile = File(context.getExternalFilesDir(null), newFileName)
+                    aes256.decryptFile(fileToOpen, outputFile)
+                    fileToOpen.delete()
+                    val fdaesOutputFile =
+                        File(context.getExternalFilesDir(null), "$newFileName.fpga")
+                    fdaes.FileEncryption_CBC(outputFile, fdaesOutputFile)
+                    outputFile.delete()
+                    updateData(listFilesInDirectory(directoryPath, "", fileType, open))
+                    Toast.makeText(context, "加密完成", Toast.LENGTH_SHORT).show()
+                }
+            }.exceptionally {
+                it.printStackTrace()
+                return@exceptionally null
+            }
+            updateData(listFilesInDirectory(directoryPath, "", fileType, open))
         }
     }
 
@@ -242,8 +214,8 @@ class MyAdapter(
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         try {
             val name = file.name
-            intent.putExtra("key",name.toString())
-            Log.e("test","$name")
+            intent.putExtra("key", name.toString())
+            Log.e("test", "$name")
 //            context.startActivityForResult(intent, OPEN_FILE_REQUEST_CODE)
 //            context.setResult(RESULT_OK,intent)
 //            context.finish()
@@ -265,7 +237,6 @@ class MyAdapter(
     fun listFilesInDirectory(
         directoryPath: File, input: String, fileExtension: String, open: Int = 1
     ): List<String> {
-
         val directory = directoryPath
         var fileExtension2: String
 
@@ -275,7 +246,6 @@ class MyAdapter(
         } else {
             fileExtension2 = fileExtension
         }
-
         // 检查目录是否存在
         if (!directory.exists() || !directory.isDirectory) {
             return emptyList()
@@ -293,32 +263,27 @@ class MyAdapter(
         val fileNames = mutableListOf<String>()
         for (file in files) {
             val userInput = file.name.contains(input, true)
+            Toast.makeText(context,"$fileExtension.pga",Toast.LENGTH_SHORT).show()
 //        Log.e("nonono", userInput.toString())
             if (file.isFile && userInput && (file.name.endsWith(fileExtension) || file.name.endsWith(
-                    fileExtension2
-                ))
+                    fileExtension2)||file.name.endsWith("$fileExtension.pga")||file.name.endsWith("$fileExtension.fpga"))
             ) {
-//                if (open == 1 && file.name.contains("Encrypted")) {
-//                    fileNames.add(file.name)
-//                } else if (open == 0 && (file.name.endsWith(fileExtension) || file.name.endsWith(
-//                        fileExtension2
-//                    )) && file.name.contains("AES_Encrypted") && !file.name.contains("FDAES_Encrypted")
-//                ) {
-//                    Log.e("test0","$open")
-//                    Log.e("test1","${file.name.endsWith(fileExtension)}")
-//                    Log.e("test2","${file.name.endsWith(fileExtension2)}")
-//                    Log.e("test3","${file.name.contains("AES_Encrypted")}")
+                if (open == 0 && file.name.contains(".pga") && !file.name.contains(".fpga")) {
                     fileNames.add(file.name)
-//                }
+                } else if (open == 1) {
+                    fileNames.add(file.name)
+                }
             }
 
         }
 
         return fileNames
     }
+
     fun setFileOpenCallback(callback: FileOpenCallback) {
         fileOpenCallback = callback
     }
+
     private fun showContextMenu(view: View, fileName: String) {
         val popupMenu = PopupMenu(context, view)
         val menu = popupMenu.menu
@@ -339,12 +304,27 @@ class MyAdapter(
                         val fileToOpen = File(context.getExternalFilesDir(null), fileName)
                         val oldFileName = fileToOpen.nameWithoutExtension
                         val extension = fileToOpen.extension
-                        val newFileName = if (oldFileName.contains("FDAES_Encrypted")) {
-                            "FDAES_Encrypted_$newName.$extension"
-                        } else if (oldFileName.contains("AES_Encrypted")) {
-                            "AES_Encrypted_$newName.$extension"
+                        val lastDotIndex = oldFileName.lastIndexOf(".")
+                        val fileExtension = if (lastDotIndex >= 0) {
+                            oldFileName.substring(lastDotIndex + 1)
                         } else {
-                            "AES_Encrypted_$newName.$extension"
+                            // 沒有找到副檔名的情況下的處理
+                            "無副檔名"
+                        }
+                        val firstDotIndex = oldFileName.indexOf(".")
+                        val nameBeforeFirstDot = if (firstDotIndex >= 0) {
+                            oldFileName.substring(0, firstDotIndex)
+                        } else {
+                            // 没有找到点的情况下的处理
+                            "无名称"
+                        }
+                        val newFileName = if (extension.contains("fpga")) {
+                            "$newName.$fileExtension.fpga"
+                        } else if (extension.contains("pga")) {
+                            "$newName.$fileExtension.pga"
+                        } else {
+                            Toast.makeText(context, "else$extension", Toast.LENGTH_SHORT).show()
+                            "$newName.$fileExtension.fpga"
                         }
                         val newFile = File(fileToOpen.parent, newFileName)
                         fileToOpen.renameTo(newFile)
@@ -370,20 +350,33 @@ class MyAdapter(
                     val fileToOpen = File(context.getExternalFilesDir(null), fileName)
                     val oldFileName = fileToOpen.nameWithoutExtension
                     val extension = fileToOpen.extension
-                    if (oldFileName.contains("FDAES_Encrypted")) {
-                        val subString: String =
-                            oldFileName.subSequence(16, oldFileName.length) as String
-                        val outputFile = File(context.getExternalFilesDir(null),
-                            "$subString.save.$extension"
+                    // 使用字符串处理方法提取副檔名
+                    val lastDotIndex = oldFileName.lastIndexOf(".")
+                    val fileExtension = if (lastDotIndex >= 0) {
+                        oldFileName.substring(lastDotIndex + 1)
+                    } else {
+                        // 沒有找到副檔名的情況下的處理
+                        "無副檔名"
+                    }
+                    val firstDotIndex = oldFileName.indexOf(".")
+                    val nameBeforeFirstDot = if (firstDotIndex >= 0) {
+                        oldFileName.substring(0, firstDotIndex)
+                    } else {
+                        // 没有找到点的情况下的处理
+                        "未命名"
+                    }
+                    if (extension.contains("fpga")) {
+                        val outputFile = File(
+                            context.getExternalFilesDir(null),
+                            "$nameBeforeFirstDot.save.$fileExtension"
                         )
                         fdaes.FileDecryption_CBC(fileToOpen, outputFile)
                         updateData(listFilesInDirectory(directoryPath, "", fileType, open))
 
-                    } else if (oldFileName.contains("AES_Encrypted")) {
-                        val subString: String =
-                            oldFileName.subSequence(14, oldFileName.length) as String
-                        val outputFile = File(context.getExternalFilesDir(null),
-                            "$subString.save.$extension"
+                    } else if (extension.contains("pga")) {
+                        val outputFile = File(
+                            context.getExternalFilesDir(null),
+                            "$nameBeforeFirstDot.save.$fileExtension"
                         )
                         aes256.decryptFile(fileToOpen, outputFile)
                         updateData(listFilesInDirectory(directoryPath, "", fileType, open))

@@ -94,7 +94,7 @@
             android:layout_gravity="start"
             android:layout_weight="1"
             android:background="#FFFFFF"
-            android:text="send"
+            android:text="SAVE"
             android:textColor="#000000"
             app:strokeColor="#676767" />
 
