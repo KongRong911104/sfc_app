@@ -2,6 +2,7 @@ package com.example.sfc_front.ui.home
 
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
@@ -57,7 +58,7 @@ class HomeFragment : Fragment() {
     private val binding get() = _binding!!
     val aes256 = AES256("sixsquare1234567")
     val fdaes = FDAES("sixsquare1234567")
-    private val password = ""
+    private val password = "1234"
     private lateinit var takePictureLauncher: ActivityResultLauncher<Uri>
     private lateinit var biometricPrompt: BiometricPrompt
     private lateinit var promptInfo: BiometricPrompt.PromptInfo
@@ -121,6 +122,7 @@ class HomeFragment : Fragment() {
         }
     }
 
+    @SuppressLint("Range")
     fun getFileNameFromUri(uri: Uri): String? {
         var fileName: String? = null
 

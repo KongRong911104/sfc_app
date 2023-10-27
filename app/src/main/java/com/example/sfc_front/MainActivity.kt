@@ -20,6 +20,10 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.sfc_front.ui.home.HomeViewModel
+import com.jcraft.jsch.ChannelSftp
+import com.jcraft.jsch.JSch
+import com.jcraft.jsch.Session
+import java.io.File
 
 
 class MainActivity : AppCompatActivity() {
@@ -55,10 +59,40 @@ class MainActivity : AppCompatActivity() {
         viewModel.progressInt.observe(this, progressObserver)
 
         switch.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked){
+            if (isChecked) {
+                // 启动云备份
                 Toast.makeText(this, "Cloud Backup in Progress.", Toast.LENGTH_SHORT).show()
-            }
-            else{
+
+                val localFolderPath = "" // 替换为您要备份的本地文件夹路径
+                val remoteFolderPath = "远程文件夹路径" // 替换为远程SFTP服务器上的文件夹路径
+
+                // 使用SFTP连接进行备份
+                val jsch = JSch()
+                val session: Session = jsch.getSession("nmg", "172.24.8.170", 22)
+                session.setPassword("e04su3su;6")
+                session.connect()
+
+                val channel: ChannelSftp = session.openChannel("sftp") as ChannelSftp
+                channel.connect()
+
+                try {
+                    uploadDirectory(channel, localFolderPath, remoteFolderPath)
+                    // 上传完成
+                    runOnUiThread {
+                        Toast.makeText(this, "Cloud Backup Completed.", Toast.LENGTH_SHORT).show()
+                    }
+                } catch (e: Exception) {
+                    // 上传失败
+                    e.printStackTrace()
+                    runOnUiThread {
+                        Toast.makeText(this, "Cloud Backup Failed.", Toast.LENGTH_SHORT).show()
+                    }
+                } finally {
+                    channel.disconnect()
+                    session.disconnect()
+                }
+            } else {
+                // 关闭云备份
                 Toast.makeText(this, "Cloud Backup has been turned off", Toast.LENGTH_SHORT).show()
             }
         }
@@ -68,6 +102,26 @@ class MainActivity : AppCompatActivity() {
         goBack.setOnClickListener {
             moveTaskToBack(true);
             exitProcess(-1)
+        }
+    }
+    private fun uploadDirectory(channel: ChannelSftp, localFolderPath: String, remoteFolderPath: String) {
+        val localDirectory = File(localFolderPath)
+        val remoteDirectory = remoteFolderPath
+
+        if (!localDirectory.exists() || !localDirectory.isDirectory) {
+            throw IllegalArgumentException("Local folder does not exist or is not a directory.")
+        }
+
+        // 上传文件夹内的文件和子文件夹
+        for (file in localDirectory.listFiles()!!) {
+            if (file.isFile) {
+                channel.put(file.absolutePath, "$remoteDirectory/${file.name}")
+            } else if (file.isDirectory) {
+                val newRemoteFolder = "$remoteDirectory/${file.name}"
+                channel.mkdir(newRemoteFolder)
+                channel.cd(newRemoteFolder)
+                uploadDirectory(channel, file.absolutePath, newRemoteFolder)
+            }
         }
     }
 
