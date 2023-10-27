@@ -1,6 +1,8 @@
 package com.example.sfc_front
 import android.annotation.SuppressLint
+import android.app.blob.BlobStoreManager
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.widget.Toast
 import android.widget.Switch
@@ -23,6 +25,9 @@ import com.example.sfc_front.ui.home.HomeViewModel
 import com.jcraft.jsch.ChannelSftp
 import com.jcraft.jsch.JSch
 import com.jcraft.jsch.Session
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.io.File
 
 
@@ -42,10 +47,10 @@ class MainActivity : AppCompatActivity() {
         val drawerLayout: DrawerLayout = binding.drawerLayout
         val navView: NavigationView = binding.navView
         val navController = findNavController(R.id.nav_host_fragment_content_main)
-        val switch:Switch = findViewById(R.id.switchButton)
+        val switch: Switch = findViewById(R.id.switchButton)
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.nav_home,R.id.nav_slideshow,R.id.nav_gallery
+                R.id.nav_home, R.id.nav_slideshow, R.id.nav_gallery
             ), drawerLayout
         )
         viewModel = ViewModelProvider(this)[HomeViewModel::class.java] // 替換成你的 ViewModel 類別
@@ -63,67 +68,73 @@ class MainActivity : AppCompatActivity() {
                 // 启动云备份
                 Toast.makeText(this, "Cloud Backup in Progress.", Toast.LENGTH_SHORT).show()
 
-                val localFolderPath = "" // 替换为您要备份的本地文件夹路径
-                val remoteFolderPath = "远程文件夹路径" // 替换为远程SFTP服务器上的文件夹路径
+                val remoteFolderPath = "/home/nmg/file_backup" // 替换为远程SFTP服务器上的文件夹路径
 
-                // 使用SFTP连接进行备份
-                val jsch = JSch()
-                val session: Session = jsch.getSession("nmg", "172.24.8.170", 22)
-                session.setPassword("e04su3su;6")
-                session.connect()
+                // 使用协程在后台线程执行备份操作
+                GlobalScope.launch(Dispatchers.IO) {
+                    try {
+                        val jsch = JSch()
 
-                val channel: ChannelSftp = session.openChannel("sftp") as ChannelSftp
-                channel.connect()
+                        val session: Session =
+                            jsch.getSession("nmg", "172.24.8.170", 22)
+                        session.setConfig("StrictHostKeyChecking", "no")
+                        session.setPassword("e04su3su;6")
+                        session.connect()
 
-                try {
-                    uploadDirectory(channel, localFolderPath, remoteFolderPath)
-                    // 上传完成
-                    runOnUiThread {
-                        Toast.makeText(this, "Cloud Backup Completed.", Toast.LENGTH_SHORT).show()
+                        val channel: ChannelSftp = session.openChannel("sftp") as ChannelSftp
+                        channel.connect()
+
+                        // 传递 SFTP 通道给 uploadDirectory 函数
+                        uploadDirectory(channel, remoteFolderPath)
+
+                        // 备份完成后在主线程显示消息
+                        runOnUiThread {
+                            Toast.makeText(
+                                this@MainActivity,
+                                "Cloud Backup Completed.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+
+                        // 关闭 SFTP 通道和会话
+                        channel.disconnect()
+                        session.disconnect()
+                    } catch (e: Exception) {
+                        // 上传失败
+                        Log.e("BackupError", "Cloud Backup Failed", e)
+                        e.printStackTrace()
+                        runOnUiThread {
+                            Toast.makeText(
+                                this@MainActivity,
+                                "Cloud Backup Failed.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     }
-                } catch (e: Exception) {
-                    // 上传失败
-                    e.printStackTrace()
-                    runOnUiThread {
-                        Toast.makeText(this, "Cloud Backup Failed.", Toast.LENGTH_SHORT).show()
-                    }
-                } finally {
-                    channel.disconnect()
-                    session.disconnect()
                 }
             } else {
                 // 关闭云备份
                 Toast.makeText(this, "Cloud Backup has been turned off", Toast.LENGTH_SHORT).show()
             }
         }
-        setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
-        val goBack = findViewById<TextView>(R.id.logout)
-        goBack.setOnClickListener {
-            moveTaskToBack(true);
-            exitProcess(-1)
-        }
     }
-    private fun uploadDirectory(channel: ChannelSftp, localFolderPath: String, remoteFolderPath: String) {
-        val localDirectory = File(localFolderPath)
-        val remoteDirectory = remoteFolderPath
+        private fun uploadDirectory(channel: ChannelSftp, remoteFolderPath: String) {
+            val localDirectory = File(getExternalFilesDir(null).toString())
+            val remoteDirectory = remoteFolderPath
 
-        if (!localDirectory.exists() || !localDirectory.isDirectory) {
-            throw IllegalArgumentException("Local folder does not exist or is not a directory.")
-        }
-
-        // 上传文件夹内的文件和子文件夹
-        for (file in localDirectory.listFiles()!!) {
-            if (file.isFile) {
-                channel.put(file.absolutePath, "$remoteDirectory/${file.name}")
-            } else if (file.isDirectory) {
-                val newRemoteFolder = "$remoteDirectory/${file.name}"
-                channel.mkdir(newRemoteFolder)
-                channel.cd(newRemoteFolder)
-                uploadDirectory(channel, file.absolutePath, newRemoteFolder)
+            // 上传文件夹内的文件和子文件夹
+            for (file in localDirectory.listFiles()) {
+                if (file.isFile) {
+                    channel.put(file.absolutePath, "$remoteDirectory/${file.name}")
+                } else if (file.isDirectory) {
+                    val newRemoteFolder = "$remoteDirectory/${file.name}"
+                    channel.mkdir(newRemoteFolder)
+                    channel.cd(newRemoteFolder)
+                    uploadDirectory(channel, file.absolutePath)
+                    channel.cd("..") // 返回到上一级目录
+                }
             }
         }
-    }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main, menu)
