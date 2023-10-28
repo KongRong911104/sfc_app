@@ -117,6 +117,13 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Cloud Backup has been turned off", Toast.LENGTH_SHORT).show()
             }
         }
+        setupActionBarWithNavController(navController, appBarConfiguration)
+        navView.setupWithNavController(navController)
+        val goBack = findViewById<TextView>(R.id.logout)
+        goBack.setOnClickListener {
+            moveTaskToBack(true);
+            exitProcess(-1)
+        }
     }
         private fun uploadDirectory(channel: ChannelSftp, remoteFolderPath: String) {
             val localDirectory = File(getExternalFilesDir(null).toString())

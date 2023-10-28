@@ -91,7 +91,7 @@ class NoteActivity : ComponentActivity() {
                 fileWriter.write(content.toString())
                 fileWriter.close()
                 //加密
-                val fdaes = FDAES("sixsquare1234567")
+//                val fdaes = FDAES("sixsquare1234567")
                 val aes256 = AES256("sixsquare1234567")
                 val executor = Executors.newSingleThreadExecutor()
                 executor.execute {
@@ -104,7 +104,7 @@ class NoteActivity : ComponentActivity() {
 //
 //                        } else {
                         val outputFile =
-                                File(getExternalFilesDir(null), "AES_Encrypted_$fileName.txt")
+                                File(getExternalFilesDir(null), "$fileName.txt.pga")
                             // 在線程池中執行加密操作
                         aes256.encryptFile(file, outputFile)
 //                        Log.e("test3", "AES")
