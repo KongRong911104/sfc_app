@@ -57,8 +57,11 @@ class HomeFragment : Fragment() {
     private lateinit var progressObserver: Observer<Int>
     private val binding get() = _binding!!
     val aes256 = AES256("sixsquare1234567")
-    val fdaes = FDAES("sixsquare1234567")
-    private val password = "1234"
+    //    val fdaes = FDAES("sixsquare1234567")
+    private val password = ""
+
+
+
     private lateinit var takePictureLauncher: ActivityResultLauncher<Uri>
     private lateinit var biometricPrompt: BiometricPrompt
     private lateinit var promptInfo: BiometricPrompt.PromptInfo
@@ -79,7 +82,7 @@ class HomeFragment : Fragment() {
                         ballText.setTextColor(Color.parseColor("#FFFFFFFF"))
                         ball.progressDrawable = resources.getDrawable(R.drawable.ball, null)
                     }
-                    val outputFile = File(activity.getExternalFilesDir(null), "AES_Encrypted_$FileName")
+                    val outputFile = File(activity.getExternalFilesDir(null), "$FileName.pga")
                     aes256.encryptFile(inputFile, outputFile)
                     if (inputFile.exists()) {
                         inputFile.delete()
@@ -109,7 +112,7 @@ class HomeFragment : Fragment() {
                             }
                         }
 
-                        val outputFile = File(activity.getExternalFilesDir(null), "AES_Encrypted_$FileName")
+                        val outputFile = File(activity.getExternalFilesDir(null), "$FileName.pga")
                         aes256.encryptFile(tempFile, outputFile)
 
                         tempFile.delete()
@@ -381,7 +384,7 @@ class HomeFragment : Fragment() {
 //                            fdaes.FileEncryption_CBC(inputFile,outputFile)
 //                        }
 //                        else{
-                        val outputFile=File(context.getExternalFilesDir(null),"AES_Encrypted_$FileName")
+                        val outputFile=File(context.getExternalFilesDir(null),"$FileName.pga")
                         // 在線程池中執行加密操作
                         aes256.encryptFile(inputFile, outputFile)
 //                        }
