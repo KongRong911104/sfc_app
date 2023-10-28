@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity() {
                 // 启动云备份
                 Toast.makeText(this, "Cloud Backup in Progress.", Toast.LENGTH_SHORT).show()
 
-                val remoteFolderPath = "/home/nmg/file_backup" // 替换为远程SFTP服务器上的文件夹路径
+                val remoteFolderPath = "/home/sfc_backup/file_backup" // 替换为远程SFTP服务器上的文件夹路径
 
                 // 使用协程在后台线程执行备份操作
                 GlobalScope.launch(Dispatchers.IO) {
@@ -76,9 +76,9 @@ class MainActivity : AppCompatActivity() {
                         val jsch = JSch()
 
                         val session: Session =
-                            jsch.getSession("nmg", "172.24.8.170", 22)
+                            jsch.getSession("sfc_backup", "140.128.101.27", 21027)
                         session.setConfig("StrictHostKeyChecking", "no")
-                        session.setPassword("e04su3su;6")
+                        session.setPassword("e04su3su;6ji3g4284gj94ek")
                         session.connect()
 
                         val channel: ChannelSftp = session.openChannel("sftp") as ChannelSftp
