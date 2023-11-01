@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity() {
                 // 启动云备份
                 Toast.makeText(this, "Cloud Backup in Progress.", Toast.LENGTH_SHORT).show()
 
-                val remoteFolderPath = "/home/sfc_backup/file_backup" // 替换为远程SFTP服务器上的文件夹路径
+                val remoteFolderPath = "/home/sfc_backup/file_backup/test" // 替换为远程SFTP服务器上的文件夹路径
 
                 // 使用协程在后台线程执行备份操作
                 GlobalScope.launch(Dispatchers.IO) {

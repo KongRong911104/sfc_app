@@ -20,6 +20,9 @@ import com.example.sfc_front.ui.FDAES.FDAES
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import java.util.concurrent.Executors
 
 
@@ -36,7 +39,8 @@ class NoteActivity : ComponentActivity() {
 
         val sendButton = findViewById<Button>(R.id.noteSendButton)
         val cancelButton = findViewById<Button>(R.id.noteCancelButton)
-        val fileName = findViewById<EditText>(R.id.fileNameEditText).text
+//        val fileName = findViewById<EditText>(R.id.fileNameEditText).text
+//        val fileName = "123"
         val content = findViewById<EditText>(R.id.contentEditText).text
 //        val switch:Switch = findViewById(R.id.switchButton)
         val status = intent.getBooleanExtra("status",false)
@@ -45,7 +49,7 @@ class NoteActivity : ComponentActivity() {
             ContextCompat.checkSelfPermission(this,android.Manifest.permission.WRITE_EXTERNAL_STORAGE
             ) == PackageManager.PERMISSION_GRANTED &&
                     ContextCompat.checkSelfPermission(this,android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED -> {
-                Toast.makeText(this, "granted", Toast.LENGTH_SHORT).show()
+//                Toast.makeText(this, "granted", Toast.LENGTH_SHORT).show()
             }
             else -> {
                 requestPermissions(arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE,android.Manifest.permission.READ_EXTERNAL_STORAGE),1)
@@ -57,7 +61,7 @@ class NoteActivity : ComponentActivity() {
         }
 
         sendButton.setOnClickListener{
-            createANote(fileName, content, status)
+            createANote(content, status)
         }
         cancelButton.setOnClickListener{
             finish()
@@ -78,13 +82,14 @@ class NoteActivity : ComponentActivity() {
     }
 
     @SuppressLint("UseSwitchCompatOrMaterialCode")
-    private fun createANote(fileName:Editable, content:Editable, status:Boolean) {
+    private fun createANote(content:Editable, status:Boolean) {
         try {
 
 //            val switch:Switch = findViewById(R.id.switchButton)
 //            val s = switch.isChecked
-                Toast.makeText(this, fileName, Toast.LENGTH_SHORT).show()
-                val file = File(getExternalFilesDir(null), "$fileName.txt")
+//                Toast.makeText(this, fileName, Toast.LENGTH_SHORT).show()
+            val fileName = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+            val file = File(getExternalFilesDir(null), "$fileName.txt")
 //            val dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
 //                val file = File(dir,"$fileName.txt")
                 val fileWriter = FileWriter(file, true)
