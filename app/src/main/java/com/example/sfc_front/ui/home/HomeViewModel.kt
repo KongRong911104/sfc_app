@@ -15,7 +15,7 @@ class HomeViewModel : ViewModel() {
         get() = _progressInt
 
     private var job: Job? = null
-//    private var currentProgress = 0
+    //    private var currentProgress = 0
 //    @JvmField
 //    var currentProgress: Int = 0
     fun startTask() {

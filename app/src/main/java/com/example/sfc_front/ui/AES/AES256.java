@@ -2,6 +2,9 @@ package com.example.sfc_front.ui.AES;
 
 import android.net.Uri;
 
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelStoreOwner;
+
 import com.example.sfc_front.ui.home.HomeViewModel;
 
 import javax.crypto.*;
@@ -19,7 +22,12 @@ public class AES256 {
         secretKey = PW;
     }
 
-
+//    private HomeViewModel homeViewModel;
+//    public AnotherClass(ViewModelStoreOwner owner) {
+//        // 获取 HomeViewModel 的实例
+//        homeViewModel = new ViewModelProvider(owner, new ViewModelProvider.AndroidViewModelFactory(owner.getApplication()))
+//                .get(HomeViewModel.class);
+//    }
     // 加密函式
     public void encryptFile(File inputFile, File outputFile) throws Exception {
         SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey.getBytes(), AES_ALGORITHM);
@@ -38,7 +46,8 @@ public class AES256 {
         long ii = 0;
         // 寫入初始化向量到輸出檔案（用於解密）
         outputStream.write(ivBytes);
-        HomeViewModel.currentProgress =0;
+
+        HomeViewModel.currentProgress = 0;
         byte[] buffer = new byte[1024];
         int bytesRead;
         while ((bytesRead = inputStream.read(buffer)) != -1) {

@@ -44,15 +44,20 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_home,R.id.nav_slideshow,R.id.nav_gallery
             ), drawerLayout
         )
-        viewModel = ViewModelProvider(this)[HomeViewModel::class.java] // 替換成你的 ViewModel 類別
-        // 設置觀察者
+        // 初始化 ViewModel
+        viewModel = ViewModelProvider(this)[HomeViewModel::class.java]
+
+        // 设置观察者
         progressObserver = Observer { progressInt ->
             ballText.text = "$progressInt%"
             ball.progress = progressInt
         }
+
+        // 首先观察 progressInt
         viewModel.progressInt.observe(this, progressObserver)
+
+        // 启动任务
         viewModel.startTask()
-        viewModel.progressInt.observe(this, progressObserver)
 
         switch.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked){

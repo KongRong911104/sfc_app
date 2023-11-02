@@ -53,7 +53,7 @@ class HomeFragment : Fragment() {
 
     private val viewModel: HomeViewModel by viewModels()
     private var _binding: FragmentHomeBinding? = null
-    private lateinit var progressObserver: Observer<Int>
+//    private lateinit var progressObserver: Observer<Int>
     private val binding get() = _binding!!
     val aes256 = AES256("sixsquare1234567")
     val fdaes = FDAES("sixsquare1234567")
@@ -146,12 +146,12 @@ class HomeFragment : Fragment() {
         val root: View = binding.root
         val ball = root.findViewById<ProgressBar>(R.id.progressBar)
         val ballText = root.findViewById<TextView>(R.id.ball_text)
-        progressObserver = Observer { progressInt ->
-            ballText.text = "$progressInt%"
-            ball.progress = progressInt
-        }
-        viewModel.progressInt.observe(requireActivity(), progressObserver)
-        viewModel.startTask()
+//        progressObserver = Observer { progressInt ->
+//            ballText.text = "$progressInt%"
+//            ball.progress = progressInt
+//        }
+//        viewModel.progressInt.observe(requireActivity(), progressObserver)
+//        viewModel.startTask()
         val noteButton = root.findViewById<ImageButton>(R.id.note_button)
         noteButton.setOnClickListener {
             val intent = Intent(getActivity(), NoteActivity::class.java)
@@ -409,15 +409,7 @@ class HomeFragment : Fragment() {
 
         return root
     }
-    override fun onDestroyView() {
-        super.onDestroyView()
 
-        // 在 onDestroyView 中移除观察者，以避免内存泄漏
-        viewModel.progressInt.removeObserver(progressObserver)
-
-        // 清理资源
-        _binding = null
-    }
     private fun protectFile() {
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
             addCategory(Intent.CATEGORY_OPENABLE)
