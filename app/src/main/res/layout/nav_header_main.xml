@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:gravity="center|center_horizontal|center_vertical"
             android:paddingTop="@dimen/nav_header_vertical_spacing"
-            android:text="user"
+            android:text="小明"
             android:textAppearance="@style/user_name" />
     </LinearLayout>
 

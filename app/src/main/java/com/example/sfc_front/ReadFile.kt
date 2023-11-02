@@ -16,13 +16,21 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.io.File
 import java.util.concurrent.CompletableFuture
+import android.os.Handler
+import android.os.Looper
+import android.view.MotionEvent
+import android.widget.Toast
 
 
 class ReadFile : AppCompatActivity() {
     private val OPEN_FILE_REQUEST_CODE = 123
+//    private val idleTimeout = 3600000 // 空闲时间（以毫秒为单位）
+    private val handler = Handler(Looper.getMainLooper())
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.fragment_gallery)
+        // 启动空闲检测定时器
+//        startIdleTimer()
 
         // 建立 FileProvider 的授權
         val builder = StrictMode.VmPolicy.Builder()
@@ -79,7 +87,7 @@ class ReadFile : AppCompatActivity() {
                 val files = directoryPath.listFiles() // 获取目录下的所有文件
 
                 for (file in files) {
-                    if (file.isFile && (!file.name.contains("AES")&&!file.name.contains(".save"))) {
+                    if (file.isFile && (!file.name.contains(".pga")&&!file.name.contains(".save")&&!file.name.contains(".fpga"))) {
                         // 如果文件是不以 "AES" 开头的，就删除它
                         file.delete()
                     }
@@ -245,16 +253,23 @@ class ReadFile : AppCompatActivity() {
 
     }
 
-//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-//        super.onActivityResult(requestCode, resultCode, data)
-//        val name = data?.getStringExtra("key")
-//        Log.e("test1","$name")
-//                CompletableFuture.runAsync {
-//                    val context = this@ReadFile
-//                    val fileName = data?.getStringExtra("key")
-//                    val fileDelete = File(context.getExternalFilesDir(null), fileName)
-//                    fileDelete.delete()
-//                    Log.e("test1", "file name: $fileName")
-//                }
+//    override fun onTouchEvent(event: MotionEvent): Boolean {
+//        // 用户触摸屏幕时，重置空闲计时器
+//        resetIdleTimer()
+//        return true
 //    }
+//
+//    private fun startIdleTimer() {
+//        handler.postDelayed({
+//            // 在这里执行在用户长时间没有触摸屏幕时需要执行的操作，例如显示提示或执行特定任务
+//            finish()
+//        }, idleTimeout.toLong())
+//    }
+//
+//    private fun resetIdleTimer() {
+//        // 重置空闲计时器
+//        handler.removeCallbacksAndMessages(null)
+//        startIdleTimer()
+//    }
+
 }
